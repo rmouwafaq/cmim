@@ -1,0 +1,2 @@
+# cmim
+CMIM Odoo Module
