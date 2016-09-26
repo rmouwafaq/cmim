@@ -1,0 +1,801 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* training_student
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 9.0-20151124\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-12-09 17:32+0000\n"
+"PO-Revision-Date: 2015-12-09 17:32+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "<b>Age:</b>"
+msgstr ":السن"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "<b>Date of Birth:</b>"
+msgstr ":تاريخ الميلاد"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "<b>Degree Registered For:</b>"
+msgstr ":الدرجة المسجل لها"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "<b>Email:</b>"
+msgstr ":البريد الإلكتروني"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "<b>Ministry University No.:</b>"
+msgstr ":رقم الوزارة"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "<b>Name:</b>"
+msgstr ":الإسم"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "<b>Phone:</b>"
+msgstr ":رقم الهاتق"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "<b>Status:</b>"
+msgstr ":الحالة"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "<b>University Seat No.:</b>"
+msgstr ":رقم الجلوس"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.report_saleorder_document_inherit
+msgid "<strong>Reference:</strong>"
+msgstr ":المرجع"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.report_saleorder_document_inherit
+msgid "<strong>Salesman:</strong>"
+msgstr ":مندوب المبيعات"
+
+#. module: training_student
+#: model:ir.model,name:training_student.model_dorf_information
+msgid "A registry of all departments or faculties"
+msgstr "سجل اﻷقسام أو الكليات"
+
+#. module: training_student
+#: model:ir.model,name:training_student.model_dord_information
+msgid "A registry of all divisions or departments"
+msgstr "سجل اﻷقسام أو الشعب"
+
+#. module: training_student
+#: model:ir.model,name:training_student.model_degree_detail
+msgid "A registry of all possible degrees offered by university / college"
+msgstr "سجل جميع الدرجات"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+#: selection:student.student,state:0
+msgid "Academic Interview"
+msgstr "المعاينة اﻷكاديمية"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_active
+msgid "Active"
+msgstr "نشط"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_age
+msgid "Age"
+msgstr "السن"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+#: selection:student.student,state:0
+msgid "Alumni"
+msgstr "خريج"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Average"
+msgstr "متوسط"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_audit_form_view
+#: model:ir.ui.view,arch_db:training_student.student_audit_tree_view
+msgid "By"
+msgstr "بواسطة"
+
+#. module: training_student
+#: model:ir.actions.act_window,name:training_student.wiz_calc_age_action
+msgid "Calc Age"
+msgstr "حساب العمر"
+
+#. module: training_student
+#: model:ir.actions.act_window,name:training_student.action_wiz_calc_age
+#: model:ir.ui.menu,name:training_student.menu_wiz_calc_age
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+#: model:ir.ui.view,arch_db:training_student.wizard_calc_age_form
+msgid "Calculate Age"
+msgstr "حساب العمر"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.wizard_calc_age_form
+msgid "Calculate Student Age"
+msgstr "حساب عمر الطالب"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.wizard_calc_age_form
+msgid "Calculate Student Age for All DOB Between Dates"
+msgstr "حساب عمر الطالب لجميع الطلاب بتاريخ ميلاد يقع بين هذه التواريخ"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.wizard_calc_age_form
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_dord_information_code
+#: model:ir.model.fields,field_description:training_student.field_dorf_information_code
+msgid "Code"
+msgstr "الرمز"
+
+#. module: training_student
+#: model:ir.ui.menu,name:training_student.menu_configuration
+msgid "Configuration and Log"
+msgstr "إعدادات و متابعة السجل"
+
+#. module: training_student
+#: selection:student.audit.log,status:0
+msgid "Copied"
+msgstr "نسخ"
+
+#. module: training_student
+#: selection:student.audit.log,status:0
+msgid "Created"
+msgstr "إنشاء"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_degree_detail_create_uid
+#: model:ir.model.fields,field_description:training_student.field_dord_information_create_uid
+#: model:ir.model.fields,field_description:training_student.field_dorf_information_create_uid
+#: model:ir.model.fields,field_description:training_student.field_hobbies_detail_create_uid
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_detail_create_uid
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_subject_create_uid
+#: model:ir.model.fields,field_description:training_student.field_student_audit_log_create_uid
+#: model:ir.model.fields,field_description:training_student.field_student_student_create_uid
+#: model:ir.model.fields,field_description:training_student.field_wiz_calc_age_create_uid
+msgid "Created by"
+msgstr "تم إنشاء السجل بواسطة"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_degree_detail_create_date
+#: model:ir.model.fields,field_description:training_student.field_dord_information_create_date
+#: model:ir.model.fields,field_description:training_student.field_dorf_information_create_date
+#: model:ir.model.fields,field_description:training_student.field_hobbies_detail_create_date
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_detail_create_date
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_subject_create_date
+#: model:ir.model.fields,field_description:training_student.field_student_audit_log_create_date
+#: model:ir.model.fields,field_description:training_student.field_student_student_create_date
+#: model:ir.model.fields,field_description:training_student.field_wiz_calc_age_create_date
+msgid "Created on"
+msgstr "تم الإنشاء في"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_audit_log_date
+msgid "Date"
+msgstr "التاريخ"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_dob
+msgid "Date of Birth"
+msgstr "تاريخ الميلاد"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.report_saleorder_document_inherit
+msgid "Date:"
+msgstr ":التاريخ"
+
+#. module: training_student
+#: model:ir.actions.act_window,name:training_student.action_degree_detail
+#: model:ir.ui.menu,name:training_student.menu_degree_detail
+msgid "Degree Details"
+msgstr "تفاصيل الدرجة"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_search
+msgid "Degree Registered For"
+msgstr "الدرجة المسجل لها"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_degree_id
+msgid "Degree to Register For"
+msgstr "الدرجة المسجل لها"
+
+#. module: training_student
+#: code:addons/training_student/student.py:89
+#, python-format
+msgid "Degree to register for not selected!"
+msgstr "لم يتم إختيار الدرجة المسجل لها"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_degree_form
+#: model:ir.ui.view,arch_db:training_student.view_degree_search
+#: model:ir.ui.view,arch_db:training_student.view_degree_tree
+msgid "Degrees"
+msgstr "الدرجات"
+
+#. module: training_student
+#: selection:student.audit.log,status:0
+msgid "Deleted"
+msgstr "تم الخذق"
+
+#. module: training_student
+#: model:ir.actions.act_window,name:training_student.action_department_information
+#: model:ir.ui.menu,name:training_student.menu_department_information
+#: model:ir.ui.view,arch_db:training_student.view_department_form
+#: model:ir.ui.view,arch_db:training_student.view_faculty_tree
+msgid "Department Information"
+msgstr "معلومات القسم"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_degree_detail_dorf_id
+#: model:ir.model.fields,field_description:training_student.field_dord_information_dorf_id
+msgid "Department or Faculty"
+msgstr "القسم أو الكلية"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_degree_search
+msgid "Department/Divison"
+msgstr "القسم أو الشعبة"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.report_saleorder_document_inherit
+msgid "Description"
+msgstr "شرح"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.report_saleorder_document_inherit
+msgid "Disc.(%)"
+msgstr "(%)خصم"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Dismiss"
+msgstr "قصل"
+
+#. module: training_student
+#: selection:student.student,state:0
+msgid "Dismissed"
+msgstr "فصل"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_degree_detail_display_name
+#: model:ir.model.fields,field_description:training_student.field_dord_information_display_name
+#: model:ir.model.fields,field_description:training_student.field_dorf_information_display_name
+#: model:ir.model.fields,field_description:training_student.field_hobbies_detail_display_name
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_detail_display_name
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_subject_display_name
+#: model:ir.model.fields,field_description:training_student.field_student_audit_log_display_name
+#: model:ir.model.fields,field_description:training_student.field_student_student_display_name
+#: model:ir.model.fields,field_description:training_student.field_wiz_calc_age_display_name
+msgid "Display Name"
+msgstr "إستعراض الإسم"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_degree_detail_dord_id
+msgid "Division or Department"
+msgstr "الشعبة أو القسم"
+
+#. module: training_student
+#: selection:student.student,state:0
+msgid "Draft"
+msgstr "أعد"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Enter Ministry University No."
+msgstr "قم بإدخال رقم الوزارة"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Enter Name"
+msgstr "قم بإدخال الإسم"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_ref_link
+msgid "External Link"
+msgstr "رابط خاريجي"
+
+#. module: training_student
+#: model:ir.actions.act_window,name:training_student.action_faculty_information
+#: model:ir.ui.menu,name:training_student.menu_faculty_information
+#: model:ir.ui.view,arch_db:training_student.view_faculty_form
+msgid "Faculty Information"
+msgstr "معلومات الكلية"
+
+#. module: training_student
+#: sql_constraint:dorf.information:0
+msgid "Faculty name must be unique!"
+msgstr "إسم الكلية يجب أن يكون فريد"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_degree_search
+msgid "Faculty/Department"
+msgstr "كلية أو قسم"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_degree_detail_degfees
+msgid "Fees per Year ($)"
+msgstr "($) الرسوم بالعام"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_search
+#: selection:student.student,gender:0
+msgid "Female"
+msgstr "انثى"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_search
+msgid "Filter By"
+msgstr "الفلترة بي"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_fdate
+msgid "First Registration Date"
+msgstr "تاريخ أول تسجيل"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "First Year Register"
+msgstr "تسجيل السنة اﻷولى"
+
+#. module: training_student
+#: selection:student.student,state:0
+msgid "First Year Registered"
+msgstr "تم تسجيل الطالب للسنة اﻷولى"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Fourth Year Register"
+msgstr "تسجيل السنة الرابعة"
+
+#. module: training_student
+#: selection:student.student,state:0
+msgid "Fourth Year Registered"
+msgstr "تم تسجيل الطالب للستة الرابعة"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_wiz_calc_age_from_date
+msgid "From Date"
+msgstr "التاريخ من"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_gender
+#: model:ir.ui.view,arch_db:training_student.view_student_search
+msgid "Gender"
+msgstr "النوع"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "General Information"
+msgstr "معلومات عامة"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "General Student Information"
+msgstr "معلومات عامة عن الطالب"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Generate Seat No."
+msgstr "إنشاء رقم جلوس"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_degree_search
+#: model:ir.ui.view,arch_db:training_student.view_student_search
+msgid "Group By"
+msgstr "التجميع بي"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_health_notes
+msgid "Health Issue(s) Details"
+msgstr "تفصيل المشاكل الصحية"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_health_issues
+msgid "Health Issues"
+msgstr "مشاكل صحية"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Health Issues and Notes"
+msgstr "معلومات عن المشاكل الصحية"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Hobbies Detail"
+msgstr "نقصيل الهوايات"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_hobbies_ids
+msgid "Hobbies Information"
+msgstr "معلومات عن الهوايات"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_degree_detail_id
+#: model:ir.model.fields,field_description:training_student.field_dord_information_id
+#: model:ir.model.fields,field_description:training_student.field_dorf_information_id
+#: model:ir.model.fields,field_description:training_student.field_hobbies_detail_id
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_detail_id
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_subject_id
+#: model:ir.model.fields,field_description:training_student.field_student_audit_log_id
+#: model:ir.model.fields,field_description:training_student.field_student_student_id
+#: model:ir.model.fields,field_description:training_student.field_wiz_calc_age_id
+msgid "ID"
+msgstr "معرف"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_image
+msgid "Image"
+msgstr "صورة"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_degree_detail___last_update
+#: model:ir.model.fields,field_description:training_student.field_dord_information___last_update
+#: model:ir.model.fields,field_description:training_student.field_dorf_information___last_update
+#: model:ir.model.fields,field_description:training_student.field_hobbies_detail___last_update
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_detail___last_update
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_subject___last_update
+#: model:ir.model.fields,field_description:training_student.field_student_audit_log___last_update
+#: model:ir.model.fields,field_description:training_student.field_student_student___last_update
+#: model:ir.model.fields,field_description:training_student.field_wiz_calc_age___last_update
+msgid "Last Modified on"
+msgstr "تاريخ أخير تعديل"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_ldate
+msgid "Last Registration Date"
+msgstr "تاريخ أخير تسجيل"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_degree_detail_write_uid
+#: model:ir.model.fields,field_description:training_student.field_dord_information_write_uid
+#: model:ir.model.fields,field_description:training_student.field_dorf_information_write_uid
+#: model:ir.model.fields,field_description:training_student.field_hobbies_detail_write_uid
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_detail_write_uid
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_subject_write_uid
+#: model:ir.model.fields,field_description:training_student.field_student_audit_log_write_uid
+#: model:ir.model.fields,field_description:training_student.field_student_student_write_uid
+#: model:ir.model.fields,field_description:training_student.field_wiz_calc_age_write_uid
+msgid "Last Updated by"
+msgstr "تاريخ أخير تحديث"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_degree_detail_write_date
+#: model:ir.model.fields,field_description:training_student.field_dord_information_write_date
+#: model:ir.model.fields,field_description:training_student.field_dorf_information_write_date
+#: model:ir.model.fields,field_description:training_student.field_hobbies_detail_write_date
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_detail_write_date
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_subject_write_date
+#: model:ir.model.fields,field_description:training_student.field_student_audit_log_write_date
+#: model:ir.model.fields,field_description:training_student.field_student_student_write_date
+#: model:ir.model.fields,field_description:training_student.field_wiz_calc_age_write_date
+msgid "Last Updated on"
+msgstr "تاريخ أخير تحديث"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_search
+#: selection:student.student,gender:0
+msgid "Male"
+msgstr "ذكر"
+
+#. module: training_student
+#: model:res.groups,name:training_student.manager_access_group
+msgid "Manager"
+msgstr "مدير"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+#: selection:student.student,state:0
+msgid "Medical Interview"
+msgstr "المعاينة اﻷكاديمية"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_uni_no
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Ministry University No."
+msgstr "رقم الوزارة"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_phone
+msgid "NOK Contact"
+msgstr "تلقون ولي اﻷمر"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_email
+msgid "NOK Email"
+msgstr "البريد اﻷلكتروني لولي اﻷمر"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_degree_detail_name
+#: model:ir.model.fields,field_description:training_student.field_dord_information_name
+#: model:ir.model.fields,field_description:training_student.field_dorf_information_name
+#: model:ir.model.fields,field_description:training_student.field_hobbies_detail_name
+#: model:ir.model.fields,field_description:training_student.field_student_student_name
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Name"
+msgstr "الإسم"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_res_partner_national_id
+msgid "National ID"
+msgstr "الرقم القومي"
+
+#. module: training_student
+#: selection:student.student,health_issues:0
+msgid "No"
+msgstr "لا"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Other Information"
+msgstr "معلومات أخرى"
+
+#. module: training_student
+#: model:ir.model,name:training_student.model_res_partner
+#: selection:student.student,ref:0
+msgid "Partner"
+msgstr "زميل"
+
+#. module: training_student
+#: code:addons/training_student/student.py:193
+#, python-format
+msgid "Please enter a detailed description!"
+msgstr "رجاءً. قم بالتفصيل"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.report_saleorder_document_inherit
+msgid "Price"
+msgstr "السعر"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.report_saleorder_document_inherit
+msgid "Quantity"
+msgstr "الكمية"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_ref
+msgid "Reference"
+msgstr "المرجع"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_regfees
+msgid "Registration Fees"
+msgstr "رسوم التسجيل"
+
+#. module: training_student
+#: model:res.groups,name:training_student.staff_access_group
+msgid "Registration Staff"
+msgstr "موظف تسجيل"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_responsible_id
+msgid "Responsible Person / Next of Kin"
+msgstr "ولي اﻷمر"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_detail_result
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "Result"
+msgstr "النتيجة"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "School Result Details"
+msgstr "تفصيل نتيجة الثانوي"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_result_ids
+msgid "School Results"
+msgstr "نتيجة الثانوي"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "School Results Information"
+msgstr "معلومات عن نتيجة الثانوي"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_seat_no
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Seat No."
+msgstr "رقم الجلوس"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Second Year Register"
+msgstr "تسجيل العام الثاني"
+
+#. module: training_student
+#: selection:student.student,state:0
+msgid "Second Year Registered"
+msgstr "تم تسجيل الطالب للعام الثاني"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_audit_log_status
+#: model:ir.model.fields,field_description:training_student.field_student_student_state
+msgid "Status"
+msgstr "الحالة"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_detail_student_id
+#: model:ir.model.fields,field_description:training_student.field_student_audit_log_student_info
+#: model:ir.ui.view,arch_db:training_student.view_student_calendar
+#: model:ir.ui.view,arch_db:training_student.view_student_gantt
+#: model:ir.ui.view,arch_db:training_student.view_student_graph
+#: model:ir.ui.view,arch_db:training_student.view_student_search
+#: model:ir.ui.view,arch_db:training_student.view_student_tree
+#: selection:student.student,ref:0
+msgid "Student"
+msgstr "الطالب"
+
+#. module: training_student
+#: model:ir.actions.act_window,name:training_student.action_student_audit_log
+#: model:ir.ui.menu,name:training_student.menu_log
+#: model:ir.ui.view,arch_db:training_student.student_audit_form_view
+#: model:ir.ui.view,arch_db:training_student.student_audit_tree_view
+msgid "Student Audit Log"
+msgstr "سجل متابعة جميع سجلات الطلاب"
+
+#. module: training_student
+#: model:ir.actions.act_window,name:training_student.action_student_student_female
+#: model:ir.ui.menu,name:training_student.menu_student_female
+msgid "Student Female"
+msgstr "جميع الطلاب - النوع أنثى"
+
+#. module: training_student
+#: model:ir.model,name:training_student.model_hobbies_detail
+msgid "Student Hobbies"
+msgstr "هوايات الطلاب"
+
+#. module: training_student
+#: model:ir.model,name:training_student.model_student_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Student Information"
+msgstr "معلومات الطالب"
+
+#. module: training_student
+#: model:ir.actions.act_window,name:training_student.action_student_student_male
+#: model:ir.ui.menu,name:training_student.menu_student_male
+msgid "Student Male"
+msgstr "جميع الطلاب - النوع ذكر"
+
+#. module: training_student
+#: model:ir.module.category,name:training_student.student_management_access_categ
+#: model:ir.ui.menu,name:training_student.menu_main
+#: model:ir.ui.menu,name:training_student.menu_student
+msgid "Student Management"
+msgstr "إدارة الطلاب"
+
+#. module: training_student
+#: model:ir.actions.report.xml,name:training_student.student_report
+msgid "Student Profile"
+msgstr "ملف الطالب"
+
+#. module: training_student
+#: model:ir.model,name:training_student.model_schoolresults_detail
+msgid "Student's student secondary education results."
+msgstr "نتيجة الطالب - مرحلة الثانوي"
+
+#. module: training_student
+#: model:ir.model,name:training_student.model_schoolresults_subject
+msgid "Student's student secondary education subjects."
+msgstr "مواد مرحلة الثانوي"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_detail_subject_id
+#: model:ir.model.fields,field_description:training_student.field_schoolresults_subject_name
+#: model:ir.ui.view,arch_db:training_student.student_profile_template
+msgid "Subject"
+msgstr "المادة"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_template
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Template"
+msgstr "قالب"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Test x2Many"
+msgstr "x2Many إختبار"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_form
+msgid "Third Year Register"
+msgstr "تسجيل الطالب للعام الثالث"
+
+#. module: training_student
+#: selection:student.student,state:0
+msgid "Third Year Registered"
+msgstr "تم تسجيل الطالب للعام الثالث"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_wiz_calc_age_to_date
+msgid "To Date"
+msgstr "التاريخ إلى"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.view_student_tree
+msgid "Total Fees"
+msgstr "مجموع الرسوم"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_totfees
+msgid "Total Fees ($)"
+msgstr "($) مجموع الرسوم"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_student_tutfees
+msgid "Tuition Fees ($)"
+msgstr "($) الرسوم الدراسية"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.report_saleorder_document_inherit
+msgid "Unit Price"
+msgstr "سعر الوحدة"
+
+#. module: training_student
+#: selection:student.audit.log,status:0
+msgid "Updated"
+msgstr "تم التحديث"
+
+#. module: training_student
+#: selection:student.student,ref:0
+msgid "User"
+msgstr "المستخدم"
+
+#. module: training_student
+#: model:ir.model.fields,field_description:training_student.field_student_audit_log_user_id
+msgid "User ID"
+msgstr "معرف المستخدم"
+
+#. module: training_student
+#: selection:student.student,health_issues:0
+msgid "Yes"
+msgstr "نعم"
+
+#. module: training_student
+#: code:addons/training_student/student.py:174
+#, python-format
+msgid "You are not allowed to delete the record!"
+msgstr "!حذف السجل غير مسموح"
+
+#. module: training_student
+#: model:ir.ui.view,arch_db:training_student.wizard_calc_age_form
+msgid "or"
+msgstr "أو"
+
+#. module: training_student
+#: model:ir.model,name:training_student.model_student_audit_log
+msgid "student.audit.log"
+msgstr ""
+
+#. module: training_student
+#: model:ir.model,name:training_student.model_wiz_calc_age
+msgid "wiz.calc.age"
+msgstr ""
+
