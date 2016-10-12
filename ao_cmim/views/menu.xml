@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<menuitem id="main_menu" name="cmim" />
+
+		<menuitem id="col_assure_menu" name="Collectivités / Assurés"
+			parent="main_menu" />
+		<menuitem id="collectivite_menu" name="Collectivités" action="action_collectivite"
+			parent="col_assure_menu" />
+		<menuitem id="assure_menu" name="Assurés" action="action_assure"
+			parent="col_assure_menu" />
+		<menuitem id="contrat_menu" name="Définition des adhésions"
+			action="action_contrat" parent="col_assure_menu" />
+
+
+		<menuitem id="import_menu" name="Import des données" action="action_import"
+			parent="main_menu" />
+
+
+		<menuitem id="cotisation_payement_menu" name="Cotisations et Réglements"
+			parent="main_menu" />
+		<menuitem id="cotisation_menu" name="Cotisations" action="action_cotisation"
+			parent="cotisation_payement_menu" />
+		<menuitem id="reglement_menu" name="Réglements" action="action_reglement"
+			parent="cotisation_payement_menu" />
+		<menuitem id="declaration_menu" name="Déclarations" action="action_declaration"
+			parent="cotisation_payement_menu" />
+
+
+		<menuitem id="produit_menu" name="Produits CMIM" action="action_produit"
+			parent="main_menu" />
+
+
+		<menuitem id="config_menu" name="Configuration" parent="main_menu" />
+		<menuitem id="cts_config_menu" name="Constantes de calcul"
+			action="action_constante_calcul" parent="config_menu" />
+		<menuitem id="secteur_menu" name="Secteur"
+			action="action_secteur" parent="config_menu" />
+		<menuitem id="tarif_menu" name="Tarif"
+			action="action_tarif" parent="config_menu" />
+
+
+		<menuitem id="rapport_menu" name="Rapports" parent="main_menu" />
+		<menuitem id="correctifs_rapport_menu" name="Rapport des Correctifs"
+			action="action_rapport_correctifs" parent="rapport_menu" />
+
+	</data>
+</openerp>

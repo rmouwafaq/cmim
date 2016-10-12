@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<!-- constante -->
+		<record id="constante_calcul_tree_view" model="ir.ui.view">
+			<field name="name">cmim.constante.tree</field>
+			<field name="model">cmim.constante</field>
+			<field name="mode">primary</field>
+			<field name="priority" eval="1" />
+			<field name="arch" type="xml">
+				<tree string="Product">
+					<field name="name" />
+					<field name="valeur" />
+				</tree>
+			</field>
+		</record>
+		<record id="constante_calcul_form_view" model="ir.ui.view">
+			<field name="name">cmim.constante.form</field>
+			<field name="model">cmim.constante</field>
+			<field name="mode">primary</field>
+			<field name="priority" eval="1" />
+			<field name="arch" type="xml">
+				<form string="Product">
+					<sheet>
+						<br></br>
+						<label
+							string="Les Constantes de calcul permettent de définir les variables globale du systèmes, celle-ci sont manipulées pour bien mener le calcul des différentes cotisations de l'ensemble des assurés "></label>
+						<separator string="" colspan="4" />
+						<separator string="" colspan="4" />
+						<separator string="" colspan="4" />
+						<group>
+							<group>
+								<field name="name" />
+							</group>
+							<group>
+								<field name="valeur" />
+							</group>
+						</group>
+						<separator string="" colspan="4" />
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_constante_calcul" model="ir.actions.act_window">
+			<field name="name">Configuration des constantes de caclul</field>
+			<field name="res_model">cmim.constante</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+			<!-- <field name='view_id' ref='constante_calcul_tree_view' /> -->
+			<!-- <field name="target">current</field> -->
+		</record>
+
+
+		<!-- secteur -->
+		<record id="action_secteur" model="ir.actions.act_window">
+			<field name="name">Secteur de collectivités</field>
+			<field name="res_model">cmim.secteur</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+			<!-- <field name='view_id' ref='constante_calcul_tree_view' /> -->
+			<!-- <field name="target">current</field> -->
+		</record>
+		<record id="secteur_tree_view" model="ir.ui.view">
+			<field name="name">cmim.secteur.tree</field>
+			<field name="model">cmim.secteur</field>
+			<field name="mode">primary</field>
+			<field name="priority" eval="1" />
+			<field name="arch" type="xml">
+				<tree string="Product">
+					<field name="name" />
+					<field name="plancher" />
+					<field name="plafond" />
+				</tree>
+			</field>
+		</record>
+		<record id="secteur_form_view" model="ir.ui.view">
+			<field name="name">cmim.secteur.form</field>
+			<field name="model">cmim.secteur</field>
+			<field name="mode">primary</field>
+			<field name="priority" eval="1" />
+			<field name="arch" type="xml">
+				<form string="Product">
+					<sheet>
+						<group>
+							<group>
+								<field name="name" />
+							</group>
+							<group>
+								<field name="plancher" />
+							</group>
+							<group>
+								<field name="plafond" />
+							</group>
+						</group>
+						<separator string="" colspan="4" />
+					</sheet>
+				</form>
+			</field>
+		</record>
+		<!-- tarif -->
+		
+		<record id="tarif_tree_view" model="ir.ui.view">
+			<field name="name">cmim.tarif.tree</field>
+			<field name="model">cmim.tarif</field>
+			<field name="mode">primary</field>
+			<field name="priority" eval="1" />
+			<field name="arch" type="xml">
+				<tree string="Product">
+					<field name="name" />
+					<field name="type" />
+					<field name="montant" />
+				</tree>
+			</field>
+		</record>
+		<record id="tarif_form_view" model="ir.ui.view">
+			<field name="name">cmim.tarif.form</field>
+			<field name="model">cmim.tarif</field>
+			<field name="mode">primary</field>
+			<field name="priority" eval="1" />
+			<field name="arch" type="xml">
+				<form string="Product">
+					<sheet>
+						<group>
+							<group>
+								<field name="name" />
+							</group>
+							<group>
+								<field name="type" />
+							</group>
+							<group>
+								<field name="montant" />
+							</group>
+						</group>
+						<separator string="" colspan="4" />
+					</sheet>
+				</form>
+			</field>
+		</record>
+		
+		<record id="tarif_search_view" model="ir.ui.view">
+			<field name="name">cmim.tarif.search</field>
+			<field name="model">cmim.tarif</field>
+			<field name="arch" type="xml">
+				<search string="Tarif filtre">
+					<field name="name"/>
+					<field name="type"/>
+					<group expand="0" string="Group By">
+						<filter name="groupby_course" string="Type fe tarif" domain="[]" context="{'group_by':'type'}"/>
+					</group>
+					<filter name="type"  string="Pourcentage" icon="terp-stock_symbol-selection"
+						domain="[('type', '=', 'p')]" />
+					<filter name="import_flag"  string="Importés" icon="terp-stock_symbol-selection"
+						domain="[('import_flag', '=', 'True')]" />
+					<filter name="type" string="Forfait" icon="terp-stock_symbol-selection"
+						domain="[('type', '=', 'f')]" />
+				</search>
+			</field>
+		</record>
+		<record id="action_tarif" model="ir.actions.act_window">
+			<field name="name">Tarifs de produits</field>
+			<field name="res_model">cmim.tarif</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+			<field name="search_id" ref="tarif_search_view"/>
+		</record>
+	</data>
+</openerp>

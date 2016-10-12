@@ -7,6 +7,17 @@
     'description': """Comptabilité auxiliaire cmim""",
     'depends':['base','account','product'],
     'data':[
+            'wizard/import_data.xml',
+            
+            'wizard/generate_rapport_correctif.xml',
+            'wizard/calcul_cotisation.xml',
+            
+            'views/product.xml',
+            'views/cotisation.xml',
+            'views/collectivite.xml',
+            'views/config.xml',
+            'views/menu.xml',
+
     ],
     'installable':True,
     'auto_install':False,

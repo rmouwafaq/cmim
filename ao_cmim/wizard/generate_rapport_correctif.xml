@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record id="action_rapport_correctifs" model="ir.actions.act_window">
+			<field name="name">génération du rapport des correctifs</field>
+			<field name="res_model">cmim.rapport.correctif</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+		</record>
+	</data>
+</openerp>
