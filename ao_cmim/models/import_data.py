@@ -14,7 +14,7 @@ class cmim_import(models.TransientModel):
     data = fields.Binary("Fichier de l'objet", required=True)
     data_contrat = fields.Binary("Fichier relation d'adhesion")
     delimeter = fields.Char('Delimeter', default=',',
-                            help='Default delimeter is ","')
+                            help='Default delimeter is ";"')
     type = fields.Selection(selection=[('collectivite', 'Collectivites'),
                                          ('assure', 'Assures'),
                                          ('produit', 'Produits'),
@@ -111,46 +111,47 @@ class cmim_import(models.TransientModel):
                 val = {}
                 field = reader_info[i]
                 values = dict(zip(keys, field)) 
-                val['code'] = values['CODE COLLECTIVITE']
-                val['name'] = values['RAISON SOCIALE']
-                val['street'] = values['ADRESSE'] or ''
-                val['phone'] = values['TELEPHONE'] or ''
-                val['fax'] = values['FAX'] or ''
-                val['import_flag'] = True
-                secteur = self.env['cmim.secteur'].search([('name', 'like', values['SECTEUR'])])
-                if(secteur):
-                    val['secteur_id'] = secteur.id
-                else: 
-                    val['secteur_id'] = self.env['cmim.secteur'].search([('name', 'like', 'DIVERS')]).id
-                val['country_id'] = self.env['res.country'].search([('name', 'ilike', values['VILLE'])]).id or False
-                try:
-                    val['date_adhesion'] = datetime.strptime(values["DATE ADHESION"], "%d/%m/%Y").strftime('%m/%d/%Y')
-                    # datetime.today().strftime('%m/%d/%Y')
-                    # datetime.strptime(values["Date d'adhesion"], "%d/%m/%Y").date()
-                except Exception:
-                    val['date_adhesion'] = datetime.today().strftime('%m/%d/%Y')
-                code = '34222' + values['CODE COLLECTIVITE']   
-                # account_type_obj = self.env['account.account.type'].search[('name', 'like', 'receivable')]
-                data = {
-                            'name' : 'Compte_CLT' + values['RAISON SOCIALE'] or False,
-                            'code' : code  or False,
-                            'user_type_id' : 1,
-                            'reconcile' : True,
-                            'company_id': self.env['res.users'].search([('id', '=', self._uid)]).company_id.id  
-                                }
-                account_obj.create(data)
-                val['property_account_receivable_id'] = account_obj.search([('code', '=', code)]).id or False
-                code = '44111' + values['CODE COLLECTIVITE']
-                data = {
-                            'name' : 'Compte_FRS' + values['RAISON SOCIALE'] or False,
-                            'code' : code  or False,
-                            'user_type_id' : 2,
-                            'reconcile' : True,
-                            'company_id': self.env['res.users'].search([('id', '=', self._uid)]).company_id.id  
-                                }
-                account_obj.create(data)
-                val['property_account_payable_id'] = account_obj.search([('code', '=', code)]).id or False
-                partner_obj.create(val)
+                if(not partner_obj.search([('code' , '=', values['CODE COLLECTIVITE'])])):
+                    val['code'] = values['CODE COLLECTIVITE']
+                    val['name'] = values['RAISON SOCIALE']
+                    val['street'] = values['ADRESSE'] or ''
+                    val['phone'] = values['TELEPHONE'] or ''
+                    val['fax'] = values['FAX'] or ''
+                    val['import_flag'] = True
+                    secteur = self.env['cmim.secteur'].search([('name', 'like', values['SECTEUR'])])
+                    if(secteur):
+                        val['secteur_id'] = secteur.id
+                    else: 
+                        val['secteur_id'] = self.env['cmim.secteur'].search([('name', 'like', 'DIVERS')]).id
+                    val['country_id'] = self.env['res.country'].search([('name', 'ilike', values['VILLE'])]).id or False
+                    try:
+                        val['date_adhesion'] = datetime.strptime(values["DATE ADHESION"], "%d/%m/%Y").strftime('%m/%d/%Y')
+                        # datetime.today().strftime('%m/%d/%Y')
+                        # datetime.strptime(values["Date d'adhesion"], "%d/%m/%Y").date()
+                    except Exception:
+                        val['date_adhesion'] = datetime.today().strftime('%m/%d/%Y')
+                    code = '34222' + values['CODE COLLECTIVITE']   
+                    # account_type_obj = self.env['account.account.type'].search[('name', 'like', 'receivable')]
+                    data = {
+                                'name' : 'Compte_CLT' + values['RAISON SOCIALE'] or False,
+                                'code' : code  or False,
+                                'user_type_id' : 1,
+                                'reconcile' : True,
+                                'company_id': self.env['res.users'].search([('id', '=', self._uid)]).company_id.id  
+                                    }
+                    account_obj.create(data)
+                    val['property_account_receivable_id'] = account_obj.search([('code', '=', code)]).id or False
+                    code = '44111' + values['CODE COLLECTIVITE']
+                    data = {
+                                'name' : 'Compte_FRS' + values['RAISON SOCIALE'] or False,
+                                'code' : code  or False,
+                                'user_type_id' : 2,
+                                'reconcile' : True,
+                                'company_id': self.env['res.users'].search([('id', '=', self._uid)]).company_id.id  
+                                    }
+                    account_obj.create(data)
+                    val['property_account_payable_id'] = account_obj.search([('code', '=', code)]).id or False
+                    partner_obj.create(val)
                 # creation des contrat
             contrat_obj = self.env['cmim.contrat']
             tarif_obj = self.env['cmim.tarif']
@@ -195,22 +196,23 @@ class cmim_import(models.TransientModel):
                 _("Verifiez l entete de votre fichier"))
         declaration_obj = self.env['cmim.declaration']
         for i in range(len(reader_info)):
-            try:
+            #try:
                 val = {}
                 field = reader_info[i]
                 values = dict(zip(keys, field))  
-                assure = self.env['cmim.assure'].search([('numero', 'like', values['ID NUM PERSONNE'])])
+                assure = self.env['cmim.assure'].search([('id_num_famille', '=', values['ID NUM PERSONNE'])])
                 val['collectivite_id'] = assure.collectivite_id.id
                 val['assure_id'] = assure.id
                 val['nb_jour'] = values['NB JOURS']
-                val['salaire'] = values['SALAIRE']
+                val['salaire'] = float('.'.join(str(x) for x in tuple(values['SALAIRE'].split(','))))
                 val['payroll_year_id'] = self.payroll_year_id.id
                 val['payroll_period_id'] = self.payroll_period_id.id
                 val['import_flag'] = True
+                print values['ID NUM PERSONNE']
                 declaration_obj.create(val)
-            except Exception:
+                """except Exception:
                     raise exceptions.Warning(
-                        _("Une erreur s'est produite au niveau de la ligne %s ")%(i+1))
+                        _("Une erreur s'est produite au niveau de la ligne %s ")%(i+1))"""
         return True
 ############################################################################
 
@@ -270,7 +272,7 @@ class cmim_import(models.TransientModel):
         for i in range(len(reader_info)):
             field = reader_info[i]
             values = dict(zip(keys, field))  
-            codes.append(values['NUMERO DE COMPTE'])
+            codes.append(int(values['NUMERO DE COMPTE']))
         if(not collectivite_obj.search([('code', 'in', codes)])):
             raise exceptions.Warning(
                 _("Collectivites inexistantes, verifiez votre fichier"))
@@ -280,16 +282,21 @@ class cmim_import(models.TransientModel):
                     val = {}
                     field = reader_info[i]
                     values = dict(zip(keys, field))  
-                    val['partner_id'] = collectivite_obj.search([('code','=', values['NUMERO DE COMPTE'])]).id
+                    val['partner_id'] = collectivite_obj.search([('code','=', int(values['NUMERO DE COMPTE']))]).id
                     val['journal_id'] = 6
-                    #self.env['account.journal'].search([('code', 'ilike', 'BNK1')]).id
                     val['payment_method_id'] = 1
                     val['payment_type'] = 'inbound'
                     val['partner_type'] = 'customer'
-                    val['amount'] = float('.'.join(str(x) for x in tuple(values['CREDIT'].split(','))))
                     val['import_flag'] = True
-                    account_obj.create(val)
+                    #try:
+                    #val['amount'] = float('.'.join(str(x) for x in tuple(values['CREDIT'].split(','))))
+                    val['amount'] = 4
+                    account_obj = account_obj.create(val)
+                    print account_obj.partner_id,'----------------------------',i
+                    account_obj.post()
                     """except Exception:
+                        print 'ligne negligee'
+                except Exception:
                     raise exceptions.Warning(
                         _("Une erreur s'est produite au niveau de la ligne %s ")%(i+1))"""
                 
