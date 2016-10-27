@@ -1,6 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 	<data>
-<!-- 		ici un wizard pour préciser la durée pour calcul ou sauvgarde des cotisations -->
+		<record id="view_calcul_cotisation" model="ir.ui.view">
+			<field name="name">Assistant de lancement de calcul des cotisations
+			</field>
+			<field name="model">cmim.calcul.cotisation</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Calcul des cotisations">
+					<br></br>
+					<group>
+						<group>
+							<field name="payroll_year_id" />
+						</group>
+						<group>
+							<field name="payroll_period_id" />
+						</group>
+						<notebook colspan="4">
+							<page string="Collectivités">
+								<field name="collectivite_ids" />
+							</page>
+						</notebook>
+					</group>
+
+					<separator string="" colspan="4" />
+					<footer>
+						<button class="oe_highlight" special="cancel" string="Annuler" />
+						<button name="calcul_engine" string="Calculer" type="object" />
+					</footer>
+				</form>
+			</field>
+		</record>
+		<record id="action_calcul_cotisation" model="ir.actions.act_window">
+			<field name="name">Assistant de lancement de calcul des cotisations
+			</field>
+			<field name="res_model">cmim.calcul.cotisation</field>
+			<field name="view_type">form</field>
+			<field name="view_id" ref="view_calcul_cotisation" />
+			<field name="view_mode">tree,form,kanban</field>
+			<field name="target">new</field>
+		</record>
 	</data>
 </openerp>

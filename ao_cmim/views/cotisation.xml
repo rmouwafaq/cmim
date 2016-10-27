@@ -1,25 +1,156 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 	<data>
-		<record id="action_cotisation" model="ir.actions.act_window">
-			<field name="name">Cotisations</field>
-			<field name="res_model">account.invoice</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">tree,form,kanban</field>
+		<!--****************************** cotisation ******************************** -->
+		<record id="cotisation_search_view" model="ir.ui.view">
+			<field name="name">cmim.cotisation.search</field>
+			<field name="model">cmim.cotisation</field>
+			<field name="arch" type="xml">
+				<search string="Cotisation filtre">
+					<group expand="0" string="Group By">
+						<filter name="collectivite_id" string="Collectivité"
+							domain="[]" context="{'group_by':'collectivite_id'}" />
+						<filter name="assure_id" string="Assuré" domain="[]"
+							context="{'group_by':'assure_id'}" />
+						<filter name="payroll_year_id" string="Année" domain="[]"
+							context="{'group_by':'payroll_year_id'}" />
+						<filter name="payroll_period_id" string="Période" domain="[]"
+							context="{'group_by':'payroll_period_id'}" />
+						<filter name="state" string="Etat" domain="[]"
+							context="{'group_by':'state'}" />
+					</group>
+				</search>
+			</field>
 		</record>
-		<record id="action_reglement" model="ir.actions.act_window">
-			<field name="name">Régements</field>
-			<field name="res_model">account.payment</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">tree,form,kanban</field>
+		<record id="cotisation_tree_view" model="ir.ui.view">
+			<field name="name">cmim.cotisation.tree</field>
+			<field name="model">cmim.cotisation</field>
+			<field name="mode">primary</field>
+			<field name="priority" eval="1" />
+			<field name="arch" type="xml">
+				<tree string="Product">
+					<field name="name" />
+					<field name="payroll_year_id" />
+					<field name="payroll_period_id" />
+					<field name="collectivite_id" />
+					<field name="assure_id" />
+					<field name="montant" />
+					<field name="state"/>
+				</tree>
+			</field>
 		</record>
-		<record id="action_declaration" model="ir.actions.act_window">
-			<field name="name">Déclarations des salaires</field>
-			<field name="res_model">cmim.declaration</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">tree,form,kanban</field>
+		<record id="cotisation_form" model="ir.ui.view">
+			<field name="name">cmim.cotisation.form</field>
+			<field name="model">cmim.cotisation</field>
+			<field name="arch" type="xml">
+				<form string="Cotisation">
+					<header>
+						<button name="action_valider" type="object" string="Valider"
+							attrs="{'invisible':[('state', '!=', 'draft')]}"
+							class="oe_highlight" groups="base.group_user" />
+						<field name="state" widget="statusbar" nolabel="1"
+							statusbar_visible="draft,valide" />
+					</header>
+					<sheet string="Cotisation">
+						<h1 class="mt0">
+							<label string="Cotisation Brouillon" attrs="{'invisible': [('state','!=','draft')]}"/>
+							<field name="name" readonly="1" class="oe_inline" attrs="{'invisible': [('state','=','draft')]}" />
+						</h1>
+						<group>
+							<group>
+								<field string="Colectivité" name="collectivite_id"
+									options='{"always_reload": True}' />
+								<field string="Assuré" name="assure_id" options='{"always_reload": True}' />
+							</group>
+							<group>
+								<field name="payroll_period_id" />
+							</group>
+						</group>
+						<notebook colspan="4">
+							<page string="Cotisation Lines">
+								<field name="cotisation_line_ids" nolabel="1" widget="one2many_list"
+									mode="tree,kanban">
+									<tree string="Cotisation Lines" editable="bottom">
+										<field name="sequence" widget="handle" />
+										<field name="product_id" />
+										<field name="name" />
+										<field name="code" />
+										<field name="base_calcul" />
+										<field name="base"  />
+										<field name="rate1" />
+										<field name="rate2" />
+										<field name="montant" />
+									</tree>
+									<kanban class="o_kanban_mobile">
+										<field name="product_id" />
+										<field name="code" />
+										<field name="base_calcul" />
+										<field name="base" />
+										<field name="rate1"/>
+										<field name="rate1"  />
+										<field name="montant"/>
+										<templates>
+											<t t-name="kanban-box">
+												<div t-attf-class="oe_kanban_card oe_kanban_global_click">
+													<div class="row">
+														<div class="col-xs-12">
+															<strong>
+																<span>
+																	<t t-esc="record.product_id.value or 'None'" />
+																</span>
+															</strong>
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-xs-8 text-muted">
+															<span>
+																<t t-esc="record.code.value" />
+																<t t-esc="record.base_calcul.value" />
+															</span>
+														</div>
+														<div class="col-xs-8 text-muted">
+															<span>
+																<t t-esc="record.base.value" />
+																<t t-esc="record.rate1.value" />
+																<t t-esc="record.rate2.value" />
+															</span>
+														</div>
+														<div class="col-xs-4 text-muted">
+															<span class="text-right">
+																<t t-esc="record.montant.value" />
+															</span>
+														</div>
+													</div>
+												</div>
+											</t>
+										</templates>
+									</kanban>
+								</field>
+							</page>
+						</notebook>
+					</sheet>
+				</form>
+			</field>
 		</record>
-		<!-- declaration -->
+		<!--****************************** declaration ******************************* -->
+		<record id="declaration_search_view" model="ir.ui.view">
+			<field name="name">cmim.declaration.search</field>
+			<field name="model">cmim.declaration</field>
+			<field name="arch" type="xml">
+				<search string="Declaration filtre">
+					<group expand="0" string="Group By">
+						<filter name="collectivite_id" string="Collectivité"
+							domain="[]" context="{'group_by':'collectivite_id'}" />
+						<filter name="assure_id" string="Assuré" domain="[]"
+							context="{'group_by':'assure_id'}" />
+						<filter name="payroll_year_id" string="Année" domain="[]"
+							context="{'group_by':'payroll_year_id'}" />
+						<filter name="payroll_period_id" string="Période" domain="[]"
+							context="{'group_by':'payroll_period_id'}" />
+					</group>
+				</search>
+			</field>
+		</record>
 		<record id="declaration_tree_view" model="ir.ui.view">
 			<field name="name">cmim.declaration.tree</field>
 			<field name="model">cmim.declaration</field>
@@ -69,6 +200,57 @@
 					</sheet>
 				</form>
 			</field>
+		</record>
+		<!-- **************************** paiements ********************************* -->
+		<record id="reglement_search_view" model="ir.ui.view">
+			<field name="name">account.payment.search</field>
+			<field name="model">account.payment</field>
+			<field name="inherit_id" ref="account.view_account_payment_search" />
+			<field name="arch" type="xml">
+				<field name="name" position="after">
+					<group expand="0" string="Group By">
+						<filter name="partner_id" string="Collectivité" domain="[]"
+							context="{'group_by':'partner_id'}" />
+						<filter name="secteur_id" string="Secteur" domain="[]"
+							context="{'group_by':'secteur_id'}" />
+						<filter name="payroll_year_id" string="Année" domain="[]"
+							context="{'group_by':'payroll_year_id'}" />
+						<filter name="payroll_period_id" string="Période" domain="[]"
+							context="{'group_by':'payroll_period_id'}" />
+					</group>
+				</field>
+
+			</field>
+		</record>
+		<!-- ************************** Actions ******************************* -->
+		<record id="action_cotisation" model="ir.actions.act_window">
+			<field name="name">Cotisations</field>
+			<field name="res_model">cmim.cotisation</field>
+			<field name="view_id" ref="cotisation_tree_view" />
+			<field name="search_id" ref="cotisation_search_view" />
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+		</record>
+		<record id="action_reglement" model="ir.actions.act_window">
+			<field name="name">Réglements</field>
+			<field name="res_model">account.payment</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+		</record>
+		<record id="action_facture" model="ir.actions.act_window">
+			<field name="name">Factures</field>
+			<field name="res_model">account.invoice</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+		</record>
+		<record id="action_declaration" model="ir.actions.act_window">
+			<field name="name">Déclarations des salaires</field>
+			<field name="res_model">cmim.declaration</field>
+			<field name="context">{"search_default_collectivite_id":1}</field>
+			<field name="view_id" ref="declaration_tree_view" />
+			<field name="search_id" ref="declaration_search_view" />
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
 		</record>
 	</data>
 </openerp>

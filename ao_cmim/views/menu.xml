@@ -1,48 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 	<data>
-		<menuitem id="main_menu" name="cmim" />
+		<menuitem id="main_menu" name="Comptabilité CMIM" />
+
 
 		<menuitem id="col_assure_menu" name="Collectivités / Assurés"
 			parent="main_menu" />
+
 		<menuitem id="collectivite_menu" name="Collectivités" action="action_collectivite"
 			parent="col_assure_menu" />
 		<menuitem id="assure_menu" name="Assurés" action="action_assure"
 			parent="col_assure_menu" />
+<!-- 		<menuitem id="ayants_droit_menu" name="Bénéficiaires" action="action_beneficiaire" -->
+<!-- 			parent="col_assure_menu" /> -->
+		<menuitem id="import_col_assure_menu" name="Importation collectivités/ Assurés"
+			action="action_col_assure_import" parent="col_assure_menu" />
 		<menuitem id="contrat_menu" name="Définition des adhésions"
 			action="action_contrat" parent="col_assure_menu" />
 
 
-		<menuitem id="import_menu" name="Import des données" action="action_import"
-			parent="main_menu" />
-
 
 		<menuitem id="cotisation_payement_menu" name="Cotisations et Réglements"
 			parent="main_menu" />
-		<menuitem id="cotisation_menu" name="Cotisations" action="action_cotisation"
-			parent="cotisation_payement_menu" />
-		<menuitem id="reglement_menu" name="Réglements" action="action_reglement"
-			parent="cotisation_payement_menu" />
+
 		<menuitem id="declaration_menu" name="Déclarations" action="action_declaration"
-			parent="cotisation_payement_menu" />
+			parent="cotisation_payement_menu" sequence="1" />
+		<menuitem id="caclcul_menu" name="Calculs" action="action_calcul_cotisation"
+			parent="cotisation_payement_menu" sequence="2" />
+		<menuitem id="cotisation_menu" name="Cotisations" action="action_cotisation"
+			parent="cotisation_payement_menu" sequence="3" />
+		<menuitem id="facture_menu" name="Factures" action="action_facture"
+			parent="cotisation_payement_menu" sequence="4" />
+		<menuitem id="reglement_menu" name="Paiements" action="action_reglement"
+			parent="cotisation_payement_menu" sequence="5" />
+		<menuitem id="import_dec_pay_menu" name="Importation déclarations/ Paiements"
+			action="action_dec_pay_import" parent="cotisation_payement_menu"
+			sequence="6" />
 
 
-		<menuitem id="produit_menu" name="Produits CMIM" action="action_produit"
-			parent="main_menu" />
+
+		<menuitem id="produit_menu" name="Produits CMIM" parent="main_menu"
+			action="action_produit" />
+
 
 
 		<menuitem id="config_menu" name="Configuration" parent="main_menu" />
 		<menuitem id="cts_config_menu" name="Constantes de calcul"
-			action="action_constante_calcul" parent="config_menu" />
-		<menuitem id="secteur_menu" name="Secteur"
-			action="action_secteur" parent="config_menu" />
-		<menuitem id="tarif_menu" name="Tarif"
-			action="action_tarif" parent="config_menu" />
+			sequence="1" action="action_constante_calcul" parent="config_menu" />
+		<menuitem id="secteur_menu" name="Secteurs" action="action_secteur"
+			parent="config_menu" sequence="2" />
+		<menuitem id="tarif_menu" name="Tarifs" action="action_tarif"
+			parent="config_menu" sequence="3" />
+		<menuitem id="periode_menu" name="Périodes" action="action_secteur"
+			parent="config_menu" sequence="4" />
+		<menuitem id="import_pdt_menu" name="Importation des produits"
+			action="action_pdt_import" parent="config_menu" sequence="5" />
+
 
 
 		<menuitem id="rapport_menu" name="Rapports" parent="main_menu" />
-		<menuitem id="correctifs_rapport_menu" name="Rapport des Correctifs"
-			action="action_rapport_correctifs" parent="rapport_menu" />
+
+		<menuitem id="rentabilite_rapport_menu" name="Rapports de rentabilité"
+			parent="rapport_menu" />
+
+		<menuitem id="collectivite_rapport_menu" name="Collectivités"
+			parent="rentabilite_rapport_menu" action="action_rapport_correctifs" />
+		<menuitem id="produit_rapport_menu" name="Produits"
+			parent="rentabilite_rapport_menu" action="action_rapport_correctifs" />
+			
+			
+		<menuitem id="cotisation_rapport_menu" name="Rapports des Cotisations"
+			parent="rapport_menu" />
+
+		<menuitem id="collectivite_rapport_menu" name="Détails calcul par assurés"
+			parent="cotisation_rapport_menu" action="action_rapport_correctifs" />
+		<menuitem id="produit_rapport_menu" name="Détails calcul par produit"
+			parent="cotisation_rapport_menu" action="action_rapport_correctifs" />
 
 	</data>
 </openerp>

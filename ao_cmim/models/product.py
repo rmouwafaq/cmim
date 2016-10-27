@@ -1,6 +1,5 @@
 
 from datetime import datetime
-from openerp.osv import osv, fields
 from openerp import models, fields, api
 
 
@@ -17,6 +16,10 @@ class contrat(models.Model):
     base_calcul = fields.Selection(
         string='Type du produit',
         related='product_id.base_calcul',
+    )
+    secteur_id = fields.Many2one('cmim.secteur',
+        string='Secteur',
+        related='collectivite_id.secteur_id', store=True
     )
     tarif_id = fields.Many2one('cmim.tarif',  string='Tarif')
     tarif_inc_deces_id = fields.Many2one('cmim.tarif',  string='Tarif Inc_Deces')
@@ -66,7 +69,7 @@ class product_cmim(models.Model):
                                         string='Base de calcul', 
                                         default = 'salaire')
     
-    
+    #contrat_ids = fields.One2many('cmim.contrat','product_id', string="Contrats")
     
     
     

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 	<data>
-		<!-- definition des adhesion -->
+
+		<!-- *****************************definition des adhesions ******************************* -->
+
 		<record id="view_contrat_tree" model="ir.ui.view">
 			<field name="name">cmim.contrat.tree</field>
 			<field name="model">cmim.contrat</field>
@@ -9,7 +11,7 @@
 			<field name="arch" type="xml">
 				<tree string="Assures">
 					<field name="name" />
-					<field name="assure_id" domain="[('id','!=',False)]"/>
+					<field name="assure_id" domain="[('id','!=',False)]" />
 					<field name="collectivite_id" />
 					<field name="product_id" />
 					<field name="base_calcul" />
@@ -28,10 +30,10 @@
 					<sheet>
 						<group>
 							<group>
-									<field name="name" />
-									<field name="for_assure" />
-									<field name="assure_id" attrs="{'invisible': [('for_assure','=', False)]}"/>
-									<field name="collectivite_id" />
+								<field name="name" />
+								<field name="for_assure" />
+								<field name="assure_id" attrs="{'invisible': [('for_assure','=', False)]}" />
+								<field name="collectivite_id" />
 							</group>
 							<group>
 								<field name="product_id" />
@@ -48,8 +50,31 @@
 				</form>
 			</field>
 		</record>
+		<record id="contrat_search_view" model="ir.ui.view">
+			<field name="name">cmim.contrat.search</field>
+			<field name="model">cmim.contrat</field>
+			<field name="arch" type="xml">
+				<search string="Contrat filtre">
+					<field name="collectivite_id" />
+					<field name="assure_id" />
+					<field name="product_id" />
+					<group expand="0" string="Group By">
+						<filter name="collectivite_id" string="Collectivité"
+							domain="[]" context="{'group_by':'collectivite_id'}" />
+						<filter name="assure_id" string="Assuré" domain="[]"
+							context="{'group_by':'assure_id'}" />
+						<filter name="product_id" string="Produit" domain="[]"
+							context="{'group_by':'product_id'}" />
+						<filter name="secteur_id" string="Secteur" domain="[]"
+							context="{'group_by':'secteur_id'}" />
+					</group>
+					<filter name="import_flag" string="Contrats Exceptionnels par assurés"
+						icon="terp-stock_symbol-selection" domain="[('for_assure', '=', 'True')]" />
+				</search>
+			</field>
+		</record>
+		<!-- *********************************** Assures ************************************** -->
 
-		<!-- assures -->
 		<record id="view_assure_tree" model="ir.ui.view">
 			<field name="name">cmim.assure.tree</field>
 			<field name="model">cmim.assure</field>
@@ -70,18 +95,24 @@
 			<field name="model">cmim.assure</field>
 			<field name="arch" type="xml">
 				<search string="Assure filtre">
-					<field name="statut"/>
-					<field name="is_normal"/>
+					<field name="statut" />
+					<field name="is_normal" />
 					<group expand="0" string="Group By">
-						<filter name="collectivite_id" string="Collectivité" domain="[]" context="{'group_by':'collectivite_id'}"/>
-						<filter name="id_num_famille" string="Famille" domain="[]" context="{'group_by':'id_num_famille'}"/>
+						<filter name="collectivite_id" string="Collectivité"
+							domain="[]" context="{'group_by':'collectivite_id'}" />
+<!-- 						<filter name="id_num_famille" string="Assuré contractant" -->
+<!-- 							domain="[]" context="{'group_by':'id_num_famille'}" /> -->
+
+						<filter name="statut" string="Statut" icon="terp-stock_symbol-selection"
+							domain="[]" context="{'group_by':'statut'}" />
 					</group>
-					<filter name="import_flag"  string="Importés" icon="terp-stock_symbol-selection"
-						domain="[('import_flag', '=', 'True')]" />
-					<filter name="is_normal"  string="Assués normaux" icon="terp-stock_symbol-selection"
-						domain="[('is_normal', '=', True)]" />
-					<filter name="is_normal" string="Assués exceptionnels" icon="terp-stock_symbol-selection"
-						domain="[('is_normal', '=', False)]" />
+					<filter name="is_normal" string="Assués normaux"
+						icon="terp-stock_symbol-selection" domain="[('is_normal', '=', True)]" />
+					<!-- <filter name="statut" string="Statut" -->
+					<!-- icon="terp-stock_symbol-selection" domain-filter="[('statut', '=', 
+						self)]" /> -->
+					<filter name="is_normal" string="Assués exceptionnels"
+						icon="terp-stock_symbol-selection" domain="[('is_normal', '=', False)]" />
 				</search>
 			</field>
 		</record>
@@ -93,6 +124,13 @@
 				<form string="Assurés">
 					<sheet>
 						<div class="oe_button_box" name="button_box">
+							<!-- <button name="get_ayant_droits" type="object" string="Ayants 
+								Droits" -->
+							<!-- class="oe_inline oe_stat_button" icon="fa-users" /> -->
+							<button name="get_declarations" type="object" string="Déclarations"
+								class="oe_inline oe_stat_button" icon="fa-align-justify" />
+							<button name="get_cotisations" type="object" string="Cotisations"
+								class="oe_inline oe_stat_button" icon="fa-sign-out" />
 						</div>
 						<field name="image" widget='image' class="oe_avatar"
 							options='{"preview_image": "image_medium", "size": [90, 90]}' />
@@ -100,14 +138,16 @@
 							<h1>
 								<field name="name" default_focus="1" placeholder="Name" />
 							</h1>
-							<h3>
+							<h2>
 								<field name="numero" default_focus="1" placeholder="Numéro" />
-							</h3>
+							</h2>
 						</div>
 						<group>
 							<group>
 								<field name="statut" />
 								<field name="collectivite_id" />
+<!-- 								<field name="parent_id" /> -->
+								<field name="epoux_id"/>
 								<field name="id_num_famille" />
 								<field name="date_naissance" />
 								<field name="is_normal" string="Pas d'adhesion excéptionnelle" />
@@ -174,8 +214,21 @@
 				</form>
 			</field>
 		</record>
-		<!-- Collectivites -->
 
+
+		<!-- *************************************** Collectivites ************************************** -->
+		<record id="partner_search_view" model="ir.ui.view">
+			<field name="name">ao.res.partner.search</field>
+			<field name="model">res.partner</field>
+			<field name="arch" type="xml">
+				<search string="Collectivite filtre">
+					<group expand="0" string="Group By">
+						<filter name="secteur_id" string="Secteur" domain="[]"
+							context="{'group_by':'secteur_id'}" />
+					</group>
+				</search>
+			</field>
+		</record>
 		<record id="view_partner_tree" model="ir.ui.view">
 			<field name="name">cmim.collectivite.tree</field>
 			<field name="model">res.partner</field>
@@ -191,12 +244,27 @@
 				</field>
 			</field>
 		</record>
-
 		<record id="view_collectivite_form" model="ir.ui.view">
 			<field name="name">cmim.collectivite.form</field>
 			<field name="model">res.partner</field>
 			<field name="inherit_id" ref="base.view_partner_form" />
 			<field name="arch" type="xml">
+				<button name="toggle_active" position="after">
+
+					<button name="get_assures" type="object" class="oe_inline oe_stat_button"
+						icon="fa-users">
+						<field string="Assurés" name="assures_count" widget="statinfo" />
+					</button>
+					<button name="get_declarations" type="object" string="Déclarations"
+						class="oe_inline oe_stat_button" icon="fa-align-justify" />
+					<button name="import_declaration" type="object"
+						string="uploader déclarations" class="oe_inline oe_stat_button"
+						icon="fa-level-up" />
+					<button name="get_cotisations" type="object" string="Cotisations"
+						class="oe_inline oe_stat_button" icon="fa-sign-out" />
+					<button name="get_payments" type="object" string="Réglements"
+						class="oe_inline oe_stat_button" icon="fa-sign-in" />
+				</button>
 				<xpath expr="//page[@name='sales_purchases']" position="before">
 					<page string="Contrats / Adhésions">
 						<group>
@@ -252,10 +320,10 @@
 						<field name="name" default_focus="1" placeholder="Raison Sociale"
 							attrs="{'required' : [('type', '=', 'contact')]}" />
 					</h1>
-					<h3>
+					<h2>
 						<field name="code" placeholder="Code Collectivité"
 							attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
-					</h3>
+					</h2>
 				</h1>
 				<xpath expr="//label[@for='street']" position="before">
 					<field name="secteur_id"
@@ -265,31 +333,48 @@
 				</xpath>
 			</field>
 		</record>
-		<!-- action -->
+
+		<!-- ************************************ action *************************************** -->
+
 		<record id="action_collectivite" model="ir.actions.act_window">
 			<field name="name">Collectivités</field>
 			<field name="res_model">res.partner</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
 			<field name="domain" eval="[('customer','=',True),('is_company','=',True)]" />
+			<field name="context">{"search_default_secteur_id":1}</field>
 			<field name="view_id" ref="view_partner_tree" />
-<!-- 			<field name="search_id" ref="assure_search_view"/> -->
+			<field name="search_id" ref="partner_search_view" />
 		</record>
 		<record id="action_assure" model="ir.actions.act_window">
 			<field name="name">Assurés </field>
 			<field name="res_model">cmim.assure</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
+			<field name="domain" eval="[('parent_id','=',False)]" />
+			<field name="context">{"search_default_statut":1,"search_default_collectivite_id":1}
+			</field>
 			<field name="view_id" ref="view_assure_tree" />
-			<field name="search_id" ref="assure_search_view"/>
+			<field name="search_id" ref="assure_search_view" />
+		</record>
+		<record id="action_beneficiaire" model="ir.actions.act_window">
+			<field name="name">Bénéficiaires_ayant droit </field>
+			<field name="res_model">cmim.assure</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+			<field name="context">{"search_default_collectivite_id":1,"search_default_id_num_famille":1}
+			</field>
+			<field name="view_id" ref="view_assure_tree" />
+			<field name="search_id" ref="assure_search_view" />
 		</record>
 		<record id="action_contrat" model="ir.actions.act_window">
 			<field name="name">Contrats</field>
 			<field name="res_model">cmim.contrat</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
+			<field name="context" >{"search_default_product_id":1, "search_default_secteur_id":1}</field>
 			<field name="view_id" ref="view_contrat_tree" />
-<!-- 			<field name="search_id" ref="assure_search_view"/> -->
+			<field name="search_id" ref="contrat_search_view" />
 		</record>
 	</data>
 </openerp>
