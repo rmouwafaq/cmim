@@ -3,7 +3,6 @@
 	<data>
 
 		<!-- *****************************definition des adhesions ******************************* -->
-
 		<record id="view_contrat_tree" model="ir.ui.view">
 			<field name="name">cmim.contrat.tree</field>
 			<field name="model">cmim.contrat</field>
@@ -100,8 +99,8 @@
 					<group expand="0" string="Group By">
 						<filter name="collectivite_id" string="Collectivité"
 							domain="[]" context="{'group_by':'collectivite_id'}" />
-<!-- 						<filter name="id_num_famille" string="Assuré contractant" -->
-<!-- 							domain="[]" context="{'group_by':'id_num_famille'}" /> -->
+						<!-- <filter name="id_num_famille" string="Assuré contractant" -->
+						<!-- domain="[]" context="{'group_by':'id_num_famille'}" /> -->
 
 						<filter name="statut" string="Statut" icon="terp-stock_symbol-selection"
 							domain="[]" context="{'group_by':'statut'}" />
@@ -146,8 +145,8 @@
 							<group>
 								<field name="statut" />
 								<field name="collectivite_id" />
-<!-- 								<field name="parent_id" /> -->
-								<field name="epoux_id"/>
+								<!-- <field name="parent_id" /> -->
+								<field name="epoux_id" />
 								<field name="id_num_famille" />
 								<field name="date_naissance" />
 								<field name="is_normal" string="Pas d'adhesion excéptionnelle" />
@@ -172,6 +171,7 @@
 
 						<notebook colspan="4"
 							attrs="{'invisible': [('is_normal','!=', False)]}">
+
 							<page string="Contrats / Adhésions">
 								<group>
 									<field name="contrat_ids" nolabel="1">
@@ -265,6 +265,8 @@
 					<button name="get_payments" type="object" string="Réglements"
 						class="oe_inline oe_stat_button" icon="fa-sign-in" />
 				</button>
+
+				
 				<xpath expr="//page[@name='sales_purchases']" position="before">
 					<page string="Contrats / Adhésions">
 						<group>
@@ -303,6 +305,9 @@
 						</group>
 					</page>
 				</xpath>
+				<page name='sales_purchases' position="attributes">
+				<attribute name="invisible">True</attribute>
+				</page>
 				<field name="is_company" position="attributes">
 					<attribute name="readonly">True</attribute>
 				</field>
@@ -372,7 +377,8 @@
 			<field name="res_model">cmim.contrat</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
-			<field name="context" >{"search_default_product_id":1, "search_default_secteur_id":1}</field>
+			<field name="context">{"search_default_product_id":1,
+				"search_default_secteur_id":1}</field>
 			<field name="view_id" ref="view_contrat_tree" />
 			<field name="search_id" ref="contrat_search_view" />
 		</record>
