@@ -37,7 +37,6 @@ class rapport_correctifs(models.TransientModel):
         except Exception:
             raise exceptions.Warning(_("Not a valid file!"))
         keys = reader_info[0]
-        # pour filtrer le type 
         
        
     

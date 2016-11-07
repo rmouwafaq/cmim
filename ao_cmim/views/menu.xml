@@ -29,7 +29,7 @@
 			parent="cotisation_payement_menu" sequence="2" />
 		<menuitem id="cotisation_menu" name="Cotisations" action="action_cotisation"
 			parent="cotisation_payement_menu" sequence="3" />
-		<menuitem id="facture_menu" name="Factures" action="action_facture"
+		<menuitem id="facture_menu" name="Factures-Cotisations" action="action_facture"
 			parent="cotisation_payement_menu" sequence="4" />
 		<menuitem id="reglement_menu" name="Paiements" action="action_reglement"
 			parent="cotisation_payement_menu" sequence="5" />

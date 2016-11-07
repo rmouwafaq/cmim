@@ -81,6 +81,7 @@
 			<field name="arch" type="xml">
 				<tree string="Assures">
 					<field name="numero" />
+					<field name="id_num_famille" />
 					<field name="name" />
 					<field name="collectivite_id" />
 					<field name="date_naissance" />
@@ -367,7 +368,7 @@
 			<field name="res_model">cmim.assure</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
-			<field name="context">{"search_default_collectivite_id":1,"search_default_id_num_famille":1}
+			<field name="context">{"search_default_collectivite_id":1}
 			</field>
 			<field name="view_id" ref="view_assure_tree" />
 			<field name="search_id" ref="assure_search_view" />
@@ -377,8 +378,7 @@
 			<field name="res_model">cmim.contrat</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
-			<field name="context">{"search_default_product_id":1,
-				"search_default_secteur_id":1}</field>
+			<field name="context">{"search_default_secteur_id":1,"search_default_product_id":1}</field>
 			<field name="view_id" ref="view_contrat_tree" />
 			<field name="search_id" ref="contrat_search_view" />
 		</record>

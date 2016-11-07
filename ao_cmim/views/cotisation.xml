@@ -76,7 +76,8 @@
 										<field name="name" />
 										<field name="code" />
 										<field name="base_calcul" />
-										<field name="base"  />
+										<field name="base1"  />
+										<field name="base2"  />
 										<field name="rate1" />
 										<field name="rate2" />
 										<field name="montant" />
@@ -85,9 +86,10 @@
 										<field name="product_id" />
 										<field name="code" />
 										<field name="base_calcul" />
-										<field name="base" />
+										<field name="base1" />
+										<field name="base2" />
 										<field name="rate1"/>
-										<field name="rate1"  />
+										<field name="rate2"  />
 										<field name="montant"/>
 										<templates>
 											<t t-name="kanban-box">

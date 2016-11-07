@@ -203,7 +203,14 @@ class assure(models.Model):
                 'domain':[('parent_id.id', '=', self.id)],
                 }"""
         return True
-
+    
+    def read_group(self, cr, uid, domain, fields, groupby, offset=0, limit=None, context=None, orderby=False, lazy=True):
+        if 'numero' in fields:
+            fields.remove('numero')
+        if 'id_num_famille' in fields:
+            fields.remove('id_num_famille')
+        return super(assure, self).read_group(cr, uid, domain, fields, groupby, offset, limit=limit, context=context, orderby=orderby, lazy=True)
+    
         
         
         
