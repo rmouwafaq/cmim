@@ -25,8 +25,8 @@
 
 					<separator string="" colspan="4" />
 					<footer>
-						<button class="oe_highlight" special="cancel" string="Annuler" />
-						<button name="calcul_engine" string="Calculer" type="object" />
+						<button class="oe_highlight"  name="calcul_engine" string="Calculer" type="object" />
+						<button  special="cancel" string="Annuler" />
 					</footer>
 				</form>
 			</field>

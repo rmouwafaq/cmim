@@ -70,7 +70,6 @@ class collectivite(models.Model):
                 'target':'self',
                 'domain':[('partner_id.id', '=', self.id)],
                 }
-        return True
     
     @api.multi
     def get_declarations(self):

@@ -11,6 +11,7 @@
             
             'wizard/generate_rapport_correctif.xml',
             'wizard/calcul_cotisation.xml',
+            'wizard/validation_cotisation.xml',
             
             'views/product.xml',
             'views/cotisation.xml',

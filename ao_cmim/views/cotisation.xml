@@ -10,8 +10,6 @@
 					<group expand="0" string="Group By">
 						<filter name="collectivite_id" string="Collectivité"
 							domain="[]" context="{'group_by':'collectivite_id'}" />
-						<filter name="assure_id" string="Assuré" domain="[]"
-							context="{'group_by':'assure_id'}" />
 						<filter name="payroll_year_id" string="Année" domain="[]"
 							context="{'group_by':'payroll_year_id'}" />
 						<filter name="payroll_period_id" string="Période" domain="[]"
@@ -33,9 +31,8 @@
 					<field name="payroll_year_id" />
 					<field name="payroll_period_id" />
 					<field name="collectivite_id" />
-					<field name="assure_id" />
 					<field name="montant" />
-					<field name="state"/>
+					<field name="state" />
 				</tree>
 			</field>
 		</record>
@@ -46,21 +43,24 @@
 				<form string="Cotisation">
 					<header>
 						<button name="action_valider" type="object" string="Valider"
-							attrs="{'invisible':[('state', '!=', 'draft')]}"
-							class="oe_highlight" groups="base.group_user" />
+							attrs="{'invisible':[('state', '!=', 'draft')]}" class="oe_highlight"
+							groups="base.group_user" />
 						<field name="state" widget="statusbar" nolabel="1"
 							statusbar_visible="draft,valide" />
 					</header>
 					<sheet string="Cotisation">
 						<h1 class="mt0">
-							<label string="Cotisation Brouillon" attrs="{'invisible': [('state','!=','draft')]}"/>
-							<field name="name" readonly="1" class="oe_inline" attrs="{'invisible': [('state','=','draft')]}" />
+							<label string="Cotisation Brouillon" attrs="{'invisible': [('state','!=','draft')]}" />
+							<field name="name" readonly="1" class="oe_inline"
+								attrs="{'invisible': [('state','=','draft')]}" />
 						</h1>
 						<group>
 							<group>
 								<field string="Colectivité" name="collectivite_id"
 									options='{"always_reload": True}' />
-								<field string="Assuré" name="assure_id" options='{"always_reload": True}' />
+							</group>
+							<group>
+								<field name="payroll_year_id" />
 							</group>
 							<group>
 								<field name="payroll_period_id" />
@@ -68,29 +68,19 @@
 						</group>
 						<notebook colspan="4">
 							<page string="Cotisation Lines">
-								<field name="cotisation_line_ids" nolabel="1" widget="one2many_list"
-									mode="tree,kanban">
+								<field name="cotisation_product_ids" nolabel="1"
+									widget="one2many_list" mode="tree,kanban">
 									<tree string="Cotisation Lines" editable="bottom">
-										<field name="sequence" widget="handle" />
 										<field name="product_id" />
-										<field name="name" />
 										<field name="code" />
 										<field name="base_calcul" />
-										<field name="base1"  />
-										<field name="base2"  />
-										<field name="rate1" />
-										<field name="rate2" />
 										<field name="montant" />
 									</tree>
 									<kanban class="o_kanban_mobile">
 										<field name="product_id" />
 										<field name="code" />
 										<field name="base_calcul" />
-										<field name="base1" />
-										<field name="base2" />
-										<field name="rate1"/>
-										<field name="rate2"  />
-										<field name="montant"/>
+										<field name="montant" />
 										<templates>
 											<t t-name="kanban-box">
 												<div t-attf-class="oe_kanban_card oe_kanban_global_click">
@@ -110,13 +100,6 @@
 																<t t-esc="record.base_calcul.value" />
 															</span>
 														</div>
-														<div class="col-xs-8 text-muted">
-															<span>
-																<t t-esc="record.base.value" />
-																<t t-esc="record.rate1.value" />
-																<t t-esc="record.rate2.value" />
-															</span>
-														</div>
 														<div class="col-xs-4 text-muted">
 															<span class="text-right">
 																<t t-esc="record.montant.value" />
@@ -128,6 +111,9 @@
 										</templates>
 									</kanban>
 								</field>
+								<group class="oe_subtotal_footer oe_right">
+									<field name="montant" class="oe_subtotal_footer_separator" />
+								</group>
 							</page>
 						</notebook>
 					</sheet>

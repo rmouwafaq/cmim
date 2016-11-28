@@ -5,7 +5,7 @@
 
 
 		<menuitem id="col_assure_menu" name="Collectivités / Assurés"
-			parent="main_menu" />
+			parent="main_menu" sequence="1"/>
 
 		<menuitem id="collectivite_menu" name="Collectivités" action="action_collectivite"
 			parent="col_assure_menu" />
@@ -20,27 +20,36 @@
 
 
 
-		<menuitem id="cotisation_payement_menu" name="Cotisations et Réglements"
-			parent="main_menu" />
-
+		<menuitem id="declaration_cotisation_menu" name="Déclarations / Calculs"
+			parent="main_menu" sequence="2"/>
+			
 		<menuitem id="declaration_menu" name="Déclarations" action="action_declaration"
-			parent="cotisation_payement_menu" sequence="1" />
+			parent="declaration_cotisation_menu" sequence="1" />
 		<menuitem id="caclcul_menu" name="Calculs" action="action_calcul_cotisation"
-			parent="cotisation_payement_menu" sequence="2" />
+			parent="declaration_cotisation_menu" sequence="2" />
 		<menuitem id="cotisation_menu" name="Cotisations" action="action_cotisation"
-			parent="cotisation_payement_menu" sequence="3" />
+			parent="declaration_cotisation_menu" sequence="3" />
+		<menuitem id="validation_menu" name="Validations" action="action_validation"
+			parent="declaration_cotisation_menu" sequence="4" />
+		<menuitem id="import_dec_menu" name="Importation déclarations"
+			action="action_dec_pay_import" parent="declaration_cotisation_menu"
+			sequence="5" />
+
+		<menuitem id="facture_payement_menu" name="Factures et Réglements"
+			parent="main_menu" sequence="3"/>
+
 		<menuitem id="facture_menu" name="Factures-Cotisations" action="action_facture"
-			parent="cotisation_payement_menu" sequence="4" />
+			parent="facture_payement_menu" sequence="4" />
 		<menuitem id="reglement_menu" name="Paiements" action="action_reglement"
-			parent="cotisation_payement_menu" sequence="5" />
-		<menuitem id="import_dec_pay_menu" name="Importation déclarations/ Paiements"
-			action="action_dec_pay_import" parent="cotisation_payement_menu"
+			parent="facture_payement_menu" sequence="5" />
+		<menuitem id="import_pay_menu" name="Importation Paiements"
+			action="action_dec_pay_import" parent="facture_payement_menu"
 			sequence="6" />
 
 
 
 		<menuitem id="produit_menu" name="Produits CMIM" parent="main_menu"
-			action="action_produit" />
+			action="action_produit" sequence="5" />
 
 
 
@@ -58,7 +67,7 @@
 
 
 
-		<menuitem id="rapport_menu" name="Rapports" parent="main_menu" />
+		<menuitem id="rapport_menu" name="Rapports" parent="main_menu" sequence="6"/>
 
 		<menuitem id="rentabilite_rapport_menu" name="Rapports de rentabilité"
 			parent="rapport_menu" />
