@@ -8,7 +8,7 @@
 			<field name="mode">primary</field>
 			<field name="priority" eval="1" />
 			<field name="arch" type="xml">
-				<tree string="Product">
+				<tree editable="bottom" string="Product">
 					<field name="name" />
 					<field name="valeur" />
 				</tree>
@@ -67,7 +67,7 @@
 			<field name="mode">primary</field>
 			<field name="priority" eval="1" />
 			<field name="arch" type="xml">
-				<tree string="Product">
+				<tree editable="bottom" string="Product">
 					<field name="name" />
 					<field name="plancher" />
 					<field name="plafond" />
@@ -106,7 +106,7 @@
 			<field name="mode">primary</field>
 			<field name="priority" eval="1" />
 			<field name="arch" type="xml">
-				<tree string="Product">
+				<tree editable="bottom" string="Product">
 					<field name="name" />
 					<field name="type" />
 					<field name="montant" />

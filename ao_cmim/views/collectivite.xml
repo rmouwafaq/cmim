@@ -129,8 +129,6 @@
 							<!-- class="oe_inline oe_stat_button" icon="fa-users" /> -->
 							<button name="get_declarations" type="object" string="Déclarations"
 								class="oe_inline oe_stat_button" icon="fa-align-justify" />
-							<button name="get_cotisations" type="object" string="Cotisations"
-								class="oe_inline oe_stat_button" icon="fa-sign-out" />
 						</div>
 						<field name="image" widget='image' class="oe_avatar"
 							options='{"preview_image": "image_medium", "size": [90, 90]}' />
@@ -378,7 +376,7 @@
 			<field name="res_model">cmim.contrat</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
-			<field name="context">{"search_default_secteur_id":1,"search_default_product_id":1}</field>
+			<field name="context">{"search_default_product_id":1,"search_default_secteur_id":1}</field>
 			<field name="view_id" ref="view_contrat_tree" />
 			<field name="search_id" ref="contrat_search_view" />
 		</record>

@@ -20,7 +20,10 @@ class declaration(models.Model):
     salaire = fields.Float('salaire')
     payroll_year_id =  fields.Many2one('py.year', 'Calendrier')
     payroll_period_id = fields.Many2one('py.period', 'Periode', domain="[('payroll_year_id','=',payroll_year_id)]")
-    
+    secteur_id = fields.Many2one('cmim.secteur',
+        string='Secteur',
+        related='collectivite_id.secteur_id', store=True
+    )
 
 class cotisation(models.Model):
     _name ='cmim.cotisation'
@@ -46,7 +49,11 @@ class cotisation(models.Model):
                                         required=True,
                                         string='Etat', 
                                         default = 'draft')
-    
+    secteur_id = fields.Many2one('cmim.secteur',
+        string='Secteur',
+        related='collectivite_id.secteur_id', store=True
+    )
+
 class cotisation_assure(models.Model):
     _name = 'cmim.cotisation.assure'
     _description = "Cotisation Assure"

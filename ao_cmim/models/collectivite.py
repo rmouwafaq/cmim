@@ -23,15 +23,13 @@ class collectivite(models.Model):
         'customer' : True
         }
     @api.one
+    @api.depends('assure_ids')
     def _assures_count(self):
-        res = dict(map(lambda x: (x,0), self._ids))
-
-        try:
-            for partner in self.browse():
-                res[self.id] = len(self.assure_ids)
-        except:
-            pass
-        return res
+        
+        for obj in self:
+            if self.assure_ids :
+                obj.assures_count = len(self.assure_ids)
+        
     
     import_flag = fields.Boolean('Par import', default=False)      
     code = fields.Char(string="Code collectivite", required=True, copy=False)
@@ -41,8 +39,8 @@ class collectivite(models.Model):
     secteur_id = fields.Many2one('cmim.secteur', "Secteur")
     contrat_ids = fields.One2many('cmim.contrat', 'collectivite_id', string="Contrats")
     declaration_ids = fields.Many2one('cmim.declaration', 'Declarations')
-    assures_count = fields.Integer(compute='_assures_count')
-    
+    assures_count = fields.Integer(compute='_assures_count', string="Nb assures")
+
     @api.multi
     def get_assures(self):
         view_id = self.env.ref('ao_cmim.view_assure_tree').id
@@ -85,10 +83,20 @@ class collectivite(models.Model):
                 'domain':[('collectivite_id.id', '=', self.id)],
                 'context':{'group_by':'payroll_period_id'},
                 }
-        return True
     @api.multi
     def get_cotisations(self):
-        return True
+        view_id = self.env.ref('ao_cmim.cotisation_tree_view').id
+        return{ 
+                'res_model':'cmim.cotisation',
+                'type': 'ir.actions.act_window',
+                'res_id': self.id,
+                'view_mode':'tree',
+                'views' : [(view_id, 'tree'),(False, 'form')],
+                'view_id': 'ao_cmim.cotisation_tree_view',
+                'target':'self',
+                'domain':[('state', '=', 'draft'),('collectivite_id.id', '=', self.id)],
+                'context':{'group_by':'payroll_period_id'},
+                }
     
     @api.multi
     def import_declaration(self):
