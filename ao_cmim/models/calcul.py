@@ -4,138 +4,13 @@ from openerp.osv import osv, fields
 from openerp import models, fields,exceptions, api, _
 from openerp.exceptions import UserError
 
+
 class constante_calcul(models.Model):
     _name = 'cmim.constante'
     name = fields.Char('Nom ', required=True)
     valeur = fields.Char('Valeur ', required=True)
-  
     
-class declaration(models.Model):
-    _name = 'cmim.declaration'
     
-    import_flag = fields.Boolean('Par import', default=False)      
-    assure_id =  fields.Many2one('cmim.assure', 'Assure', ondelete='cascade')#domain=[('collectivite_id.id','=',collectivite_id.id)] , 
-    collectivite_id = fields.Many2one('res.partner', 'Collectivite', ondelete='cascade')
-    nb_jour = fields.Integer('Nombre de jours declares')
-    salaire = fields.Float('salaire')
-    payroll_year_id =  fields.Many2one('py.year', 'Calendrier')
-    payroll_period_id = fields.Many2one('py.period', 'Periode', domain="[('payroll_year_id','=',payroll_year_id)]")
-    secteur_id = fields.Many2one('cmim.secteur',
-        string='Secteur',
-        related='collectivite_id.secteur_id', store=True
-    )
-
-class cotisation(models.Model):
-    _name ='cmim.cotisation'
-    
-    def _getmontant_total(self):
-    
-        if(self.cotisation_line_ids):
-            self.montant = sum(line.montant for line in self.cotisation_line_ids)
-        elif(self.cotisation_product_ids):
-            self.montant = sum(line.montant for line in self.cotisation_product_ids)
-                
-    name =  fields.Char('Libelle')
-    collectivite_id = fields.Many2one('res.partner', 'Collectivite')
-    payroll_year_id = fields.Many2one('py.year', 'Calendrier')
-    payroll_period_id = fields.Many2one('py.period', 'Periode de calcul', domain="[('payroll_year_id','=',payroll_year_id)]")
-    cotisation_assure_ids = fields.One2many('cmim.cotisation.assure', 'cotisation_id', 'Ligne de calcul par assure')    
-    cotisation_product_ids = fields.One2many('cmim.cotisation.product', 'cotisation_id', 'Ligne de calcul par produit')    
-    montant = fields.Float(compute="_getmontant_total", string='Montant', default= 0.0, digits=0, store=True)
-    #montant = fields.Float(string='Montant', default= 0.0)
-    
-    state = fields.Selection(selection=[('draft', 'Brouillon'),
-                                        ('valide', 'Validee')],
-                                        required=True,
-                                        string='Etat', 
-                                        default = 'draft')
-    secteur_id = fields.Many2one('cmim.secteur',
-        string='Secteur',
-        related='collectivite_id.secteur_id', store=True
-    )
-    
-    @api.multi
-    def action_validate(self):
-        vals ={'partner_id' : self.collectivite_id.id,
-                                                      'account_id.id' : self.collectivite_id.property_account_receivable_id.id,
-                                                      'cotisation_id' : self.id
-                                                      }
-        print vals
-        #inv_obj = self.env['account.invoice'].create(vals)
-        for line in self.cotisation_product_ids:
-            valls = {'name': line.product_id.name , 
-                   'price_unit' : line.montant,
-                   'account.id.id': 504,
-                   'invoice_id.id' : inv_obj.id                        
-                                                                                                  }
-            #inv_obj.write({'invoice_line_ids':   [(4, self.env['account.invoice.line'].create(valls))]})
-        self.state('valide')
-
-class cotisation_assure(models.Model):
-    _name = 'cmim.cotisation.assure'
-    _description = "Cotisation Assure"
-
-    def _getmontant_total(self):
-        self.montant = sum(line.montant for line in self.cotisation_assure_line_ids)
-        
-        
-    cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation',  ondelete='cascade')
-    payroll_year_id = fields.Many2one('py.year', string = 'Calendrier', related='cotisation_id.payroll_year_id', store=True)
-    payroll_period_id = fields.Many2one('py.period', string = 'Periode de calcul', related='cotisation_id.payroll_period_id', store=True)
-    collectivite_id = fields.Many2one('res.partner', 'Collectivite')
-    assure_id = fields.Many2one('cmim.assure', 'Assure')
-    name =  fields.Char('Libelle')
-    cotisation_assure_line_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_assure_id', 'Ligne de calcul par assure')  
-    montant = fields.Float(compute="_getmontant_total", string='Montant', default= 0.0, digits=0, store=True)
-    #montant = fields.Float(string='Montant', default= 0.0)
-
-class cotisation_assure_line(models.Model):
-    _name = 'cmim.cotisation.assure.line'
-    _description = "Lignes ou details du calcul des cotisations_assure"
-    _order = 'cotisation_assure_id,sequence'
-
-    cotisation_assure_id = fields.Many2one('cmim.cotisation.assure', 'Cotisation assure',  ondelete='cascade')
-    cotisation_id = fields.Many2one('cmim.cotisation', string='Cotisation',related='cotisation_assure_id.cotisation_id', store=True)
-    sequence = fields.Integer('Sequence')
-    product_id = fields.Many2one('product.template', 'Produit')
-    
-    code = fields.Integer(
-        string='Code Produit',
-        related='product_id.code',
-        )
-    
-    base_calcul = fields.Selection(
-        string='Type du produit',
-        related='product_id.base_calcul',
-    )
-    
-    name = fields.Char('Libelle')
-    base1 = fields.Float('Tranche A', help = 'si le type de produit est salaire, la tranche A est elle-meme la base de salaire', default=0.0)
-    base2 = fields.Float('Tranche B', default = 0.0)
-    rate1 = fields.Float('Taux 1')
-    rate2 = fields.Float('Taux 2')
-    montant = fields.Float('Montant', default= 0.0) 
-    
-class cotisation_product(models.Model):
-    _name = 'cmim.cotisation.product'
-    _description = "Lignes ou details du calcul des cotisations_produit"
-
-    cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation',  ondelete='cascade')
-    payroll_year_id = fields.Many2one('py.year', string = 'Calendrier', related='cotisation_id.payroll_year_id', store=True)
-    payroll_period_id = fields.Many2one('py.period', string = 'Periode de calcul', related='cotisation_id.payroll_period_id', store=True)
-    product_id = fields.Many2one('product.template', 'Produit')
-    code = fields.Integer(
-        string='Code Produit',
-        related='product_id.code',
-        )
-    
-    base_calcul = fields.Selection(
-        string='Type du produit',
-        related='product_id.base_calcul',
-    )
-    
-    montant = fields.Float('Montant', default= 0.0) 
-     
 class calcul_cotisation (models.TransientModel):
     _name = 'cmim.calcul.cotisation'
     
@@ -260,7 +135,6 @@ class calcul_cotisation (models.TransientModel):
                     cotisation_obj.write({'montant': cotisation_obj.montant + cotisation_assure_obj.montant})
                 self.create_cotisation_product_lines(cotisation_obj)
                 cotisation_ids.append(cotisation_obj.id)
-                print 'pppppppppppppppppppppppppppppppppppppppppp',cotisation_ids
             return {
                     'type': 'ir.actions.act_window',
                     'res_model': 'cmim.cotisation',

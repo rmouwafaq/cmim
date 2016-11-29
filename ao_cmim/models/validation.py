@@ -42,7 +42,7 @@ class validation_cotisation (models.TransientModel):
     @api.multi
     def valider_act(self):
         for cotisation in self.cotisation_ids:
-            cotisation.write({ 'state': 'valide'})
+            cotisation.action_validate()
             
         self.state="validate"    
         return {

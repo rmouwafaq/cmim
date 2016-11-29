@@ -9,6 +9,7 @@ class reglement(models.Model):
     _default = { 'payment_type' : 'inbound',
                 'partner_type': 'customer',
                 }
+    
     import_flag = fields.Boolean('Par import', default=False)
     secteur_id = fields.Many2one('cmim.secteur',
         string='Secteur',
@@ -16,3 +17,9 @@ class reglement(models.Model):
     )
     payroll_year_id =  fields.Many2one('py.year', 'Calendrier')
     payroll_period_id = fields.Many2one('py.period', 'Periode', domain="[('payroll_year_id','=',payroll_year_id)]")
+    
+class AccountInvoice(models.Model):
+    
+    _inherit = "account.invoice"
+    
+    cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation')

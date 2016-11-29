@@ -44,7 +44,7 @@
 			<field name="arch" type="xml">
 				<form string="Cotisation">
 					<header>
-						<button name="action_valider" type="object" string="Valider"
+						<button name="action_validate" type="object" string="Valider"
 							attrs="{'invisible':[('state', '!=', 'draft')]}" class="oe_highlight"
 							groups="base.group_user" />
 						<field name="state" widget="statusbar" nolabel="1"
