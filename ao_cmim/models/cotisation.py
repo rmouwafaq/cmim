@@ -56,20 +56,43 @@ class cotisation(models.Model):
     
     @api.multi
     def action_validate(self):
-        vals ={'partner_id' : self.collectivite_id.id,
-                                                      'account_id.id' : self.collectivite_id.property_account_receivable_id.id,
-                                                      'cotisation_id' : self.id
-                                                      }
-        print vals
-        #inv_obj = self.env['account.invoice'].create(vals)
+        
+        inv_obj = self.env['account.invoice']
+        invoices = {}
+        group_key = self.id 
         for line in self.cotisation_product_ids:
-            valls = {'name': line.product_id.name , 
-                   'price_unit' : line.montant,
-                   'account.id.id': 504,
-                   'invoice_id.id' : inv_obj.id                        
-                                                                                                  }
-            #inv_obj.write({'invoice_line_ids':   [(4, self.env['account.invoice.line'].create(valls))]})
-        self.state('valide')
+            if group_key not in invoices:
+                inv_data = self._prepare_invoice()
+                invoice = inv_obj.create(inv_data)
+                invoices[group_key] = invoice
+            line.invoice_line_create(invoices[group_key].id)
+
+        if not invoices:
+            raise UserError(_('There is no invoicable line.'))
+
+        for invoice in invoices.values():
+            if not invoice.invoice_line_ids:
+                raise UserError(_('There is no invoicable line.'))
+        self.state = 'valide'
+        return [inv.id for inv in invoices.values()]
+    
+    @api.multi
+    def _prepare_invoice(self):
+        journal_id = self.env['account.invoice'].default_get(['journal_id'])['journal_id']
+        if not journal_id:
+            raise UserError(_('Please define an accounting sale journal for this company.'))
+        invoice_vals = {
+            'name': self.collectivite_id.name ,
+            'origin':self.collectivite_id.name,
+            'cotisation_id.id' : self.id,
+            'type': 'out_invoice',
+            'account_id': self.collectivite_id.property_account_receivable_id.id,
+            'partner_id': self.collectivite_id.id,
+            'journal_id': journal_id,
+            'residual_signed' : self.montant
+        }
+        return invoice_vals
+  
 
 class cotisation_assure(models.Model):
     _name = 'cmim.cotisation.assure'
@@ -135,7 +158,34 @@ class cotisation_product(models.Model):
     )
     
     montant = fields.Float('Montant', default= 0.0) 
-     
+    
+    @api.multi
+    def _prepare_invoice_line(self):
+        res = {}
+        account = self.product_id.property_account_income_id or self.product_id.categ_id.property_account_income_categ_id
+        if not account:
+            raise UserError(_('Please define income account for this product: "%s" (id:%d) - or for its category: "%s".') % \
+                            (self.product_id.name, self.product_id.id, self.product_id.categ_id.name))
+
+        res = {
+            'name': self.product_id.name,
+            'origin': self.cotisation_id.collectivite_id.name,
+            'account_id': account.id,
+            'price_unit': self.montant,
+            'quantity': 1,
+            #'discount': self.discount,
+            'uom_id': 1,
+            'product_id': self.product_id.id or False,
+            #'invoice_line_tax_ids': [(6, 0, self.tax_id.ids)],
+            #'account_analytic_id': self.order_id.project_id.id,
+        }
+        return res
+    @api.multi
+    def invoice_line_create(self, invoice_id):
+        for line in self:
+                vals = line._prepare_invoice_line()
+                vals.update({'invoice_id': invoice_id, 'invoice_line_ids': [(6, 0, [line.id])]})
+                self.env['account.invoice.line'].create(vals)
 class calcul_cotisation (models.TransientModel):
     _name = 'cmim.calcul.cotisation'
     

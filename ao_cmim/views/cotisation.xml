@@ -219,8 +219,7 @@
 			<field name="name">Cotisations</field>
 			<field name="res_model">cmim.cotisation</field>
 			<field name="view_id" ref="cotisation_tree_view" />
-			<field name="context">{"search_default_payroll_year_id":1,"search_default_payroll_period_id":1,"search_default_secteur_id":1}
-			</field>
+			<field name="context">{'group_by': ['payroll_year_id','payroll_period_id','secteur_id']}</field>
 			<field name="search_id" ref="cotisation_search_view" />
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
@@ -240,8 +239,7 @@
 		<record id="action_declaration" model="ir.actions.act_window">
 			<field name="name">Déclarations des salaires</field>
 			<field name="res_model">cmim.declaration</field>
-			<field name="context">{"search_default_secteur_id":1,"search_default_collectivite_id":1}
-			</field>
+			<field name="context">{'group_by': ['payroll_year_id','payroll_period_id','secteur_id','collectivite_id']}</field>
 			<field name="view_id" ref="declaration_tree_view" />
 			<field name="search_id" ref="declaration_search_view" />
 			<field name="view_type">form</field>
