@@ -1,16 +1,8 @@
-
 from datetime import datetime
 from openerp.osv import osv, fields
 from openerp import models, fields,exceptions, api, _
 from openerp.exceptions import UserError
 
-
-class constante_calcul(models.Model):
-    _name = 'cmim.constante'
-    name = fields.Char('Nom ', required=True)
-    valeur = fields.Char('Valeur ', required=True)
-    
-    
 class calcul_cotisation (models.TransientModel):
     _name = 'cmim.calcul.cotisation'
     
@@ -135,6 +127,7 @@ class calcul_cotisation (models.TransientModel):
                     cotisation_obj.write({'montant': cotisation_obj.montant + cotisation_assure_obj.montant})
                 self.create_cotisation_product_lines(cotisation_obj)
                 cotisation_ids.append(cotisation_obj.id)
+                print 'pppppppppppppppppppppppppppppppppppppppppp',cotisation_ids
             return {
                     'type': 'ir.actions.act_window',
                     'res_model': 'cmim.cotisation',

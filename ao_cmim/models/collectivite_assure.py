@@ -4,14 +4,6 @@ from datetime import datetime
 from openerp.osv import osv, fields
 from openerp import models, fields, tools, api
 
-
-class secteur(models.Model):
-    _name = 'cmim.secteur'
-    
-    name = fields.Char('nom du secteur', reduired=True)
-    plancher = fields.Float('Plancher du secteur')
-    plafond = fields.Float('Plafond du secteur')   
-    
 class collectivite(models.Model):
     _inherit = "res.partner"
     """_sql_constraints = [

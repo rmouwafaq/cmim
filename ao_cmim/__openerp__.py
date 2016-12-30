@@ -8,15 +8,17 @@
     'depends':['base','account','product'],
     'data':[
             'wizard/import_data.xml',
-            
             'wizard/generate_rapport_correctif.xml',
             'wizard/calcul_cotisation.xml',
             'wizard/validation_cotisation.xml',
             
             'views/product.xml',
             'views/cotisation.xml',
-            'views/collectivite.xml',
+            'views/collectivite_assure.xml',
             'views/config.xml',
+            'views/contrat.xml',
+            'views/declaration.xml',
+            'views/facture_paiement.xml',
             'views/menu.xml',
 
     ],

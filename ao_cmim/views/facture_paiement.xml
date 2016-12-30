@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+				
+		<!-- **************************** paiements ********************************* -->
+		<record id="reglement_search_view" model="ir.ui.view">
+			<field name="name">account.payment.search</field>
+			<field name="model">account.payment</field>
+			<field name="inherit_id" ref="account.view_account_payment_search" />
+			<field name="arch" type="xml">
+				<field name="name" position="after">
+					<group expand="0" string="Group By">
+						<filter name="partner_id" string="Collectivité" domain="[]"
+							context="{'group_by':'partner_id'}" />
+						<filter name="secteur_id" string="Secteur" domain="[]"
+							context="{'group_by':'secteur_id'}" />
+						<filter name="payroll_year_id" string="Année" domain="[]"
+							context="{'group_by':'payroll_year_id'}" />
+						<filter name="payroll_period_id" string="Période" domain="[]"
+							context="{'group_by':'payroll_period_id'}" />
+					</group>
+				</field>
+
+			</field>
+		</record>
+		<record id="action_reglement" model="ir.actions.act_window">
+			<field name="name">Réglements</field>
+			<field name="res_model">account.payment</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+		</record>
+		<record id="action_facture" model="ir.actions.act_window">
+			<field name="name">Factures</field>
+			<field name="res_model">account.invoice</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+		</record>
+	</data>
+</openerp>

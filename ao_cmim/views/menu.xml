@@ -11,8 +11,6 @@
 			parent="col_assure_menu" />
 		<menuitem id="assure_menu" name="Assurés" action="action_assure"
 			parent="col_assure_menu" />
-<!-- 		<menuitem id="ayants_droit_menu" name="Bénéficiaires" action="action_beneficiaire" -->
-<!-- 			parent="col_assure_menu" /> -->
 		<menuitem id="import_col_assure_menu" name="Importation collectivités/ Assurés"
 			action="action_col_assure_import" parent="col_assure_menu" />
 		<menuitem id="contrat_menu" name="Définition des adhésions"

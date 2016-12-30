@@ -1,9 +1,9 @@
-import collectivite
+import collectivite_assure
 import product
 import cotisation
 import periode
-import import_data
 import rapport
-import validation
 import facture_payement
-#import calcul
+import contrat
+import config
+import declaration
