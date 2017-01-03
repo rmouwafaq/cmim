@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openerp>
+<odoo>
 	<data>
 
 		<!-- *********************************** Assures ************************************** -->
-
 		<record id="view_assure_tree" model="ir.ui.view">
 			<field name="name">cmim.assure.tree</field>
 			<field name="model">cmim.assure</field>
@@ -187,15 +186,13 @@
 					<button name="get_declarations" type="object" string="Déclarations"
 						class="oe_inline oe_stat_button" icon="fa-align-justify" />
 					<button name="import_declaration" type="object"
-						string="uploader déclarations" class="oe_inline oe_stat_button"
+						string="Importer les déclarations" class="oe_inline oe_stat_button"
 						icon="fa-level-up" />
 					<button name="get_cotisations" type="object" string="Cotisations"
 						class="oe_inline oe_stat_button" icon="fa-sign-out" />
 					<button name="get_payments" type="object" string="Réglements"
 						class="oe_inline oe_stat_button" icon="fa-sign-in" />
 				</button>
-
-				
 				<xpath expr="//page[@name='sales_purchases']" position="before">
 					<page string="Contrats / Adhésions">
 						<group>
@@ -303,4 +300,4 @@
 		</record>
 
 	</data>
-</openerp>
+</odoo>

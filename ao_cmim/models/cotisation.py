@@ -33,7 +33,30 @@ class cotisation(models.Model):
         string='Secteur',
         related='collectivite_id.secteur_id', store=True
     )
+    @api.onchange('fiscal_date')
+    def onchange_field_id(self):
+         if self.fiscal_date:
+            periodes = self.env['date.range'].search([])
+            ids = []
+            dec_year = datetime.strptime(self.fiscal_date, '%Y-%m-%d').year
+            for periode in periodes :
+                duree =  (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
+                if duree>88 and duree <92 and dec_year == datetime.strptime(periode.date_end, '%Y-%m-%d').year and dec_year == datetime.strptime(periode.date_start, '%Y-%m-%d').year:
+                    ids.append(periode.id)
+            return {'domain':{'date_range_id': [('id', 'in', ids)]}}
+    @api.model
+    def _get_domain(self):
+        periodes = self.env['date.range'].search([])
+        ids = []
+        for periode in periodes :
+            duree =  (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
+            if duree>88 and duree <92:
+                ids.append(periode.id)
+        return [('id', 'in', ids)]
     
+           
+    fiscal_date = fields.Date(string="Annee fiscale")
+    date_range_id = fields.Many2one('date.range', 'Periode', domain=lambda self: self._get_domain())
     @api.multi
     def action_validate(self):
         
@@ -83,10 +106,8 @@ class cotisation_assure(models.Model):
         
         
     cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation',  ondelete='cascade')
-    payroll_year_id = fields.Many2one('py.year', string = 'Calendrier', related='cotisation_id.payroll_year_id', store=True)
-    payroll_period_id = fields.Many2one('py.period', string = 'Periode de calcul', related='cotisation_id.payroll_period_id', store=True)
-    collectivite_id = fields.Many2one('res.partner', 'Collectivite')
-    assure_id = fields.Many2one('cmim.assure', 'Assure')
+    collectivite_id = fields.Many2one('res.partner',related='cotisation_id.collectivite_id', store=True)
+    assure_id = fields.Many2one('cmim.assure', 'Assure', domain="[('collectivite_id', '=','collectivite_id' ]")
     name =  fields.Char('Libelle')
     cotisation_assure_line_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_assure_id', 'Ligne de calcul par assure')  
     montant = fields.Float(compute="_getmontant_total", string='Montant', default= 0.0, digits=0, store=True)
@@ -124,8 +145,6 @@ class cotisation_product(models.Model):
     _description = "Lignes ou details du calcul des cotisations_produit"
 
     cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation',  ondelete='cascade')
-    payroll_year_id = fields.Many2one('py.year', string = 'Calendrier', related='cotisation_id.payroll_year_id', store=True)
-    payroll_period_id = fields.Many2one('py.period', string = 'Periode de calcul', related='cotisation_id.payroll_period_id', store=True)
     product_id = fields.Many2one('product.template', 'Produit')
     code = fields.Integer(
         string='Code Produit',

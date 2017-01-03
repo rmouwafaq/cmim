@@ -3,9 +3,8 @@
 	<data>
 		<menuitem id="main_menu" name="Comptabilité CMIM" />
 
-
 		<menuitem id="col_assure_menu" name="Collectivités / Assurés"
-			parent="main_menu" sequence="1"/>
+			parent="main_menu" sequence="1" />
 
 		<menuitem id="collectivite_menu" name="Collectivités" action="action_collectivite"
 			parent="col_assure_menu" />
@@ -19,8 +18,8 @@
 
 
 		<menuitem id="declaration_cotisation_menu" name="Déclarations / Calculs"
-			parent="main_menu" sequence="2"/>
-			
+			parent="main_menu" sequence="2" />
+
 		<menuitem id="declaration_menu" name="Déclarations" action="action_declaration"
 			parent="declaration_cotisation_menu" sequence="1" />
 		<menuitem id="caclcul_menu" name="Calculs" action="action_calcul_cotisation"
@@ -34,10 +33,10 @@
 			sequence="5" />
 
 		<menuitem id="facture_payement_menu" name="Factures et Réglements"
-			parent="main_menu" sequence="3"/>
+			parent="main_menu" sequence="3" />
 
-		<menuitem id="facture_menu" name="Factures-Cotisations" action="action_facture"
-			parent="facture_payement_menu" sequence="4" />
+		<menuitem id="facture_menu" name="Factures-Cotisations"
+			action="action_facture" parent="facture_payement_menu" sequence="4" />
 		<menuitem id="reglement_menu" name="Paiements" action="action_reglement"
 			parent="facture_payement_menu" sequence="5" />
 		<menuitem id="import_pay_menu" name="Importation Paiements"
@@ -53,19 +52,20 @@
 
 		<menuitem id="config_menu" name="Configuration" parent="main_menu" />
 		<menuitem id="cts_config_menu" name="Constantes de calcul"
-			sequence="1" action="action_constante_calcul" parent="config_menu" />
+			sequence="2" action="action_constante_calcul" parent="config_menu" />
 		<menuitem id="secteur_menu" name="Secteurs" action="action_secteur"
-			parent="config_menu" sequence="2" />
-		<menuitem id="tarif_menu" name="Tarifs" action="action_tarif"
 			parent="config_menu" sequence="3" />
-		<menuitem id="periode_menu" name="Périodes" action="action_secteur"
+		<menuitem id="tarif_menu" name="Tarifs" action="action_tarif"
 			parent="config_menu" sequence="4" />
-		<menuitem id="import_pdt_menu" name="Importation des produits"
-			action="action_pdt_import" parent="config_menu" sequence="5" />
+		<menuitem id="periode_menu" name="Périodes" action="action_secteur"
+			parent="config_menu" sequence="5" />
+<!-- 		<menuitem id="import_pdt_menu" name="Importation des produits" -->
+<!-- 			action="action_pdt_import" parent="config_menu" sequence="6" /> -->
 
 
 
-		<menuitem id="rapport_menu" name="Rapports" parent="main_menu" sequence="6"/>
+		<menuitem id="rapport_menu" name="Rapports" parent="main_menu"
+			sequence="6" />
 
 		<menuitem id="rentabilite_rapport_menu" name="Rapports de rentabilité"
 			parent="rapport_menu" />
@@ -74,8 +74,8 @@
 			parent="rentabilite_rapport_menu" action="action_rapport_correctifs" />
 		<menuitem id="produit_rapport_menu" name="Produits"
 			parent="rentabilite_rapport_menu" action="action_rapport_correctifs" />
-			
-			
+
+
 		<menuitem id="cotisation_rapport_menu" name="Rapports des Cotisations"
 			parent="rapport_menu" />
 
@@ -84,5 +84,10 @@
 		<menuitem id="produit_rapport_menu" name="Détails calcul par produit"
 			parent="cotisation_rapport_menu" action="action_rapport_correctifs" />
 
+		<!-- Menu des période de date_range -->
+		<menuitem id="date_range.menu_date_range" name="Périodes" parent="config_menu"
+			sequence="1" />
+		<menuitem action="date_range.date_range_type_action" id="date_range.menu_date_range_type_action"
+			parent="date_range.menu_date_range" groups="base.group_no_one"/>
 	</data>
 </openerp>

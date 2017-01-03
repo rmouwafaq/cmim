@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record id="view_import_col_assure" model="ir.ui.view">
+			<field name="name">cmim.import.col.assure.form</field>
+			<field name="model">cmim.import.col.ass</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Import Collectivites assures">
+					<br></br>
+					<label
+						string="L'intégration des collectivités ou adhérents nécessite l'upload de 2 fichiers, le premier correspond aux informations globales sur l'ensemble des adhérents, tandis que le deuxième permet de définir la totalités des adhesions de ces adhérents par rapport aux produit offerts par la CMIM "
+						attrs="{'invisible': [('type_entite','!=', 'collectivite')]}" />
+					<group>
+						<group>
+							<field name="type_entite" />
+						</group>
+						<group>
+							<field name="data" />
+						</group>
+					</group>
+					<group>
+						<group>
+							<field name="data_contrat"
+								attrs="{'invisible': [('type_entite','!=', 'collectivite')]}" />
+						</group>
+					</group>
+					<separator string="" colspan="4" />
+					<footer>
+						<button class="oe_highlight" special="cancel" string="Annuler" />
+						<button name="import_col_assure" string="Importer" type="object" />
+					</footer>
+				</form>
+			</field>
+		</record>
+		
+		<record id="action_col_assure_import" model="ir.actions.act_window">
+			<field name="name">Assistant d'intégration des données de la CMIM
+			</field>
+			<field name="res_model">cmim.import.col.ass</field>
+			<field name="view_type">form</field>
+			<field name="view_id" ref="view_import_col_assure" />
+			<field name="view_mode">tree,form,kanban</field>
+			<field name="target">new</field>
+		</record>
+
+	</data>
+</openerp>

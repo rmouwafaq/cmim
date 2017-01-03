@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+		<record id="view_import_dec_pay" model="ir.ui.view">
+			<field name="name">cmim.import.dec.pay.form</field>
+			<field name="model">cmim.import.dec.pay</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Import Declarations Paiements">
+					<br></br>
+					<group>
+						<group>
+							<field name="type_operation" />
+							<field name="model" attrs="{'invisible': [('type_operation','!=', 'declaration')]}"/>
+							<field name="payment_date" attrs="{'invisible': [('type_operation','!=', 'reglement')]}"/>
+						</group>
+						<group>
+							<field name="data" />
+							<field name="fiscal_date" attrs="{'invisible': [('type_operation','!=', 'declaration')]}"/>
+							<field name="date_range_id" attrs="{'invisible': [('type_operation','!=', 'declaration')]}"/>
+						</group>
+					</group>
+					<separator string="" colspan="4" />
+					<footer>
+						<button name="import_dec_pay" class="oe_highlight"  string="Importer" type="object" />
+						où
+						<button  special="cancel" string="Annuler" />
+					</footer>
+				</form>
+			</field>
+		</record>
+		<record id="action_dec_pay_import" model="ir.actions.act_window">
+			<field name="name">Assistant d'intégration des données de la CMIM
+			</field>
+			<field name="res_model">cmim.import.dec.pay</field>
+			<field name="view_type">form</field>
+			<field name="view_id" ref="view_import_dec_pay" />
+			<field name="view_mode">tree,form,kanban</field>
+			<field name="target">new</field>
+		</record>
+	</data>
+</odoo>

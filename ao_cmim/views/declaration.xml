@@ -12,10 +12,6 @@
 							domain="[]" context="{'group_by':'collectivite_id'}" />
 						<filter name="assure_id" string="Assuré" domain="[]"
 							context="{'group_by':'assure_id'}" />
-						<filter name="payroll_year_id" string="Année" domain="[]"
-							context="{'group_by':'payroll_year_id'}" />
-						<filter name="payroll_period_id" string="Période" domain="[]"
-							context="{'group_by':'payroll_period_id'}" />
 						<filter name="secteur_id" string="Secteur" domain="[]"
 							context="{'group_by':'secteur_id'}" />
 					</group>
@@ -29,8 +25,8 @@
 			<field name="priority" eval="1" />
 			<field name="arch" type="xml">
 				<tree string="Product">
-					<field name="payroll_year_id" />
-					<field name="payroll_period_id" />
+					<field name="fiscal_date" />
+					<field name="date_range_id" />
 					<field name="collectivite_id" />
 					<field name="assure_id" />
 					<field name="salaire" />
@@ -49,22 +45,16 @@
 						<separator string="" colspan="4" />
 						<group>
 							<group>
-								<field name="payroll_year_id" />
-							</group>
-							<group>
-								<field name="payroll_period_id" />
-							</group>
-							<group>
+
 								<field name="collectivite_id" />
+								<field name="fiscal_date" />
+
+								<field name="nb_jour" />
+								<field name="salaire" />
 							</group>
 							<group>
 								<field name="assure_id" />
-							</group>
-							<group>
-								<field name="nb_jour" />
-							</group>
-							<group>
-								<field name="salaire" />
+								<field name="date_range_id" />
 							</group>
 						</group>
 						<separator string="" colspan="4" />
@@ -72,10 +62,12 @@
 				</form>
 			</field>
 		</record>
-				<record id="action_declaration" model="ir.actions.act_window">
+		<record id="action_declaration" model="ir.actions.act_window">
 			<field name="name">Déclarations des salaires</field>
 			<field name="res_model">cmim.declaration</field>
-			<field name="context">{'group_by': ['payroll_year_id','payroll_period_id','secteur_id','collectivite_id']}</field>
+			<field name="context">{'group_by':
+				['fiscal_date','date_range_id','secteur_id','collectivite_id']}
+			</field>
 			<field name="view_id" ref="declaration_tree_view" />
 			<field name="search_id" ref="declaration_search_view" />
 			<field name="view_type">form</field>

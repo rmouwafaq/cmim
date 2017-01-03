@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <record id="date_range_generator_view_form" model="ir.ui.view">
-        <field name="name">date.range.generator.form</field>
+        <field name="name">date.range.generator.form.inherited</field>
         <field name="model">date.range.generator</field>
         <field name="arch" type="xml">
             <form string="Genrate Date Ranges">

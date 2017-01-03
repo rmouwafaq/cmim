@@ -6,9 +6,9 @@ from openerp import models, fields, tools, api
 
 class collectivite(models.Model):
     _inherit = "res.partner"
-    """_sql_constraints = [
+    _sql_constraints = [
         ('code_collectivite_uniq', 'unique(code)', 'le code d\'adherent doit etre unique'),
-    ]"""
+    ]
     _defaults = {
         'company_type': 'company',
         'is_company': True,
@@ -21,16 +21,14 @@ class collectivite(models.Model):
         for obj in self:
             if self.assure_ids :
                 obj.assures_count = len(self.assure_ids)
-        
-    
+            
     import_flag = fields.Boolean('Par import', default=False)      
     code = fields.Char(string="Code collectivite", required=True, copy=False)
     name = fields.Char(string="Raison sociale", required=True)
     date_adhesion = fields.Date(string="date d\'adhesion", required=True)
-    assure_ids = fields.One2many('cmim.assure', 'collectivite_id', string="Assures associes")
     secteur_id = fields.Many2one('cmim.secteur', "Secteur")
     contrat_ids = fields.One2many('cmim.contrat', 'collectivite_id', string="Contrats")
-    declaration_ids = fields.Many2one('cmim.declaration', 'Declarations')
+    assure_ids = fields.One2many('cmim.assure', 'collectivite_id', string="Assures associes")
     assures_count = fields.Integer(compute='_assures_count', string="Nb assures")
 
     @api.multi

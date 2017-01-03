@@ -14,10 +14,6 @@
 							context="{'group_by':'partner_id'}" />
 						<filter name="secteur_id" string="Secteur" domain="[]"
 							context="{'group_by':'secteur_id'}" />
-						<filter name="payroll_year_id" string="Année" domain="[]"
-							context="{'group_by':'payroll_year_id'}" />
-						<filter name="payroll_period_id" string="Période" domain="[]"
-							context="{'group_by':'payroll_period_id'}" />
 					</group>
 				</field>
 
