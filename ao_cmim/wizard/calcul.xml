@@ -11,10 +11,10 @@
 					<br></br>
 					<group>
 						<group>
-							<field name="payroll_year_id" />
+							<field name="fiscal_date" />
 						</group>
 						<group>
-							<field name="payroll_period_id" />
+							<field name="date_range_id" />
 						</group>
 						<notebook colspan="4">
 							<page string="Collectivités">

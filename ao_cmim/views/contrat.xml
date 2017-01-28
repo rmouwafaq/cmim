@@ -11,10 +11,10 @@
 			<field name="arch" type="xml">
 				<tree string="Assures">
 					<field name="name" />
-					<field name="assure_id" domain="[('id','!=',False)]" />
 					<field name="collectivite_id" />
+					<field name="code" />
 					<field name="product_id" />
-					<field name="base_calcul" />
+					<field name="type_product_id" />
 					<field name="tarif_id" />
 					<field name="tarif_inc_deces_id" />
 					<field name="tarif_inv_id" />
@@ -31,19 +31,19 @@
 						<group>
 							<group>
 								<field name="name" />
-								<field name="for_assure" />
-								<field name="assure_id" attrs="{'invisible': [('for_assure','=', False)]}" />
 								<field name="collectivite_id" />
+								<field name="product_id" />
+								<field name="code" string="code produit" />
 							</group>
 							<group>
-								<field name="product_id" />
-								<field name="base_calcul" readonly='1' />
+								<field name="type_product_id" />
+								<field name="type_product_name" invisible='1' />
 								<field name="tarif_id"
-									attrs="{'invisible': [('base_calcul','!=', 'salaire')]}" />
+									attrs="{'invisible': [('type_product_name','!=', 'MAL')]}" />
 								<field name="tarif_inc_deces_id"
-									attrs="{'invisible': [('base_calcul','!=', 'tranche')]}" />
+									attrs="{'invisible': [('type_product_name','!=', 'PRV')]}" />
 								<field name="tarif_inv_id"
-									attrs="{'invisible': [('base_calcul','!=', 'tranche')]}" />
+									attrs="{'invisible': [('type_product_name','!=', 'PRV')]}" />
 							</group>
 						</group>
 					</sheet>
@@ -56,20 +56,19 @@
 			<field name="arch" type="xml">
 				<search string="Contrat filtre">
 					<field name="collectivite_id" />
-					<field name="assure_id" />
 					<field name="product_id" />
 					<group expand="0" string="Group By">
 						<filter name="collectivite_id" string="Collectivité"
 							domain="[]" context="{'group_by':'collectivite_id'}" />
-						<filter name="assure_id" string="Assuré" domain="[]"
-							context="{'group_by':'assure_id'}" />
 						<filter name="product_id" string="Produit" domain="[]"
 							context="{'group_by':'product_id'}" />
 						<filter name="secteur_id" string="Secteur" domain="[]"
 							context="{'group_by':'secteur_id'}" />
+						<filter name="type_product_id" string="Type de produit" domain="[]"
+							context="{'group_by':'type_product_id'}" />
+						<filter name="collectivite_id" string="Collectivité" domain="[]"
+							context="{'group_by':'collectivite_id'}" />
 					</group>
-					<filter name="import_flag" string="Contrats Exceptionnels par assurés"
-						icon="terp-stock_symbol-selection" domain="[('for_assure', '=', 'True')]" />
 				</search>
 			</field>
 		</record>

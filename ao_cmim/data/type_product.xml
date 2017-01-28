@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+
+		<record id="produit_mal_retraire" model="cmim.product.type">
+			<field name="name">MALADIE + RETRAITE</field>
+			<field name="short_name">MAL</field>
+		</record>
+		<record id="produit_prevoyance" model="cmim.product.type">
+			<field name="name">PREVOYANCE</field>
+			<field name="short_name">PRV</field>
+		</record>
+	</data>
+</odoo>

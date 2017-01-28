@@ -24,9 +24,12 @@
 			<field name="mode">primary</field>
 			<field name="priority" eval="1" />
 			<field name="arch" type="xml">
-				<tree string="Product">
+				<tree>
 					<field name="name" />
 					<field name="collectivite_id" />
+					<field name="secteur_id" />
+					<field name="fiscal_date"/>
+					<field name="date_range_id"/>
 					<field name="montant" />
 					<field name="state" />
 				</tree>
@@ -62,19 +65,19 @@
 							</group>
 						</group>
 						<notebook colspan="4">
-							<page string="Cotisation Lines">
+							<page string="Récapitulatif" readonly='1'>
 								<field name="cotisation_product_ids" nolabel="1"
 									widget="one2many_list" mode="tree,kanban">
 									<tree string="Cotisation Lines" editable="bottom">
 										<field name="product_id" />
 										<field name="code" />
-										<field name="base_calcul" />
+										<field name="type_product_id" />
 										<field name="montant" />
 									</tree>
 									<kanban class="o_kanban_mobile">
 										<field name="product_id" />
 										<field name="code" />
-										<field name="base_calcul" />
+										<field name="type_product_id" />
 										<field name="montant" />
 										<templates>
 											<t t-name="kanban-box">
@@ -92,7 +95,79 @@
 														<div class="col-xs-8 text-muted">
 															<span>
 																<t t-esc="record.code.value" />
-																<t t-esc="record.base_calcul.value" />
+																<t t-esc="record.type_product_id.value" />
+															</span>
+														</div>
+														
+														<div class="col-xs-4 text-muted">
+															<span class="text-right">
+																<t t-esc="record.montant.value" />
+															</span>
+														</div>
+													</div>
+												</div>
+											</t>
+										</templates>
+									</kanban>
+								</field>
+								<group class="oe_subtotal_footer oe_right">
+									<field name="montant" class="oe_subtotal_footer_separator" />
+								</group>
+							</page>
+							<page string="Détails" readonly='1'>
+								<field name="cotisation_assure_line_ids" nolabel="1"
+									widget="one2many_list" mode="tree,kanban">
+									<tree string="Cotisation assure Lines" editable="bottom">
+										<field name="assure_id"/>
+										<field name="product_id" />
+										<field name="code" />
+										<field name="type_product_id" />
+										<field name="base1"/>
+										<field name="rate1"/>
+										<field name="base2"/>
+										<field name="rate2"/>
+										<field name="montant" />
+									</tree>
+									<kanban class="o_kanban_mobile">
+										<field name="assure_id"/>
+										<field name="product_id" />
+										<field name="code" />
+										<field name="type_product_id" />
+										<field name="base1"/>
+										<field name="rate1"/>
+										<field name="base2"/>
+										<field name="rate2"/>
+										<field name="montant" />
+										<templates>
+											<t t-name="kanban-box">
+												<div t-attf-class="oe_kanban_card oe_kanban_global_click">
+													<div class="row">
+														<div class="col-xs-12">
+															<strong>
+																<span>
+																	<t t-esc="record.assure_id.value or 'None'" />
+																	<t t-esc="record.product_id.value or 'None'" />
+																</span>
+															</strong>
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-xs-8 text-muted">
+															<span>
+																<t t-esc="record.code.value" />
+																<t t-esc="record.type_product_id.value" />
+															</span>
+														</div>
+														<div class="col-xs-8 text-muted">
+															<span>
+																<t t-esc="record.base1.value" />
+																<t t-esc="record.rate1.value" />
+															</span>
+														</div>
+														<div class="col-xs-8 text-muted">
+															<span>
+																<t t-esc="record.base2.value" />
+																<t t-esc="record.rate2.value" />
 															</span>
 														</div>
 														<div class="col-xs-4 text-muted">

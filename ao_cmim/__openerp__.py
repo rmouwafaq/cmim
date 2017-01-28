@@ -5,11 +5,16 @@
     'website':'http://www.agilorg.com',
     'category': 'account',
     'description': """Comptabilité auxiliaire cmim""",
-    'depends':['base','account','product', 'date_range'],
+    'depends':['base',
+               'account',
+               'product', 
+               'date_range'],
     'data':[
             'data/data_range_tye.xml',
+            'data/product_template.xml',
+            'data/secteurs.xml',
+            'data/type_product.xml',
             
-            #'wizard/import_data.xml',
             'wizard/import_declarations_reglements.xml',
             'wizard/import_collectivites_assures.xml',
             'wizard/rapport.xml',

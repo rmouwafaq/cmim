@@ -19,7 +19,7 @@ class cmimImportDecPay(models.TransientModel):
                                            required=True,
                                            string="Type d'operation",
                                            default='declaration')
-    model = fields.Selection(selection=[('1', 'Trimestrielle'), ('2', 'Par mois')])
+    model = fields.Selection(selection=[('1', 'Trimestrielle'), ('2', 'Par mois')], required=True)
     payment_date = fields.Date(string="Date de reglement")
     
     @api.model
@@ -43,6 +43,14 @@ class cmimImportDecPay(models.TransientModel):
                 if duree > 88 and duree < 92 and dec_year == datetime.strptime(periode.date_end, '%Y-%m-%d').year and dec_year == datetime.strptime(periode.date_start, '%Y-%m-%d').year:
                     ids.append(periode.id)
             return {'domain':{'date_range_id': [('id', 'in', ids)]}}
+        
+    @api.onchange('fiscal_date')
+    def onchange_fiscal_date(self):
+        if(self.fiscal_date):
+            print self.fiscal_date
+            date = str(datetime.strptime(self.fiscal_date, '%Y-%m-%d').year) + "-1-1"
+            mydate = datetime.strptime(date, '%Y-%m-%d')
+            self.fiscal_date = mydate
     fiscal_date = fields.Date(string="Annee fiscale")
     date_range_id = fields.Many2one('date.range', 'Periode', domain=lambda self: self._get_domain())
     
@@ -64,7 +72,7 @@ class cmimImportDecPay(models.TransientModel):
                         if(not declaration_obj.search([('assure_id.id', '=', assure.id), ('fiscal_date', '=', self.fiscal_date), ('date_range_id.id', '=', self.date_range_id.id)])):
                             declaration_obj.create({ 'collectivite_id': collectivite_obj.id,
                                                      'assure_id': assure.id,
-                                                     'nb_jour' : values['3'],
+                                                     'nb_jour' : values[3],
                                                      'salaire': salaire,
                                                      'import_flag': True,
                                                      'fiscal_date': self.fiscal_date,
@@ -82,7 +90,7 @@ class cmimImportDecPay(models.TransientModel):
                         if(not declaration_obj.search([('assure_id.id', '=', assure.id), ('fiscal_date', '=', self.fiscal_date), ('date_range_id.id', '=', self.date_range_id.id)])):
                             declaration_obj.create({ 'collectivite_id': collectivite_obj.id,
                                                      'assure_id': assure.id,
-                                                     'nb_jour' : values['2'] + values['4'] + values['6'],
+                                                     'nb_jour' : values[2] + values[4] + values[6],
                                                      'salaire': salaire,
                                                      'import_flag': True,
                                                      'fiscal_date': self.fiscal_date,
@@ -136,12 +144,12 @@ class cmimImportDecPay(models.TransientModel):
             raise exceptions.Warning(_("Le fichier selectionne n'est pas valide!"))
         if self.type_operation == 'declaration':
             if(not self.env['res.partner'].search([('customer', '=', True), ('is_company', '=', True)])):
-                raise exceptions.Warning(_("L'import des declarations exige l'existance des collectivites dans le systemes, veuillez creer les collectivites en premier"))
+                raise exceptions.Warning(_("L'import des declarations exige l'existance des collectivites dans le systeme, veuillez creer les collectivites en premier"))
             else:
                 return self.import_declarations(reader_info)
         elif self.type_operation == 'reglement':
             if(not self.env['res.partner'].search([('customer', '=', True), ('is_company', '=', True)])):
-                raise exceptions.Warning(_("L'import des encaissements exige l'existances des collectivites dans le systemes, veuillez creer les collectivites en premier"))
+                raise exceptions.Warning(_("L'import des encaissements exige l'existances des collectivites dans le systeme, veuillez creer les collectivites en premier"))
             else:
                 return self.import_reglements(reader_info)
             

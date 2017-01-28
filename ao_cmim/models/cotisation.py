@@ -8,6 +8,10 @@ from openerp.exceptions import UserError
 class cotisation(models.Model):
     _name ='cmim.cotisation'
     
+    def _get_cotisation_assure_line_ids(self):
+        print "_get_cotisation_assure_line_ids"
+        self.cotisation_assure_line_ids = self.env['cmim.cotisation.assure.line'].search([('cotisation_id.id', '=', self.id)], order="product_id")
+        print "ooook", self.cotisation_assure_line_ids
     def _getmontant_total(self):
     
         if(self.cotisation_line_ids):
@@ -16,11 +20,11 @@ class cotisation(models.Model):
             self.montant = sum(line.montant for line in self.cotisation_product_ids)
                 
     name =  fields.Char('Libelle')
-    collectivite_id = fields.Many2one('res.partner', 'Collectivite')
-    payroll_year_id = fields.Many2one('py.year', 'Calendrier')
-    payroll_period_id = fields.Many2one('py.period', 'Periode de calcul', domain="[('payroll_year_id','=',payroll_year_id)]")
+    collectivite_id = fields.Many2one('res.partner', 'Collectivite',  domain = "[('customer','=',True),('is_company','=',True)]")
+    
     cotisation_assure_ids = fields.One2many('cmim.cotisation.assure', 'cotisation_id', 'Ligne de calcul par assure')    
     cotisation_product_ids = fields.One2many('cmim.cotisation.product', 'cotisation_id', 'Ligne de calcul par produit')    
+    cotisation_assure_line_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_id', compute = "_get_cotisation_assure_line_ids") 
     montant = fields.Float(compute="_getmontant_total", string='Montant', default= 0.0, digits=0, store=True)
     #montant = fields.Float(string='Montant', default= 0.0)
     
@@ -54,6 +58,13 @@ class cotisation(models.Model):
                 ids.append(periode.id)
         return [('id', 'in', ids)]
     
+    @api.onchange('fiscal_date')
+    def onchange_fiscal_date(self):
+        if(self.fiscal_date):
+            print self.fiscal_date
+            date = str(datetime.strptime(self.fiscal_date, '%Y-%m-%d').year) + "-1-1"
+            mydate = datetime.strptime(date, '%Y-%m-%d')
+            self.fiscal_date = mydate    
            
     fiscal_date = fields.Date(string="Annee fiscale")
     date_range_id = fields.Many2one('date.range', 'Periode', domain=lambda self: self._get_domain())
@@ -71,11 +82,11 @@ class cotisation(models.Model):
             line.invoice_line_create(invoices[group_key].id)
 
         if not invoices:
-            raise UserError(_('There is no invoicable line.'))
+            raise UserError(_('Pas de lignes facturables.'))
 
         for invoice in invoices.values():
             if not invoice.invoice_line_ids:
-                raise UserError(_('There is no invoicable line.'))
+                raise UserError(_('Pas de lignes facturables.'))
         self.state = 'valide'
         return [inv.id for inv in invoices.values()]
     
@@ -83,15 +94,17 @@ class cotisation(models.Model):
     def _prepare_invoice(self):
         journal_id = self.env['account.invoice'].default_get(['journal_id'])['journal_id']
         if not journal_id:
-            raise UserError(_('Please define an accounting sale journal for this company.'))
+            raise UserError(_('Veuillez definir un compte journal pour votre Ste.'))
         invoice_vals = {
             'name': self.collectivite_id.name ,
             'origin':self.collectivite_id.name,
             'cotisation_id.id' : self.id,
             'type': 'out_invoice',
+            'cotisation_id': self.id,
             'account_id': self.collectivite_id.property_account_receivable_id.id,
             'partner_id': self.collectivite_id.id,
             'journal_id': journal_id,
+            'date_invoice' : self.date_range_id.date_end,
             'residual_signed' : self.montant
         }
         return invoice_vals
@@ -116,23 +129,15 @@ class cotisation_assure(models.Model):
 class cotisation_assure_line(models.Model):
     _name = 'cmim.cotisation.assure.line'
     _description = "Lignes ou details du calcul des cotisations_assure"
-    _order = 'cotisation_assure_id,sequence'
+    _order = 'cotisation_assure_id'
 
     cotisation_assure_id = fields.Many2one('cmim.cotisation.assure', 'Cotisation assure',  ondelete='cascade')
     cotisation_id = fields.Many2one('cmim.cotisation', string='Cotisation',related='cotisation_assure_id.cotisation_id', store=True)
-    sequence = fields.Integer('Sequence')
+    assure_id = fields.Many2one('cmim.assure', string='Assure',related='cotisation_assure_id.assure_id', store=True )
+    
     product_id = fields.Many2one('product.template', 'Produit')
-    
-    code = fields.Integer(
-        string='Code Produit',
-        related='product_id.code',
-        )
-    
-    base_calcul = fields.Selection(
-        string='Type du produit',
-        related='product_id.base_calcul',
-    )
-    
+    code = fields.Char('Code Produit')
+    type_product_id = fields.Many2one("cmim.product.type", string='Type de produit' )
     name = fields.Char('Libelle')
     base1 = fields.Float('Tranche A', help = 'si le type de produit est salaire, la tranche A est elle-meme la base de salaire', default=0.0)
     base2 = fields.Float('Tranche B', default = 0.0)
@@ -145,17 +150,9 @@ class cotisation_product(models.Model):
     _description = "Lignes ou details du calcul des cotisations_produit"
 
     cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation',  ondelete='cascade')
-    product_id = fields.Many2one('product.template', 'Produit')
-    code = fields.Integer(
-        string='Code Produit',
-        related='product_id.code',
-        )
-    
-    base_calcul = fields.Selection(
-        string='Type du produit',
-        related='product_id.base_calcul',
-    )
-    
+    product_id = fields.Many2one('product.template', 'Produit') 
+    code = fields.Char('Code Produit')
+    type_product_id = fields.Many2one("cmim.product.type", string='Type de produit' )
     montant = fields.Float('Montant', default= 0.0) 
     
     @api.multi

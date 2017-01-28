@@ -1,7 +1,6 @@
 import collectivite_assure
 import product
 import cotisation
-import periode
 import rapport
 import facture_payement
 import contrat

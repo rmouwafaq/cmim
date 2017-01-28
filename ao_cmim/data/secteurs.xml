@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+
+		<record id="product_raib" model="cmim.secteur">
+			<field name="name">RAIB</field>
+			<field name="plancher">3500</field>
+			<field name="plafond">10000</field>
+		</record>
+		<record id="product_petrolier" model="cmim.secteur">
+			<field name="name">PETROLIERS</field>
+			<field name="plancher">3500</field>
+			<field name="plafond">12000</field>
+		</record>
+		<record id="product_divers" model="cmim.secteur">
+			<field name="name">DIVERS</field>
+			<field name="plancher">3500</field>
+			<field name="plafond">10000</field>
+		</record>
+		
+	</data>
+</odoo>

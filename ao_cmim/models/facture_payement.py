@@ -20,4 +20,4 @@ class AccountInvoice(models.Model):
     
     _inherit = "account.invoice"
     
-    cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation')
+    cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation', ondelete='cascade')

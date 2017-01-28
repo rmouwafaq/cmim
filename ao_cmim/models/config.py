@@ -4,6 +4,11 @@ from datetime import datetime
 from openerp.osv import osv, fields
 from openerp import models, fields, tools, api
 
+class TypeProduit(models.Model):
+    _name="cmim.product.type"
+    name = fields.Char('Nom du type', required=True )
+    short_name = fields.Char("code")
+    
 class secteur(models.Model):
     _name = 'cmim.secteur'
     
@@ -18,11 +23,11 @@ class constante_calcul(models.Model):
     
 class tarif(models.Model):
     _name='cmim.tarif'
-    name = fields.Char('Description', required = True)
+    name = fields.Char('Nom', required = True)
     type = fields.Selection(selection= [('p', 'Taux'),
                                         ('f', 'Forfait')],
                                         required=True,
                                         default = "p",
                                         string='Type de tarif')
     montant = fields.Float('Tarif')    
-    import_flag = fields.Boolean('Par import', default=False)       
+    import_flag = fields.Boolean('Par import', default=False )       

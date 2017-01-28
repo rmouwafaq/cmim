@@ -26,7 +26,7 @@ class collectivite(models.Model):
     code = fields.Char(string="Code collectivite", required=True, copy=False)
     name = fields.Char(string="Raison sociale", required=True)
     date_adhesion = fields.Date(string="date d\'adhesion", required=True)
-    secteur_id = fields.Many2one('cmim.secteur', "Secteur")
+    secteur_id = fields.Many2one('cmim.secteur', "Secteur", required=True)
     contrat_ids = fields.One2many('cmim.contrat', 'collectivite_id', string="Contrats")
     assure_ids = fields.One2many('cmim.assure', 'collectivite_id', string="Assures associes")
     assures_count = fields.Integer(compute='_assures_count', string="Nb assures")
@@ -139,8 +139,6 @@ class assure(models.Model):
     
     parent_id =  fields.Many2one('cmim.assure', 'Assure contractant')
     epoux_id =  fields.Many2one('cmim.assure', 'Epoux (se)')
-
-    contrat_ids = fields.One2many('cmim.contrat', 'assure_id', string="Contrats")
     declaration_ids = fields.Many2one('cmim.declaration', 'Declarations')    
     
     @api.onchange('epoux_id', 'collectivite_id')

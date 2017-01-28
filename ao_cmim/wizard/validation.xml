@@ -14,10 +14,10 @@
 					<div name="select_collectivities" states="init">
 						<group>
 							<group>
-								<field name="payroll_year_id" />
+								<field name="fiscal_date" />
 							</group>
 							<group>
-								<field name="payroll_period_id" />
+								<field name="date_range_id" />
 							</group>
 						</group>
 						<separator string="Collectivités" colspan="4" />

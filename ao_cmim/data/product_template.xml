@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="product_maladie_mld" model="product.template">
+            <field name="name">MAL.MATERNITE</field>
+            <field name="type">service</field>
+            <field name="categ_id">1</field>
+        </record>
+		<record id="product_mld" model="product.template">
+            <field name="name">M.L.D</field>
+            <field name="type">service</field>
+            <field name="categ_id">1</field>
+        </record>
+        <record id="product_retraite" model="product.template">
+            <field name="name">RETRAITE</field>
+            <field name="type">service</field>
+            <field name="categ_id">1</field>
+        </record>
+		<record id="product_deces" model="product.template">
+            <field name="name">DECES</field>
+            <field name="type">service</field>
+            <field name="categ_id">1</field>
+        </record>
+        <record id="product_invalidite" model="product.template">
+            <field name="name">INVALIDITE</field>
+            <field name="type">service</field>
+            <field name="categ_id">1</field>
+        </record>
+		<record id="product_incapacite" model="product.template">
+            <field name="name">INCAPACITE</field>
+            <field name="type">service</field>
+            <field name="categ_id">1</field>
+        </record>
+	</data>
+</odoo>

@@ -40,8 +40,6 @@
 					<!-- <filter name="statut" string="Statut" -->
 					<!-- icon="terp-stock_symbol-selection" domain-filter="[('statut', '=', 
 						self)]" /> -->
-					<filter name="is_normal" string="Assués exceptionnels"
-						icon="terp-stock_symbol-selection" domain="[('is_normal', '=', False)]" />
 				</search>
 			</field>
 		</record>
@@ -53,9 +51,6 @@
 				<form string="Assurés">
 					<sheet>
 						<div class="oe_button_box" name="button_box">
-							<!-- <button name="get_ayant_droits" type="object" string="Ayants 
-								Droits" -->
-							<!-- class="oe_inline oe_stat_button" icon="fa-users" /> -->
 							<button name="get_declarations" type="object" string="Déclarations"
 								class="oe_inline oe_stat_button" icon="fa-align-justify" />
 						</div>
@@ -73,12 +68,9 @@
 							<group>
 								<field name="statut" />
 								<field name="collectivite_id" />
-								<!-- <field name="parent_id" /> -->
 								<field name="epoux_id" />
 								<field name="id_num_famille" />
 								<field name="date_naissance" />
-								<field name="is_normal" string="Pas d'adhesion excéptionnelle" />
-
 							</group>
 							<group>
 
@@ -96,48 +88,6 @@
 								</div>
 							</group>
 						</group>
-
-						<notebook colspan="4"
-							attrs="{'invisible': [('is_normal','!=', False)]}">
-
-							<page string="Contrats / Adhésions">
-								<group>
-									<field name="contrat_ids" nolabel="1">
-										<form string="Contrats / adhesions">
-											<group>
-												<group>
-													<field name="product_id" domain="[('type', '=', 'service')]" />
-													<field name="name" />
-												</group>
-												<group>
-													<field name="base_calcul" readonly='1' />
-													<field name="tarif_id"
-														attrs="{'invisible': [('base_calcul','!=', 'salaire')]}" />
-													<field name="tarif_inc_deces_id"
-														attrs="{'invisible': [('base_calcul','!=', 'tranche')]}" />
-													<field name="tarif_inv_id"
-														attrs="{'invisible': [('base_calcul','!=', 'tranche')]}" />
-												</group>
-											</group>
-											<label for="name" />
-											<field name="name" />
-										</form>
-										<tree string="Contrats / dhesions" editable="bottom">
-											<field name="product_id" domain="[('type', '=', 'service')]" />
-											<field name="name" />
-											<field name="base_calcul" readonly='1' />
-											<field name="tarif_id"
-												attrs="{'invisible': [('base_calcul','!=', 'salaire')]}" />
-											<field name="tarif_inc_deces_id"
-												attrs="{'invisible': [('base_calcul','!=', 'tranche')]}" />
-											<field name="tarif_inv_id"
-												attrs="{'invisible': [('base_calcul','!=', 'tranche')]}" />
-										</tree>
-									</field>
-								</group>
-							</page>
-
-						</notebook>
 					</sheet>
 				</form>
 			</field>
@@ -204,13 +154,15 @@
 											<field name="name" />
 										</group>
 										<group>
-											<field name="base_calcul" readonly='1' />
+											<field name="code" />
+											<field name="type_product_id" readonly='1' />
+											<field name="type_product_name" invisible='1' />
 											<field name="tarif_id"
-												attrs="{'invisible': [('base_calcul','!=', 'salaire')]}" />
+												attrs="{'invisible': [('type_product_name','!=', 'MAL')]}" />
 											<field name="tarif_inc_deces_id"
-												attrs="{'invisible': [('base_calcul','!=', 'tranche')]}" />
+												attrs="{'invisible': [('type_product_name','!=', 'PRV')]}" />
 											<field name="tarif_inv_id"
-												attrs="{'invisible': [('base_calcul','!=', 'tranche')]}" />
+												attrs="{'invisible': [('type_product_name','!=', 'PRV')]}" />
 										</group>
 									</group>
 									<label for="name" />
@@ -219,20 +171,18 @@
 								<tree string="Contrats / dhesions" editable="bottom">
 									<field name="product_id" domain="[('type', '=', 'service')]" />
 									<field name="name" />
-									<field name="base_calcul" readonly='1' />
-									<field name="tarif_id"
-										attrs="{'invisible': [('base_calcul','!=', 'salaire')]}" />
-									<field name="tarif_inc_deces_id"
-										attrs="{'invisible': [('base_calcul','!=', 'tranche')]}" />
-									<field name="tarif_inv_id"
-										attrs="{'invisible': [('base_calcul','!=', 'tranche')]}" />
+									<field name="code" />
+									<field name="type_product_id" />
+									<field name="tarif_id" />
+									<field name="tarif_inc_deces_id" />
+									<field name="tarif_inv_id" />
 								</tree>
 							</field>
 						</group>
 					</page>
 				</xpath>
 				<page name='sales_purchases' position="attributes">
-				<attribute name="invisible">True</attribute>
+					<attribute name="invisible">True</attribute>
 				</page>
 				<field name="is_company" position="attributes">
 					<attribute name="readonly">True</attribute>
