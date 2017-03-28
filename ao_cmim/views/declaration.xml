@@ -7,6 +7,9 @@
 			<field name="model">cmim.declaration</field>
 			<field name="arch" type="xml">
 				<search string="Declaration filtre">
+					<field name="collectivite_id"/>
+					<field name="assure_id"/>
+					<field name="secteur_id"/>
 					<group expand="0" string="Group By">
 						<filter name="collectivite_id" string="Collectivité"
 							domain="[]" context="{'group_by':'collectivite_id'}" />

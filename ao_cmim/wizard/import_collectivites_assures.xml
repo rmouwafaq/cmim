@@ -24,8 +24,8 @@
 					</group>
 					<separator string="" colspan="4" />
 					<footer>
-						<button class="oe_highlight" special="cancel" string="Annuler" />
-						<button name="import_col_assure" string="Importer" type="object" />
+						<button class="oe_highlight" name="import_col_assure" string="Importer" type="object" />
+						<button special="cancel" string="Annuler" />
 					</footer>
 				</form>
 			</field>

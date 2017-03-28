@@ -28,9 +28,7 @@
 					</group>
 					<separator string="" colspan="4" />
 					<footer>
-						<button name="import_dec_pay" class="oe_highlight" string="Importer"
-							type="object" />
-						ou
+						<button name="import_dec_pay" class="oe_highlight" string="Importer" type="object" />
 						<button special="cancel" string="Annuler" />
 					</footer>
 				</form>

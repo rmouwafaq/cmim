@@ -57,6 +57,7 @@
 				<search string="Contrat filtre">
 					<field name="collectivite_id" />
 					<field name="product_id" />
+					<field name="code"/>
 					<group expand="0" string="Group By">
 						<filter name="collectivite_id" string="Collectivité"
 							domain="[]" context="{'group_by':'collectivite_id'}" />

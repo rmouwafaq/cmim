@@ -9,6 +9,7 @@
 			<field name="inherit_id" ref="account.view_account_payment_search" />
 			<field name="arch" type="xml">
 				<field name="name" position="after">
+					<field name="secteur_id"/>
 					<group expand="0" string="Group By">
 						<filter name="partner_id" string="Collectivité" domain="[]"
 							context="{'group_by':'partner_id'}" />
