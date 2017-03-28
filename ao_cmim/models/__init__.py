@@ -1,4 +1,5 @@
-import collectivite_assure
+import collectivite
+import assure
 import product
 import cotisation
 import rapport

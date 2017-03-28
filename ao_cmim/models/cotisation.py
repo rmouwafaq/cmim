@@ -5,13 +5,20 @@ from openerp import models, fields,exceptions, api, _
 from openerp.exceptions import UserError
 
 
-class cotisation(models.Model):
+class Cotisation(models.Model):
     _name ='cmim.cotisation'
     
+    @api.multi
+    def unlink(self):
+        for cotisation in self:
+            if cotisation.state == 'valide' and not cotisation.invoice_id.state == 'draft':
+                raise ValidationError("Vous ne pouvez pas supprimer une cotisation d'une Facture validee")
+            self.env['account.invoice'].search([('id', '=', cotisation.invoice_id.id)]).unlink()
+        super(Cotisation, self).unlink()
+        
+        
     def _get_cotisation_assure_line_ids(self):
-        print "_get_cotisation_assure_line_ids"
         self.cotisation_assure_line_ids = self.env['cmim.cotisation.assure.line'].search([('cotisation_id.id', '=', self.id)], order="product_id")
-        print "ooook", self.cotisation_assure_line_ids
     def _getmontant_total(self):
     
         if(self.cotisation_line_ids):
@@ -21,7 +28,7 @@ class cotisation(models.Model):
                 
     name =  fields.Char('Libelle')
     collectivite_id = fields.Many2one('res.partner', 'Collectivite',  domain = "[('customer','=',True),('is_company','=',True)]")
-    
+    invoice_id = cotisation_id = fields.Many2one('account.invoice', 'Facture', domain=[('type', '=', 'out_invoice')],  ondelete='cascade')
     cotisation_assure_ids = fields.One2many('cmim.cotisation.assure', 'cotisation_id', 'Ligne de calcul par assure')    
     cotisation_product_ids = fields.One2many('cmim.cotisation.product', 'cotisation_id', 'Ligne de calcul par produit')    
     cotisation_assure_line_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_id', compute = "_get_cotisation_assure_line_ids") 
@@ -80,6 +87,8 @@ class cotisation(models.Model):
                 invoice = inv_obj.create(inv_data)
                 invoices[group_key] = invoice
             line.invoice_line_create(invoices[group_key].id)
+            self.invoice_id = invoice.id
+            self.name='Cot/ ' + invoice.name+"/ "+ self.date_range_id.name
 
         if not invoices:
             raise UserError(_('Pas de lignes facturables.'))
@@ -98,9 +107,8 @@ class cotisation(models.Model):
         invoice_vals = {
             'name': self.collectivite_id.name ,
             'origin':self.collectivite_id.name,
-            'cotisation_id.id' : self.id,
+#             'cotisation_id.id' : self.id,
             'type': 'out_invoice',
-            'cotisation_id': self.id,
             'account_id': self.collectivite_id.property_account_receivable_id.id,
             'partner_id': self.collectivite_id.id,
             'journal_id': journal_id,

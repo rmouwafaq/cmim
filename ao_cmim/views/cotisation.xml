@@ -59,7 +59,7 @@
 							<group>
 								<field string="Colectivité" name="collectivite_id"
 									options='{"always_reload": True}' />
-
+								<field name="invoice_id"/>
 							</group>
 							<group>
 								<field name="fiscal_date" />

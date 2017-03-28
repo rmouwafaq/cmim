@@ -15,9 +15,9 @@ class reglement(models.Model):
         string='Secteur',
         related='partner_id.secteur_id', store=True
     )
-    
+     
 class AccountInvoice(models.Model):
-    
+     
     _inherit = "account.invoice"
-    
-    cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation', ondelete='cascade')
+     
+    cotisation_id = fields.One2many('cmim.cotisation', 'invoice_id', 'Cotisation')
