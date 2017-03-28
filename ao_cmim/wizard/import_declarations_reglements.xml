@@ -11,20 +11,27 @@
 					<group>
 						<group>
 							<field name="type_operation" />
-							<field name="model" attrs="{'invisible': [('type_operation','!=', 'declaration')]}"/>
-							<field name="payment_date" attrs="{'invisible': [('type_operation','!=', 'reglement')]}"/>
+							<field name="systeme" />
+							<field name="model"
+								attrs="{'invisible': [('type_operation','!=', 'declaration')]}" />
+
 						</group>
 						<group>
 							<field name="data" />
-							<field name="fiscal_date" attrs="{'invisible': [('type_operation','!=', 'declaration')]}"/>
-							<field name="date_range_id" attrs="{'invisible': [('type_operation','!=', 'declaration')]}"/>
+							<field name="fiscal_date"
+								attrs="{'invisible': [('type_operation','!=', 'declaration')]}" />
+							<field name="date_range_id"
+								attrs="{'invisible': [('type_operation','!=', 'declaration')]}" />
+							<field name="payment_date"
+								attrs="{'invisible': [('type_operation','!=', 'reglement')]}" />
 						</group>
 					</group>
 					<separator string="" colspan="4" />
 					<footer>
-						<button name="import_dec_pay" class="oe_highlight"  string="Importer" type="object" />
-						où
-						<button  special="cancel" string="Annuler" />
+						<button name="import_dec_pay" class="oe_highlight" string="Importer"
+							type="object" />
+						ou
+						<button special="cancel" string="Annuler" />
 					</footer>
 				</form>
 			</field>

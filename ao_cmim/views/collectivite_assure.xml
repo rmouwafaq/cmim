@@ -62,6 +62,7 @@
 							</h1>
 							<h2>
 								<field name="numero" default_focus="1" placeholder="Numéro" />
+								<field name="code_compose" default_focus="1" placeholder="Code Composé" />
 							</h2>
 						</div>
 						<group>
@@ -201,13 +202,23 @@
 						<field name="name" default_focus="1" placeholder="Raison Sociale"
 							attrs="{'required' : [('type', '=', 'contact')]}" />
 					</h1>
-					<h2>
-						<field name="code" placeholder="Code Collectivité"
-							attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
-					</h2>
+					
+					<h5>
+						<div>
+						<label for="code"  class="oe_inline" string="Anc/Nouv. code"/>
+							<field name="code" class="oe_inline" nolabel="1"/>
+							 -
+							<field name="old_code" nolabel="1" class="oe_inline"/>
+						</div>
+<!-- 					<h2> -->
+<!-- 						<field name="code" placeholder="Code Collectivité" -->
+<!-- 							attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" /> -->
+					</h5>
 				</h1>
 				<xpath expr="//label[@for='street']" position="before">
 					<field name="secteur_id"
+						attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
+					<field name="parent_id" string="Collectivité mère"
 						attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
 					<field name="date_adhesion"
 						attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />

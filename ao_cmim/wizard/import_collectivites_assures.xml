@@ -14,13 +14,10 @@
 					<group>
 						<group>
 							<field name="type_entite" />
+							<field name="systeme" />
 						</group>
 						<group>
 							<field name="data" />
-						</group>
-					</group>
-					<group>
-						<group>
 							<field name="data_contrat"
 								attrs="{'invisible': [('type_entite','!=', 'collectivite')]}" />
 						</group>

@@ -167,6 +167,7 @@ class calcul_cotisation (models.TransientModel):
                     'view_id': 'ao_cmim.cotisation_tree_view',
                     'domain':[('id', 'in', cotisation_ids)],
                     'target':'self',
+                    'name' : 'Cotisations-Factures',
                     }
     
         

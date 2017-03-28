@@ -16,12 +16,13 @@ class cmimImportCOlAss(models.TransientModel):
     data = fields.Binary("Fichier de l'objet", required=True)
     data_contrat = fields.Binary("Fichier relation d'adhesion")
     delimeter = fields.Char('Delimeter', default=',',
-                            help='Default delimeter is ";"')
+                            help='Default delimeter is ","')
     type_entite = fields.Selection(selection=[('collectivite', 'Collectivites'),
                                          ('assure', 'Assures')],
                                            required=True,
                                            string="Type d'entite",
                                            default='collectivite')
+    systeme = fields.Selection(selection=[('old', 'Ancien Sys'), ('new', 'New Sys')], defalut='new', required=True)
        
 ############################################################################
 
@@ -175,13 +176,15 @@ class cmimImportCOlAss(models.TransientModel):
         for i in range(len(reader_info)):
             val = {}
             values = reader_info[i]
-            if(not assure_obj.search([('numero', '=', values[3])])):
+            code_compose = assure_obj._get_code(values[0], values[3], str(values[5])[:1] + str(values[6])[:1] )
+            if(not assure_obj.search([('code_compose', '=',code_compose)])):
                 collectivite_obj = self.env['res.partner'].search([('code', '=', values[0])])
                 if(collectivite_obj):
                     val['collectivite_id'] = collectivite_obj.id
-                    val['name'] = '%s %s' % (values[4], values[5])
+                    val['name'] = '%s %s' % (values[5], values[6])
                     val['numero'] = values[3]
-                    epoux_obj = self.env['cmim.assure'].search([("id_num_famille", '=', values[2])])
+                    val['code_compose'] = code_compose
+                    epoux_obj = self.env['cmim.assure'].search([("id_num_famille", '=', values[2])], limit=1)
                     if(epoux_obj):
                         val['epoux_id'] = epoux_obj.id
                     val['id_num_famille'] = values[2]
@@ -193,8 +196,10 @@ class cmimImportCOlAss(models.TransientModel):
                         
                     if(values[4].upper() == 'RETRAITE'):
                         val['statut'] = 'retraite'
-                    if(values[4].upper() == 'INVALIDE'):
+                    elif(values[4].upper() == 'INVALIDE'):
                         val['statut'] = 'invalide'
+                    else:
+                        val['statut'] = 'active'
                     assure_obj = assure_obj.create(val)
                     epoux_obj.write({'epoux_id':assure_obj.id})
         return True

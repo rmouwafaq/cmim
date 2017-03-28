@@ -7,6 +7,8 @@
 			<field name="model">cmim.cotisation</field>
 			<field name="arch" type="xml">
 				<search string="Cotisation filtre">
+					<field name="name" string="Nom" filter_domain="[('name','ilike',self)" />
+					<field name="secteur_id" string="Secteur" filter_domain="[('secteur_id','=',self)" />
 					<group expand="0" string="Group By">
 						<filter name="collectivite_id" string="Collectivité"
 							domain="[]" context="{'group_by':'collectivite_id'}" />
@@ -28,8 +30,8 @@
 					<field name="name" />
 					<field name="collectivite_id" />
 					<field name="secteur_id" />
-					<field name="fiscal_date"/>
-					<field name="date_range_id"/>
+					<field name="fiscal_date" />
+					<field name="date_range_id" />
 					<field name="montant" />
 					<field name="state" />
 				</tree>
@@ -98,7 +100,7 @@
 																<t t-esc="record.type_product_id.value" />
 															</span>
 														</div>
-														
+
 														<div class="col-xs-4 text-muted">
 															<span class="text-right">
 																<t t-esc="record.montant.value" />
@@ -118,25 +120,25 @@
 								<field name="cotisation_assure_line_ids" nolabel="1"
 									widget="one2many_list" mode="tree,kanban">
 									<tree string="Cotisation assure Lines" editable="bottom">
-										<field name="assure_id"/>
+										<field name="assure_id" />
 										<field name="product_id" />
 										<field name="code" />
 										<field name="type_product_id" />
-										<field name="base1"/>
-										<field name="rate1"/>
-										<field name="base2"/>
-										<field name="rate2"/>
+										<field name="base1" />
+										<field name="rate1" />
+										<field name="base2" />
+										<field name="rate2" />
 										<field name="montant" />
 									</tree>
 									<kanban class="o_kanban_mobile">
-										<field name="assure_id"/>
+										<field name="assure_id" />
 										<field name="product_id" />
 										<field name="code" />
 										<field name="type_product_id" />
-										<field name="base1"/>
-										<field name="rate1"/>
-										<field name="base2"/>
-										<field name="rate2"/>
+										<field name="base1" />
+										<field name="rate1" />
+										<field name="base2" />
+										<field name="rate2" />
 										<field name="montant" />
 										<templates>
 											<t t-name="kanban-box">
@@ -181,9 +183,9 @@
 										</templates>
 									</kanban>
 								</field>
-								<group class="oe_subtotal_footer oe_right">
-									<field name="montant" class="oe_subtotal_footer_separator" />
-								</group>
+								<!-- <group class="oe_subtotal_footer oe_right"> -->
+								<!-- <field name="montant" class="oe_subtotal_footer_separator" /> -->
+								<!-- </group> -->
 							</page>
 						</notebook>
 					</sheet>

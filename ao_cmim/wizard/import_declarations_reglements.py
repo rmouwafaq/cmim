@@ -19,7 +19,8 @@ class cmimImportDecPay(models.TransientModel):
                                            required=True,
                                            string="Type d'operation",
                                            default='declaration')
-    model = fields.Selection(selection=[('1', 'Trimestrielle'), ('2', 'Par mois')], required=True)
+    model = fields.Selection(selection=[('1', 'Trimestrielle'), ('2', 'Par mois')], defalut='1',required=True)
+    systeme = fields.Selection(selection=[('old', 'Ancien Sys'), ('new', 'New Sys')], defalut='new', required=True)
     payment_date = fields.Date(string="Date de reglement")
     
     @api.model
@@ -64,15 +65,16 @@ class cmimImportDecPay(models.TransientModel):
         if(self.model == "1"):
             for i in range(len(reader_info)):
                 values = reader_info[i]
-                salaire = float('.'.join(str(x) for x in tuple(values[2].split(','))))
+                salaire = float('.'.join(str(x) for x in tuple(values[6].split(','))))
                 if(not salaire == 0):
                     collectivite_obj = collectivite_obj.search([('code', '=', values[0])])
-                    assure = self.env['cmim.assure'].search([('numero', '=', values[1]), ('collectivite_id.id', '=', collectivite_obj.id)])
+                    code_compose = self.env['cmim.assure']._get_code(values[0], values[5], str(values[2])[:1] + str(values[3])[:1] )
+                    assure = self.env['cmim.assure'].search([('code_compose', '=',code_compose)])
                     if(assure):
                         if(not declaration_obj.search([('assure_id.id', '=', assure.id), ('fiscal_date', '=', self.fiscal_date), ('date_range_id.id', '=', self.date_range_id.id)])):
                             declaration_obj.create({ 'collectivite_id': collectivite_obj.id,
                                                      'assure_id': assure.id,
-                                                     'nb_jour' : values[3],
+                                                     'nb_jour' : values[7],
                                                      'salaire': salaire,
                                                      'import_flag': True,
                                                      'fiscal_date': self.fiscal_date,
