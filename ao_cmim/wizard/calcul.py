@@ -157,19 +157,20 @@ class calcul_cotisation (models.TransientModel):
                 self.create_cotisation_product_lines(cotisation_obj)
                 cotisation_ids.append(cotisation_obj.id)
             view_id = self.env.ref('ao_cmim.cotisation_tree_view').id
-
-            return{ 
-                    'res_model':'cmim.cotisation',
-                    'type': 'ir.actions.act_window',
-                    'res_id': self.id,
-                    'view_mode':'tree,form',
-                    'views' : [(view_id, 'tree'),(False, 'form')],
-                    'view_id': 'ao_cmim.cotisation_tree_view',
-                    'domain':[('id', 'in', cotisation_ids)],
-                    'target':'self',
-                    'name' : 'Cotisations-Factures',
-                    }
-    
+            if len(cotisation_ids)>0:
+                return{ 
+                        'res_model':'cmim.cotisation',
+                        'type': 'ir.actions.act_window',
+                        'res_id': self.id,
+                        'view_mode':'tree,form',
+                        'views' : [(view_id, 'tree'),(False, 'form')],
+                        'view_id': 'ao_cmim.cotisation_tree_view',
+                        'domain':[('id', 'in', cotisation_ids)],
+                        'target':'self',
+                        'name' : 'Cotisations-Factures',
+                        }
+            else:
+                return True
         
    
 

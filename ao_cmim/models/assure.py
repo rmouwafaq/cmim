@@ -102,7 +102,6 @@ class assure(models.Model):
                 'domain':[('assure_id.id', '=', self.id)],
                 'context':{'group_by':'date_range_id'},
                 }
-        return True
     
     @api.multi
     def get_cotisations(self):

@@ -9,19 +9,19 @@ class TypeProduit(models.Model):
     name = fields.Char('Nom du type', required=True )
     short_name = fields.Char("code")
     
-class secteur(models.Model):
+class Secteur(models.Model):
     _name = 'cmim.secteur'
     
     name = fields.Char('nom du secteur', reduired=True)
     plancher = fields.Float('Plancher du secteur')
     plafond = fields.Float('Plafond du secteur')
 
-class constante_calcul(models.Model):
+class ConstanteCalcul(models.Model):
     _name = 'cmim.constante'
     name = fields.Char('Nom ', required=True)
     valeur = fields.Char('Valeur ', required=True)
     
-class tarif(models.Model):
+class Tarif(models.Model):
     _name='cmim.tarif'
     name = fields.Char('Nom', required = True)
     type = fields.Selection(selection= [('p', 'Taux'),

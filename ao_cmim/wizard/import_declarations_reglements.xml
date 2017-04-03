@@ -12,6 +12,8 @@
 						<group>
 							<field name="type_operation" />
 							<field name="systeme" />
+							<field name="company_id" invisible="1"/>
+							<field name="journal_id" attrs="{'invisible': [('type_operation','!=', 'reglement')]}" />
 							<field name="model"
 								attrs="{'invisible': [('type_operation','!=', 'declaration')]}" />
 
