@@ -14,7 +14,7 @@
             'data/product_template.xml',
             #'data/secteurs.xml',
             'data/type_product.xml',
-            'data/constante_calcul.xml',
+            #'data/constante_calcul.xml',
             
             'wizard/import_declarations_reglements.xml',
             'wizard/import_collectivites_assures.xml',
