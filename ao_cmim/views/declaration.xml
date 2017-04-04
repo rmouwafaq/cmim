@@ -28,7 +28,7 @@
 			<field name="priority" eval="1" />
 			<field name="arch" type="xml">
 				<tree string="Product">
-					<field name="fiscal_date" />
+					<field name="fiscal_date"  string="Année Comptable" />
 					<field name="date_range_id" />
 					<field name="collectivite_id" />
 					<field name="assure_id" />
@@ -50,7 +50,7 @@
 							<group>
 
 								<field name="collectivite_id" />
-								<field name="fiscal_date" />
+								<field name="fiscal_date"  string="Année Comptable"/>
 
 								<field name="nb_jour" />
 								<field name="salaire" />
@@ -68,11 +68,8 @@
 		<record id="action_declaration" model="ir.actions.act_window">
 			<field name="name">Déclarations des salaires</field>
 			<field name="res_model">cmim.declaration</field>
-			<field name="context">{'group_by':
-				['fiscal_date','date_range_id','secteur_id','collectivite_id']}
-			</field>
+			<field name="context">{"group_by":['fiscal_date','date_range_id']}</field>
 			<field name="view_id" ref="declaration_tree_view" />
-			<field name="search_id" ref="declaration_search_view" />
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
 		</record>

@@ -27,7 +27,7 @@ class collectivite(models.Model):
     old_code = fields.Char(string="Code collectivite")
     name = fields.Char(string="Raison sociale", required=True)
     date_adhesion = fields.Date(string="date d\'adhesion", required=True)
-    secteur_id = fields.Many2one('cmim.secteur', "Secteur", required=True)
+    secteur_id = fields.Many2one('cmim.secteur', "Secteur", required=True, ondelete="restrict")
     contrat_ids = fields.One2many('cmim.contrat', 'collectivite_id', string="Contrats")
     assure_ids = fields.One2many('cmim.assure', 'collectivite_id', string="Assures associes")
     assures_count = fields.Integer(compute='_assures_count', string="Nb assures")

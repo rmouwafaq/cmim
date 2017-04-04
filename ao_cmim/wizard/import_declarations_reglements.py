@@ -20,7 +20,7 @@ class cmimImportDecPay(models.TransientModel):
                                            string="Type d'operation",
                                            default='declaration')
     model = fields.Selection(selection=[('1', 'Trimestrielle'), ('2', 'Par mois')], defalut='1')
-    systeme = fields.Selection(selection=[('old', 'Ancien Sys'), ('new', 'New Sys')], defalut='new', required=True)
+    systeme = fields.Selection(selection=[('old', 'Ancien'), ('new', 'Nouveau')], defalut='new', required=True)
     payment_date = fields.Date(string="Date de reglement")
     
     def _default_journal(self):

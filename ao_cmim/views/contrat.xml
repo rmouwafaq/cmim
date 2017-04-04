@@ -78,9 +78,8 @@
 			<field name="res_model">cmim.contrat</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
-			<field name="context">{'group_by': ['product_id','secteur_id']}</field>
+			<field name="context">{"search_default_secteur_id":1}</field>
 			<field name="view_id" ref="view_contrat_tree" />
-			<field name="search_id" ref="contrat_search_view" />
 		</record>
 	</data>
 </openerp>

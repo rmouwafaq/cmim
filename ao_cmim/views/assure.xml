@@ -137,20 +137,9 @@
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
 			<field name="domain" eval="[('parent_id','=',False)]" />
-			<!-- <field name="context">{'group_by': ['statut','collectivite_id']} 
-				</field> -->
-			<field name="context">{"search_default_secteur_id":1}</field>
+			<field name="context">{}</field>
+<!-- 			"search_default_statut":1 -->
 			<field name="view_id" ref="view_assure_kanban" />
-			<field name="search_id" ref="assure_search_view" />
-		</record>
-		<record id="action_beneficiaire" model="ir.actions.act_window">
-			<field name="name">Bénéficiaires_ayant droit </field>
-			<field name="res_model">cmim.assure</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">tree,form,kanban</field>
-			<field name="context">{'group_by': ['secteur_id','collectivite_id']}
-			</field>
-			<field name="view_id" ref="view_assure_tree" />
 			<field name="search_id" ref="assure_search_view" />
 		</record>
 	</data>

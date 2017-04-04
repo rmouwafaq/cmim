@@ -15,9 +15,10 @@
 
 				</field>
 				<field name="parent_id" position="attributes">
-				<attribute name="string"> Collectivité Mère</attribute>
+					<attribute name="string"> Collectivité Mère</attribute>
 				</field>
-				<group name="group_by" position="after">
+				
+				<group name="group_by" position="inside">
 					<filter name="secteur_id" string="Secteur" domain="[]"
 						context="{'group_by':'secteur_id'}" />
 				</group>
@@ -150,7 +151,8 @@
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
 			<field name="domain" eval="[('customer','=',True),('is_company','=',True)]" />
-			<field name="context">{"search_default_secteur_id":1}</field>
+			<field name="context">{}</field>
+<!-- 			"search_default_secteur_id":1 -->
 			<field name="view_id" ref="base.res_partner_kanban_view" />
 			<field name="search_id" ref="partner_search_view" />
 		</record>

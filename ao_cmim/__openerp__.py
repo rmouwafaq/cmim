@@ -12,7 +12,7 @@
     'data':[
             'data/data_range_tye.xml',
             'data/product_template.xml',
-            'data/secteurs.xml',
+            #'data/secteurs.xml',
             'data/type_product.xml',
             'data/constante_calcul.xml',
             
@@ -21,6 +21,7 @@
             'wizard/rapport.xml',
             'wizard/calcul.xml',
             'wizard/validation.xml',
+            'wizard/date_range_generator.xml',
             
             'views/date_range.xml',
             'views/product.xml',

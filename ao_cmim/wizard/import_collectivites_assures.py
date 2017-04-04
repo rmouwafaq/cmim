@@ -22,7 +22,7 @@ class cmimImportCOlAss(models.TransientModel):
                                            required=True,
                                            string="Type d'entite",
                                            default='collectivite')
-    systeme = fields.Selection(selection=[('old', 'Ancien Sys'), ('new', 'New Sys')], defalut='new', required=True)
+    systeme = fields.Selection(selection=[('old', 'Ancien'), ('new', 'Nouveau')], defalut='new', required=True)
        
 ############################################################################
 
