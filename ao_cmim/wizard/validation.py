@@ -6,38 +6,22 @@ from openerp.exceptions import UserError
 
 class validation_cotisation (models.TransientModel):
     _name = 'cmim.validation.cotisation'
-    
-    @api.onchange('fiscal_date')
-    def onchange_field_id(self):
-         if self.fiscal_date:
-            periodes = self.env['date.range'].search([])
-            ids = []
-            dec_year = datetime.strptime(self.fiscal_date, '%Y-%m-%d').year
-            for periode in periodes :
-                duree =  (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
-                if duree>88 and duree <92 and dec_year == datetime.strptime(periode.date_end, '%Y-%m-%d').year and dec_year == datetime.strptime(periode.date_start, '%Y-%m-%d').year:
-                    ids.append(periode.id)
-            return {'domain':{'date_range_id': [('id', 'in', ids)]}}
-    @api.model
-    def _get_domain(self):
-        periodes = self.env['date.range'].search([])
-        ids = []
-        for periode in periodes :
-            duree =  (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
-            if duree>88 and duree <92:
-                ids.append(periode.id)
-        return [('id', 'in', ids)]
-    
+    _sql_constraints = [
+        ('fiscal_date', "check(fiscal_date > 1999)", _("Valeur incorrecte pour l'an comptable !"))
+    ]
     @api.onchange('fiscal_date')
     def onchange_fiscal_date(self):
         if(self.fiscal_date):
-            print self.fiscal_date
-            date = str(datetime.strptime(self.fiscal_date, '%Y-%m-%d').year) + "-1-1"
-            mydate = datetime.strptime(date, '%Y-%m-%d')
-            self.fiscal_date = mydate
-            
-    fiscal_date = fields.Date(string="Annee fiscale")
-    date_range_id = fields.Many2one('date.range', 'Periode', domain=lambda self: self._get_domain())
+            periodes = self.env['date.range'].search([])
+            ids = []
+            for periode in periodes :
+                duree = (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
+                if duree > 88 and duree < 92 and self.fiscal_date == datetime.strptime(periode.date_end, '%Y-%m-%d').year and self.fiscal_date == datetime.strptime(periode.date_start, '%Y-%m-%d').year:
+                    ids.append(periode.id)
+            return {'domain':{'date_range_id': [('id', 'in', ids)]}}
+        
+    fiscal_date = fields.Integer(string="Annee Comptable")
+    date_range_id = fields.Many2one('date.range', 'Periode')
     
     collectivite_ids = fields.Many2many('res.partner','validation_collectivite', 'validation_id', 'partner_id', "Collectivites", domain = "[('customer','=',True),('is_company','=',True)]")
     cotisation_ids = fields.Many2many('cmim.cotisation','validation_cotisation', 'validation_id', 'cotisaion_id', "Cotisations")
