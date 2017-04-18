@@ -17,7 +17,7 @@
 				<tree string="Product">
 					<field name="name" />
 					<field name="type" />
-					<field name="type_product_ids" />
+					<field name="short_name" />
 <!-- 					<field name="nb_uses" /> -->
 				</tree>
 			</field>

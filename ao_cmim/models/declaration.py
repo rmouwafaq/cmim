@@ -20,6 +20,46 @@ class declaration(models.Model):
         related='collectivite_id.secteur_id', store=True
     )
     
+    base_calcul = fields.Float('Base', compute="get_base_calcul", default=0.0, 
+                   help="La base de calcul = Salaire si compris entre plancher et plafond du Secteur de la collectivite.\
+                        , si le Salaire < plancher du secteur la base de calcul prend pour valeur ce dernier.\
+                        idem, si le salaire depasse le plafond du secteur de la collectivite le plafond est lui-meme la base de calcul qui sera prise")
+    base_trancheA = fields.Float('Base', compute="get_base_calcul", default=0.0,
+                                 help="La tranche A = Salaire si salaire < Plafond CNSS, sinon Plafond CNSS.") 
+    base_trancheB = fields.Float('Base', compute="get_base_calcul", default=0.0,
+                                 help=" trancheB = salaire - Tranche A si salaire > TrancheA, sinon  0.\
+                                      La tranche B plafonnee= trancheB si trancheB < SRP, sinon  SRP.")  
+    
+    @api.multi
+    @api.depends('salaire', 'secteur_id')
+    def get_base_calcul(self ):
+        cnss = self.env.ref('ao_cmim.cte_calcul_cnss') or self.env.search([('name', '=', 'CNSS')]) 
+        srp = self.env.ref('ao_cmim.cte_calcul_srp') or self.env.search([('name', '=', 'SRP')]) 
+        if cnss and srp:
+            for obj in self:
+                # calcul de base_calcul
+                if obj.salaire >= obj.secteur_id.plancher and obj.salaire <= obj.secteur_id.plafond:
+                    obj.base_calcul = obj.salaire
+                elif obj.salaire <= obj.secteur_id.plancher: 
+                    obj.base_calcul = obj.secteur_id.plancher
+                else:
+                    obj.base_calcul = obj.secteur_id.plafond
+                #calcul de base_trancheA
+                if cnss.valeur > obj.salaire:
+                    obj.base_trancheA = obj.salaire
+                else: 
+                    obj.base_trancheA = cnss.valeur     
+                #calcul de base_trancheB 
+                if(obj.salaire > obj.base_trancheA):
+                    res = obj.salaire - obj.base_trancheA
+                if(res > srp.valeur):
+                    obj.base_trancheB = srp.valeur
+                else: 
+                    obj.base_trancheB = res
+        else:
+            raise osv.except_osv(_('Error!'), _("Veuillez verifier la configuration des constantes de calcul" ))
+    
+    
     @api.onchange('fiscal_date')
     def onchange_field_id(self):
          if self.fiscal_date:

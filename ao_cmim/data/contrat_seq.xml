@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="seq_cmim_contrat" model="ir.sequence">
+			<field name="name">CMIM Contrat</field>
+			<field name="code">cmim.contrat</field>
+			<field name="prefix">CT</field>
+			<field name="padding">3</field>
+		</record>
+	</data>
+</odoo>

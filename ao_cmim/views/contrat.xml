@@ -1,78 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openerp>
+<odoo>
 	<data>
 
 		<!-- *****************************definition des adhesions ******************************* -->
 		<record id="view_contrat_tree" model="ir.ui.view">
 			<field name="name">cmim.contrat.tree</field>
 			<field name="model">cmim.contrat</field>
-			<field eval="7" name="priority" />
-
 			<field name="arch" type="xml">
-				<tree string="Assures">
+				<tree>
 					<field name="name" />
-					<field name="collectivite_id" />
-					<field name="code" />
-					<field name="product_id" />
-					<field name="type_product_id" />
-					<field name="tarif_id" />
-					<field name="tarif_inc_deces_id" />
-					<field name="tarif_inv_id" />
 				</tree>
 			</field>
 		</record>
+
 		<record id="view_contrat_form" model="ir.ui.view">
 			<field name="name">cmim.contrat.form</field>
 			<field name="model">cmim.contrat</field>
 			<field name="priority" eval="1" />
 			<field name="arch" type="xml">
-				<form string="Assurés">
+				<form>
 					<sheet>
 						<group>
 							<group>
 								<field name="name" />
-								<field name="collectivite_id" />
-								<field name="product_id" />
-								<field name="code" string="code produit" />
-							</group>
-							<group>
-								<field name="type_product_id" />
-								<field name="type_product_name" invisible='1' />
-								<field name="tarif_id"
-									attrs="{'invisible': [('type_product_name','!=', 'MAL')]}" />
-								<field name="tarif_inc_deces_id"
-									attrs="{'invisible': [('type_product_name','!=', 'PRV')]}" />
-								<field name="tarif_inv_id"
-									attrs="{'invisible': [('type_product_name','!=', 'PRV')]}" />
+								<field name="collectivite_id" widget="many2many_tags" />
 							</group>
 						</group>
+						<notebook>
+							<page string="Règles de calcul">
+								<field name="contrat_ids" widget="many2many">
+<!-- 									<tree> -->
+<!-- 										<field name="product_id" /> -->
+<!-- 										<field name="code" /> -->
+<!-- 										<field name="type_produit" /> -->
+<!-- 										<field name="regle_id" /> -->
+<!-- 									</tree> -->
+								</field>
+							</page>
+							<page string="Notes">
+								<field name="notes" />
+							</page>
+						</notebook>
 					</sheet>
 				</form>
 			</field>
 		</record>
-		<record id="contrat_search_view" model="ir.ui.view">
-			<field name="name">cmim.contrat.search</field>
-			<field name="model">cmim.contrat</field>
-			<field name="arch" type="xml">
-				<search string="Contrat filtre">
-					<field name="collectivite_id" />
-					<field name="product_id" />
-					<field name="code"/>
-					<group expand="0" string="Group By">
-						<filter name="collectivite_id" string="Collectivité"
-							domain="[]" context="{'group_by':'collectivite_id'}" />
-						<filter name="product_id" string="Produit" domain="[]"
-							context="{'group_by':'product_id'}" />
-						<filter name="secteur_id" string="Secteur" domain="[]"
-							context="{'group_by':'secteur_id'}" />
-						<filter name="type_product_id" string="Type de produit" domain="[]"
-							context="{'group_by':'type_product_id'}" />
-						<filter name="collectivite_id" string="Collectivité" domain="[]"
-							context="{'group_by':'collectivite_id'}" />
-					</group>
-				</search>
-			</field>
-		</record>
+<!-- 		<record id="contrat_search_view" model="ir.ui.view"> -->
+<!-- 			<field name="name">cmim.contrat.search</field> -->
+<!-- 			<field name="model">cmim.contrat</field> -->
+<!-- 			<field name="arch" type="xml"> -->
+<!-- 				<search string="Contrat filtre"> -->
+<!-- 					<field name="collectivite_id" /> -->
+<!-- 					<field name="product_id" /> -->
+<!-- 					<field name="code" /> -->
+<!-- 					<group expand="0" string="Group By"> -->
+<!-- 						<filter name="collectivite_id" string="Collectivité" -->
+<!-- 							domain="[]" context="{'group_by':'collectivite_id'}" /> -->
+<!-- 						<filter name="product_id" string="Produit" domain="[]" -->
+<!-- 							context="{'group_by':'product_id'}" /> -->
+<!-- 						<filter name="secteur_id" string="Secteur" domain="[]" -->
+<!-- 							context="{'group_by':'secteur_id'}" /> -->
+<!-- 						<filter name="type_product_id" string="Type de produit" -->
+<!-- 							domain="[]" context="{'group_by':'type_product_id'}" /> -->
+<!-- 						<filter name="collectivite_id" string="Collectivité" -->
+<!-- 							domain="[]" context="{'group_by':'collectivite_id'}" /> -->
+<!-- 					</group> -->
+<!-- 				</search> -->
+<!-- 			</field> -->
+<!-- 		</record> -->
 		<record id="action_contrat" model="ir.actions.act_window">
 			<field name="name">Contrats</field>
 			<field name="res_model">cmim.contrat</field>
@@ -82,4 +77,4 @@
 			<field name="view_id" ref="view_contrat_tree" />
 		</record>
 	</data>
-</openerp>
+</odoo>

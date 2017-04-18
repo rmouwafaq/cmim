@@ -5,31 +5,37 @@
         <record id="product_maladie_mld" model="product.template">
             <field name="name">MAL.MATERNITE</field>
             <field name="type">service</field>
+            <field name="short_name">MAL.MAT</field>
             <field name="categ_id">1</field>
         </record>
 		<record id="product_mld" model="product.template">
             <field name="name">M.L.D</field>
             <field name="type">service</field>
+            <field name="short_name">MLD</field>
             <field name="categ_id">1</field>
         </record>
         <record id="product_retraite" model="product.template">
             <field name="name">RETRAITE</field>
             <field name="type">service</field>
+            <field name="short_name">RET</field>
             <field name="categ_id">1</field>
         </record>
 		<record id="product_deces" model="product.template">
             <field name="name">DECES</field>
             <field name="type">service</field>
+            <field name="short_name">DEC</field>
             <field name="categ_id">1</field>
         </record>
         <record id="product_invalidite" model="product.template">
             <field name="name">INVALIDITE</field>
             <field name="type">service</field>
+            <field name="short_name">INV</field>
             <field name="categ_id">1</field>
         </record>
 		<record id="product_incapacite" model="product.template">
             <field name="name">INCAPACITE</field>
             <field name="type">service</field>
+            <field name="short_name">INC</field>
             <field name="categ_id">1</field>
         </record>
 	</data>

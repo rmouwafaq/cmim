@@ -32,6 +32,12 @@ class collectivite(models.Model):
     assure_ids = fields.One2many('cmim.assure', 'collectivite_id', string="Assures associes")
     assures_count = fields.Integer(compute='_assures_count', string="Nb assures")
     parent_id = fields.Many2one('res.partner', domain="[('customer','=',True),('is_company','=',True)]")
+    
+    
+    contrat_id = fields.Many2one('cmim.contrat', string="Contrat", required=True)
+    
+    
+    
     @api.multi
     def get_assures(self):
         view_id = self.env.ref('ao_cmim.view_assure_tree').id

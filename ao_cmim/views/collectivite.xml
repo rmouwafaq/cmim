@@ -60,50 +60,51 @@
 					<button name="get_payments" type="object" string="Réglements"
 						class="oe_inline oe_stat_button" icon="fa-sign-in" />
 				</button>
-				<xpath expr="//page[@name='sales_purchases']" position="before">
-					<page string="Contrats / Adhésions">
-						<group>
-							<field name="contrat_ids" nolabel="1">
-								<form string="Contrats / adhesions">
-									<group>
-										<group>
-											<field name="product_id" domain="[('type', '=', 'service')]" />
-											<field name="name" />
-										</group>
-										<group>
-											<field name="code" />
-											<field name="type_product_id" readonly='1' />
-											<field name="type_product_name" invisible='1' />
-											<field name="tarif_id"
-												attrs="{'invisible': [('type_product_name','!=', 'MAL')]}" />
-											<field name="tarif_inc_deces_id"
-												attrs="{'invisible': [('type_product_name','!=', 'PRV')]}" />
-											<field name="tarif_inv_id"
-												attrs="{'invisible': [('type_product_name','!=', 'PRV')]}" />
-										</group>
-									</group>
-									<label for="name" />
-									<field name="name" />
-								</form>
-								<tree string="Contrats / dhesions" editable="bottom">
-									<field name="product_id" domain="[('type', '=', 'service')]" />
-									<field name="name" />
-									<field name="code" />
-									<field name="type_product_id" />
-									<field name="tarif_id" />
-									<field name="tarif_inc_deces_id" />
-									<field name="tarif_inv_id" />
-								</tree>
-							</field>
-						</group>
-					</page>
-				</xpath>
+<!-- 				<xpath expr="//page[@name='sales_purchases']" position="before"> -->
+<!-- 					<page string="Contrats / Adhésions"> -->
+<!-- 						<group> -->
+<!-- 							<field name="contrat_ids" nolabel="1"> -->
+<!-- 								<form string="Contrats / adhesions"> -->
+<!-- 									<group> -->
+<!-- 										<group> -->
+<!-- 											<field name="product_id" domain="[('type', '=', 'service')]" /> -->
+<!-- 											<field name="name" /> -->
+<!-- 										</group> -->
+<!-- 										<group> -->
+<!-- 											<field name="code" /> -->
+<!-- 											<field name="type_product_id" readonly='1' /> -->
+<!-- 											<field name="type_product_name" invisible='1' /> -->
+<!-- 											<field name="tarif_id" -->
+<!-- 												attrs="{'invisible': [('type_product_name','!=', 'MAL')]}" /> -->
+<!-- 											<field name="tarif_inc_deces_id" -->
+<!-- 												attrs="{'invisible': [('type_product_name','!=', 'PRV')]}" /> -->
+<!-- 											<field name="tarif_inv_id" -->
+<!-- 												attrs="{'invisible': [('type_product_name','!=', 'PRV')]}" /> -->
+<!-- 										</group> -->
+<!-- 									</group> -->
+<!-- 									<label for="name" /> -->
+<!-- 									<field name="name" /> -->
+<!-- 								</form> -->
+<!-- 								<tree string="Contrats / dhesions" editable="bottom"> -->
+<!-- 									<field name="product_id" domain="[('type', '=', 'service')]" /> -->
+<!-- 									<field name="name" /> -->
+<!-- 									<field name="code" /> -->
+<!-- 									<field name="type_product_id" /> -->
+<!-- 									<field name="tarif_id" /> -->
+<!-- 									<field name="tarif_inc_deces_id" /> -->
+<!-- 									<field name="tarif_inv_id" /> -->
+<!-- 								</tree> -->
+<!-- 							</field> -->
+<!-- 						</group> -->
+<!-- 					</page> -->
+<!-- 				</xpath> -->
 				<page name='sales_purchases' position="attributes">
 					<attribute name="invisible">True</attribute>
 				</page>
 				<field name="is_company" position="attributes">
 					<attribute name="readonly">True</attribute>
 				</field>
+				<field name="website" position="replace"> </field>
 				<field name="company_type" position="attributes">
 					<attribute name="readonly">True</attribute>
 				</field>
@@ -138,6 +139,8 @@
 					<field name="parent_id" string="Collectivité mère"
 						attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
 					<field name="date_adhesion"
+						attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
+					<field name="contrat_id"
 						attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
 				</xpath>
 			</field>

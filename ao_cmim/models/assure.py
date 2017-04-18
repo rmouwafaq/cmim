@@ -49,8 +49,8 @@ class assure(models.Model):
     
     parent_id =  fields.Many2one('cmim.assure', 'Assure contractant')
     epoux_id =  fields.Many2one('cmim.assure', 'Epoux (se)')
-    declaration_ids = fields.Many2one('cmim.declaration', 'Declarations')    
-    
+    declaration_ids = fields.Many2one('cmim.declaration', 'Declarations')          
+            
     @api.onchange('epoux_id', 'collectivite_id')
     def onchange_assure(self):
         if(self.epoux_id):

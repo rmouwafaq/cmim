@@ -12,9 +12,10 @@
     'data':[
             'data/data_range_tye.xml',
             'data/product_template.xml',
-            #'data/secteurs.xml',
+            'data/secteurs.xml',
             'data/type_product.xml',
-            #'data/constante_calcul.xml',
+            'data/constante_calcul.xml',
+            'data/contrat_seq.xml',
             
             'wizard/import_declarations_reglements.xml',
             'wizard/import_collectivites_assures.xml',
@@ -29,6 +30,7 @@
             'views/collectivite.xml',
             'views/assure.xml',
             'views/config.xml',
+            'views/regle_calcul.xml',
             'views/contrat.xml',
             'views/declaration.xml',
             'views/facture_paiement.xml',

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+
+		<!-- *****************************definition des adhesions ******************************* -->
+		<record id="view_regle_tree" model="ir.ui.view">
+			<field name="name">cmim.regle.calcul.tree</field>
+			<field name="model">cmim.regle.calcul</field>
+			<field name="arch" type="xml">
+				<tree editable="buttom">
+					<field name="name" />
+					<field name="base" attrs="{'required': [('tarif1_type', '=', 'p')]}"/>
+					<field name="tarif_id" />
+					<field name="tarif1_type" invisible="1"/>
+					<field name="base_2" />
+					<field name="tarif_inc_inv_id" />
+					<field name="type_assure" />
+					<field name="secteur_id" />
+					<field name="date_range_id" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="action_regle_calcul" model="ir.actions.act_window">
+			<field name="name">Règles de calcul</field>
+			<field name="res_model">cmim.regle.calcul</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+<!-- 			<field name="context">{"search_default_secteur_id":1}</field> -->
+			<field name="view_id" ref="view_regle_tree" />
+		</record>
+	</data>
+</odoo>
