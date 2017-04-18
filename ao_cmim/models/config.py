@@ -44,7 +44,7 @@ class RegleCalcul(models.Model):
                 obj.name="%s * %s " %(obj.base, obj.tarif_id.montant)
             obj.type_regle = "mal_retraite"
             if obj.base_2 and obj.tarif_inc_inv_id:
-                obj.name = obj.name + ' + %s * %s' %(obj.base2, obj.tarif_inc_inv_id.montant)
+                obj.name = obj.name + ' + %s * %s' %(obj.base_2, obj.tarif_inc_inv_id.montant)
                 obj.type_regle = "prevoyance"
     name = fields.Char('Regle de calcul', compute="get_name_type")
     type_regle = fields.Selection(selection=[('prevoyance', 'Prevoyance'),
