@@ -3,10 +3,12 @@
 	<data>
 		<record id="cte_calcul_cnss" model="cmim.constante">
 			<field name="name">CNSS</field>
+			<field name="reserved">1</field>
 			<field name="valeur">6000</field>
 		</record>
 		<record id="cte_calcul_srp" model="cmim.constante">
 			<field name="name">SRP</field>
+			<field name="reserved">1</field>
 			<field name="valeur">24000</field>
 		</record>
 	</data>

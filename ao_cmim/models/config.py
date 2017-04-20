@@ -20,6 +20,14 @@ class Secteur(models.Model):
 
 class ConstanteCalcul(models.Model):
     _name = 'cmim.constante'
+    @api.multi
+    def unlink(self):
+        if self.reserved:
+            raise UserError(
+                _(u"Impossible de supprimer des constantes de calcul réservées au système"))
+        else:
+            return super(RegleCalcul, self).unlink()
+    reserved = fields.Boolean(u'réservé au système', default=False)
     name = fields.Char('Nom ', required=True)
     valeur = fields.Char('Valeur ', required=True)
     

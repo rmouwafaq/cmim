@@ -7,6 +7,7 @@
 			<field name="model">cmim.regle.calcul</field>
 			<field name="arch" type="xml">
 				<tree>
+					<field name="sequence" widget="handle"/>
 					<field name="name" />
 					<field name="regle_base_id" />
 					<field name="tarif_id" />
