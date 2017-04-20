@@ -4,30 +4,26 @@ from openerp import models, fields, api
 class Contrat(models.Model):
     _name = 'cmim.contrat'
     
-    collectivite_id = fields.One2many('res.partner', 'contrat_id', string='Collectivite')
-    contrat_ids = fields.Many2many('cmim.contrat.line','cmim_contrat_contrat_ligne_rel', 'contrat_id', 'contrat_ligne_id', string="Lignes de contrat", required=True)
-    name = fields.Char('Nom')  
+    collectivite_ids = fields.One2many('res.partner', 'contrat_id', string='Collectivites',  domain=[('customer','=',True),('is_company','=',True)])
+    contrat_line_ids = fields.Many2many('cmim.contrat.line','cmim_contrat_contrat_ligne_rel', 'contrat_id', 'contrat_ligne_id', string="Lignes de contrat", required=True)
+    name = fields.Char('Nom', readonly=True)  
     notes = fields.Text('Notes')   
     @api.model
     def create(self, vals): 
-        if vals.get('name','/')=='/':
-            vals['name'] = self.env['ir.sequence'].get(cr, uid, 'cmim.contrat') 
+        vals['name'] = self.env['ir.sequence'].next_by_code('cmim.contrat') 
+        print vals
         return super(Contrat, self).create(vals)
 class LigneContrat(models.Model):
     _name = 'cmim.contrat.line'
-    
+
     @api.model
     def create(self, vals): 
         if vals.get('name','/')=='/':
             vals['name'] =  '%s: %s' %(obj.product_id.short_name, obj.regle_id.name) 
-        return super(Contrat, self).create(vals)
+        return super(LigneContrat, self).create(vals)
     name = fields.Char('Nom', required=True)
     product_id = fields.Many2one('product.template', "Produit", required=True)
     code = fields.Integer("Code Produit")
-    type_produit = fields.Selection(selection=[('prevoyance', 'Prevoyance'),
-                                          ('mal_retraite', 'Mal/ Retraire')],
-                                           required=True,
-                                           string='Type Produit')
     regle_id = fields.Many2one('cmim.regle.calcul', 'Regle de calcul', required=True)
 # class contrat(models.Model):
 #     _name = 'cmim.contrat'

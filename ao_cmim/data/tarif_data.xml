@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="tarif1" model="cmim.tarif">
+			<field name="name">100%</field>
+			<field name="type">p</field>
+			<field name="montant">100</field>
+		</record>
+	</data>
+</odoo>

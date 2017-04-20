@@ -27,7 +27,7 @@ class Cotisation(models.Model):
             self.montant = sum(line.montant for line in self.cotisation_product_ids)
                 
     name =  fields.Char('Libelle')
-    collectivite_id = fields.Many2one('res.partner', 'Collectivite',  domain = "[('customer','=',True),('is_company','=',True)]")
+    collectivite_id = fields.Many2one('res.partner', 'Collectivite',required=True,  domain = "[('customer','=',True),('is_company','=',True)]")
     invoice_id = cotisation_id = fields.Many2one('account.invoice', 'Facture', domain=[('type', '=', 'out_invoice')],  ondelete='cascade')
     cotisation_assure_ids = fields.One2many('cmim.cotisation.assure', 'cotisation_id', 'Ligne de calcul par assure')    
     cotisation_product_ids = fields.One2many('cmim.cotisation.product', 'cotisation_id', 'Ligne de calcul par produit')    
@@ -44,37 +44,22 @@ class Cotisation(models.Model):
         string='Secteur',
         related='collectivite_id.secteur_id', store=True
     )
-    @api.onchange('fiscal_date')
-    def onchange_field_id(self):
-         if self.fiscal_date:
-            periodes = self.env['date.range'].search([])
-            ids = []
-            dec_year = datetime.strptime(self.fiscal_date, '%Y-%m-%d').year
-            for periode in periodes :
-                duree =  (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
-                if duree>88 and duree <92 and dec_year == datetime.strptime(periode.date_end, '%Y-%m-%d').year and dec_year == datetime.strptime(periode.date_start, '%Y-%m-%d').year:
-                    ids.append(periode.id)
-            return {'domain':{'date_range_id': [('id', 'in', ids)]}}
-    @api.model
-    def _get_domain(self):
-        periodes = self.env['date.range'].search([])
-        ids = []
-        for periode in periodes :
-            duree =  (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
-            if duree>88 and duree <92:
-                ids.append(periode.id)
-        return [('id', 'in', ids)]
     
+    
+        
     @api.onchange('fiscal_date')
     def onchange_fiscal_date(self):
         if(self.fiscal_date):
-            print self.fiscal_date
-            date = str(datetime.strptime(self.fiscal_date, '%Y-%m-%d').year) + "-1-1"
-            mydate = datetime.strptime(date, '%Y-%m-%d')
-            self.fiscal_date = mydate    
-           
-    fiscal_date = fields.Date(string="Annee fiscale")
-    date_range_id = fields.Many2one('date.range', 'Periode', domain=lambda self: self._get_domain())
+            periodes = self.env['date.range'].search([])
+            ids = []
+            for periode in periodes :
+                duree = (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
+                if duree > 88 and duree < 92 and self.fiscal_date == datetime.strptime(periode.date_end, '%Y-%m-%d').year and self.fiscal_date == datetime.strptime(periode.date_start, '%Y-%m-%d').year:
+                    ids.append(periode.id)
+            return {'domain':{'date_range_id': [('id', 'in', ids)]}}
+        
+    fiscal_date = fields.Integer(string="Annee Comptable", required=True)
+    date_range_id = fields.Many2one('date.range', 'Periode', required=True)
     @api.multi
     def action_validate(self):
         
@@ -132,26 +117,28 @@ class cotisation_assure(models.Model):
     name =  fields.Char('Libelle')
     cotisation_assure_line_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_assure_id', 'Ligne de calcul par assure')  
     montant = fields.Float(compute="_getmontant_total", string='Montant', default= 0.0, digits=0, store=True)
-    #montant = fields.Float(string='Montant', default= 0.0)
 
 class cotisation_assure_line(models.Model):
     _name = 'cmim.cotisation.assure.line'
     _description = "Lignes ou details du calcul des cotisations_assure"
     _order = 'cotisation_assure_id'
 
+    @api.multi
+    def get_montant(self):
+        for obj in self:
+            obj.montant = obj.base * obj.taux
+            
     cotisation_assure_id = fields.Many2one('cmim.cotisation.assure', 'Cotisation assure',  ondelete='cascade')
     cotisation_id = fields.Many2one('cmim.cotisation', string='Cotisation',related='cotisation_assure_id.cotisation_id', store=True)
     assure_id = fields.Many2one('cmim.assure', string='Assure',related='cotisation_assure_id.assure_id', store=True )
-    
-    product_id = fields.Many2one('product.template', 'Produit')
-    code = fields.Char('Code Produit')
-    type_product_id = fields.Many2one("cmim.product.type", string='Type de produit' )
+    contrat_line_id = fields.Many2one('cmim.contrat.line', 'Ligne contrat')
+    product_id  = fields.Many2one('product.template', related='contrat_line_id.product_id', store=True)
+    code = fields.Integer(related='contrat_line_id.code',)
+    regle_id = fields.Many2one('cmim.regle.calcul',  related='contrat_line_id.regle_id')
     name = fields.Char('Libelle')
-    base1 = fields.Float('Tranche A', help = 'si le type de produit est salaire, la tranche A est elle-meme la base de salaire', default=0.0)
-    base2 = fields.Float('Tranche B', default = 0.0)
-    rate1 = fields.Float('Taux 1')
-    rate2 = fields.Float('Taux 2')
-    montant = fields.Float('Montant', default= 0.0) 
+    base = fields.Float('Base')
+    taux = fields.Float('Taux 1')
+    montant = fields.Float('Montant', compute="get_montant") 
     
 class cotisation_product(models.Model):
     _name = 'cmim.cotisation.product'
@@ -160,7 +147,6 @@ class cotisation_product(models.Model):
     cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation',  ondelete='cascade')
     product_id = fields.Many2one('product.template', 'Produit') 
     code = fields.Char('Code Produit')
-    type_product_id = fields.Many2one("cmim.product.type", string='Type de produit' )
     montant = fields.Float('Montant', default= 0.0) 
     
     @api.multi

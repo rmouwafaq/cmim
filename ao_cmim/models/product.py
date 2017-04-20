@@ -9,5 +9,5 @@ class ProductCMIM(models.Model):
         'type': 'service',
         }  
     type_product_ids = fields.Many2many('cmim.product.type', 'pdt_id', 'pdt_type_id', string= "Types des declinaisons")
-    short_name = fields.Char('Intitule long')
+    short_name = fields.Char('Intitule Court')
     

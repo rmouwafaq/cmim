@@ -12,10 +12,15 @@ class declaration(models.Model):
     _sql_constraints = [
         ('fiscal_date', "check(fiscal_date > 1999)", _("Valeur incorrecte pour l'an comptable !"))
     ]
+    @api.multi
+    def get_salaire_mensuel(self):
+        for obj in self:
+            obj.sal_mensuel = obj.salaire/obj.nb_jour
     import_flag = fields.Boolean('Par import', default=False)      
     assure_id = fields.Many2one('cmim.assure', 'Assure', ondelete='cascade')  # domain=[('collectivite_id.id','=',collectivite_id.id)] , 
     collectivite_id = fields.Many2one('res.partner', 'Collectivite', ondelete='cascade')
     nb_jour = fields.Integer('Nombre de jours declares')
+    sal_mensuel = fields.Float('Salaire mensuel', compute="get_salaire_mensuel")
     salaire = fields.Float('salaire')
     secteur_id = fields.Many2one('cmim.secteur',
         string='Secteur',
@@ -40,20 +45,20 @@ class declaration(models.Model):
         if cnss and srp:
             for obj in self:
                 # calcul de base_calcul
-                if obj.salaire >= obj.secteur_id.plancher and obj.salaire <= obj.secteur_id.plafond:
-                    obj.base_calcul = obj.salaire
-                elif obj.salaire <= obj.secteur_id.plancher: 
+                if obj.sal_mensuel >= obj.secteur_id.plancher and obj.sal_mensuel <= obj.secteur_id.plafond:
+                    obj.base_calcul = obj.sal_mensuel
+                elif obj.sal_mensuel <= obj.secteur_id.plancher: 
                     obj.base_calcul = obj.secteur_id.plancher
                 else:
                     obj.base_calcul = obj.secteur_id.plafond
                 #calcul de base_trancheA
-                if cnss.valeur > obj.salaire:
-                    obj.base_trancheA = obj.salaire
+                if cnss.valeur > obj.sal_mensuel:
+                    obj.base_trancheA = obj.sal_mensuel
                 else: 
                     obj.base_trancheA = cnss.valeur     
                 #calcul de base_trancheB 
-                if(obj.salaire > obj.base_trancheA):
-                    res = obj.salaire - obj.base_trancheA
+                if(obj.sal_mensuel > obj.base_trancheA):
+                    res = obj.sal_mensuel - obj.base_trancheA
                 if(res > srp.valeur):
                     obj.base_trancheB = srp.valeur
                 else: 
