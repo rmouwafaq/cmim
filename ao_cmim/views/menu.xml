@@ -12,9 +12,6 @@
 			parent="col_assure_menu" />
 		<menuitem id="import_col_assure_menu" name="Importation collectivités/ Assurés"
 			action="action_col_assure_import" parent="col_assure_menu" />
-		<menuitem id="contrat_menu" name="Définition des adhésions"
-			action="action_contrat" parent="col_assure_menu" />
-
 
 
 		<menuitem id="declaration_cotisation_menu" name="Déclarations / Calculs"
@@ -52,10 +49,18 @@
 
 
 		<menuitem id="config_menu" name="Configuration" parent="main_menu" />
+		
+		<menuitem id="contrat_regle_config_menu" name="Contrats et règles"
+			sequence="1" parent="config_menu" />
+		<menuitem id="contrat_config_menu" name="Contrats"
+			sequence='1' action="action_contrat" parent="contrat_regle_config_menu" />
+		<menuitem id="contrat_ligne_config_menu" name="Lignes de contrats"
+			sequence='2' action="action_contrat_ligne" parent="contrat_regle_config_menu" />
+		<menuitem id="regle_config_menu" name="Règles de calcul"
+			sequence='3' action="action_regle_calcul" parent="contrat_regle_config_menu" />
+			
 		<menuitem id="cts_config_menu" name="Constantes de calcul"
 			sequence="2" action="action_constante_calcul" parent="config_menu" />
-		<menuitem id="regle_config_menu" name="Règles de calcul"
-			sequence="3" action="action_regle_calcul" parent="config_menu" />
 		<menuitem id="secteur_menu" name="Secteurs" action="action_secteur"
 			parent="config_menu" sequence="3" />
 		<menuitem id="tarif_menu" name="Tarifs" action="action_tarif"
@@ -104,9 +109,10 @@
 			<field name="domain">[]</field>
 			<field name="context">{}</field>
 		</record>
-		<menuitem action="date_range_action" id="date_range.menu_date_range_action" parent="date_range.menu_date_range"/>
-		<menuitem action="date_range_generator_action" id="date_range.menu_date_range_generator_action"
+		<menuitem action="date_range_action" id="date_range.menu_date_range_action"
 			parent="date_range.menu_date_range" />
+		<menuitem action="date_range_generator_action"
+			id="date_range.menu_date_range_generator_action" parent="date_range.menu_date_range" />
 		<delete model="ir.ui.menu" id="date_range.menu_date_range_type_action" />
 
 	</data>

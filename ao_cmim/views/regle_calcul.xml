@@ -7,14 +7,14 @@
 			<field name="model">cmim.regle.calcul</field>
 			<field name="arch" type="xml">
 				<tree>
-					<field name="sequence" widget="handle"/>
+					<field name="sequence" widget="handle" />
 					<field name="name" />
 					<field name="regle_base_id" />
 					<field name="tarif_id" />
 					<field name="debut_applicabilite" />
 					<field name="fin_applicabilite" />
 					<field name="type_assure" />
-					<field name="reserved" string="Réservé système"/>
+					<field name="reserved" string="Réservé système" />
 					<field name="secteur_ids" />
 				</tree>
 			</field>
@@ -26,11 +26,13 @@
 				<form>
 					<sheet>
 						<group>
+							<field name="name" />
+						</group>
+						<group>
 							<group>
-								<field name="name" />
+								<field name="regle_base_id" required="1" />
 							</group>
 							<group>
-								<field name="regle_base_id" required="1"/>
 								<field name="tarif_id" />
 							</group>
 						</group>

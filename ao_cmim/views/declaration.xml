@@ -7,9 +7,9 @@
 			<field name="model">cmim.declaration</field>
 			<field name="arch" type="xml">
 				<search string="Declaration filtre">
-					<field name="collectivite_id"/>
-					<field name="assure_id"/>
-					<field name="secteur_id"/>
+					<field name="collectivite_id" />
+					<field name="assure_id" />
+					<field name="secteur_id" />
 					<group expand="0" string="Group By">
 						<filter name="collectivite_id" string="Collectivité"
 							domain="[]" context="{'group_by':'collectivite_id'}" />
@@ -28,7 +28,7 @@
 			<field name="priority" eval="1" />
 			<field name="arch" type="xml">
 				<tree string="Product">
-					<field name="fiscal_date"  string="Année Comptable" />
+					<field name="fiscal_date" string="Année Comptable" />
 					<field name="date_range_id" />
 					<field name="collectivite_id" />
 					<field name="assure_id" />
@@ -50,9 +50,9 @@
 							<group>
 
 								<field name="collectivite_id" />
-								<field name="fiscal_date"/>
+								<field name="fiscal_date" />
 								<field name="nb_jour" />
-								
+
 							</group>
 							<group>
 								<field name="assure_id" />
@@ -63,9 +63,11 @@
 						<separator string="Bases de calcul" colspan="4" />
 						<group>
 							<group>
-								<field name="base_calcul"/>
-								<field name="base_trancheA"/>
-								<field name="base_trancheB"/>
+								<field name="base_calcul" />
+							</group>
+							<group>
+								<field name="base_trancheA" />
+								<field name="base_trancheB" />
 							</group>
 						</group>
 					</sheet>
@@ -75,7 +77,8 @@
 		<record id="action_declaration" model="ir.actions.act_window">
 			<field name="name">Déclarations des salaires</field>
 			<field name="res_model">cmim.declaration</field>
-			<field name="context">{"group_by":['fiscal_date','date_range_id']}</field>
+			<field name="context">{"group_by":['fiscal_date','date_range_id']}
+			</field>
 			<field name="view_id" ref="declaration_tree_view" />
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>

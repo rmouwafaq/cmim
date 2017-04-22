@@ -155,7 +155,6 @@ class cmimImportCOlAss(models.TransientModel):
                         val['tarif_inv_id'] = tarif_obj.id
                     val['type_product_id'] = type_product_id.search([('short_name', '=','PRV')]).id
                 collectivite.write({'contrat_ids':   [(0, 0, val)]})
-                product.write({"type_product_ids": [4,type_product_id.id]})
         if  not anomalies :
             return True
         else:

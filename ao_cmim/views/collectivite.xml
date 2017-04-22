@@ -11,7 +11,7 @@
 
 				<field name="name" position="after">
 					<separator />
-					<field name="code" string="Codes" domain-filter="['|','|',('old_code', '=', self),('code', '=', self)]" />
+					<field name="code" string="Codes" domain-filter="[()'code', '=', self)]" />
 
 				</field>
 				<field name="parent_id" position="attributes">
@@ -122,10 +122,8 @@
 
 					<h5>
 						<div>
-							<label for="code" class="oe_inline" string="Nouv/Anc. code" />
+							<label for="code" class="oe_inline" string="Code" />
 							<field name="code" class="oe_inline" nolabel="1" />
-							-
-							<field name="old_code" nolabel="1" class="oe_inline" />
 						</div>
 						<!-- <h2> -->
 						<!-- <field name="code" placeholder="Code Collectivité" -->

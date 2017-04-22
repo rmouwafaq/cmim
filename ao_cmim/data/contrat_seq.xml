@@ -5,7 +5,7 @@
 			<field name="name">CMIM Contrat</field>
 			<field name="code">cmim.contrat</field>
 			<field name="prefix">CT</field>
-			<field name="padding">5</field>
+			<field name="padding">7</field>
 		</record>
 	</data>
 </odoo>

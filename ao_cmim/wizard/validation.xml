@@ -31,10 +31,10 @@
 					<separator string="" colspan="4" />
 					<footer states="init">
 						<button special="cancel" name="annuler_act" string="Annuler" />
-						<button class="oe_highlight" name="suivant_act" string="Suivant" type="object" />
+						<button class="oe_highlight" name="suivant_act" icon="fa-angle-double-right" string="Suivant" type="object" />
 					</footer>
 					<footer states="select">
-						<button special="retour_act" name="retour_act" string="Retour" type="object" />
+						<button special="retour_act" name="retour_act" icon="fa-angle-double-left" string="Retour" type="object" />
 						<button class="oe_highlight" name="valider_act"
 							string="Valider" type="object" />
 					</footer>

@@ -24,7 +24,6 @@ class collectivite(models.Model):
             
     import_flag = fields.Boolean('Par import', default=False)      
     code = fields.Char(string="Code collectivite", required=True, copy=False)
-    old_code = fields.Char(string="Code collectivite")
     name = fields.Char(string="Raison sociale", required=True)
     date_adhesion = fields.Date(string="date d\'adhesion", required=True)
     secteur_id = fields.Many2one('cmim.secteur', "Secteur", required=True, ondelete="restrict")

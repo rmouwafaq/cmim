@@ -2,7 +2,18 @@
 <odoo>
 	<data>
 
-		<!-- *****************************definition des adhesions ******************************* -->
+		<record id="view_contrat_ligne_tree" model="ir.ui.view">
+			<field name="name">cmim.contrat.line.tree</field>
+			<field name="model">cmim.contrat.line</field>
+			<field name="arch" type="xml">
+				<tree editable='buttom'>
+					<field name="name" />
+					<field name="product_id" />
+					<field name="code" />
+					<field name="regle_id" />
+				</tree>
+			</field>
+		</record>
 		<record id="view_contrat_tree" model="ir.ui.view">
 			<field name="name">cmim.contrat.tree</field>
 			<field name="model">cmim.contrat</field>
@@ -74,6 +85,13 @@
 			<field name="view_mode">tree,form,kanban</field>
 			<field name="context">{"search_default_secteur_id":1}</field>
 			<field name="view_id" ref="view_contrat_tree" />
+		</record>
+		<record id="action_contrat_ligne" model="ir.actions.act_window">
+			<field name="name">Lignes de Contrats</field>
+			<field name="res_model">cmim.contrat.line</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+			<field name="view_id" ref="view_contrat_ligne_tree" />
 		</record>
 	</data>
 </odoo>

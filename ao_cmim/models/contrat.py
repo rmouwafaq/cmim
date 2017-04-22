@@ -11,17 +11,15 @@ class Contrat(models.Model):
     @api.model
     def create(self, vals): 
         vals['name'] = self.env['ir.sequence'].next_by_code('cmim.contrat') 
-        print vals
         return super(Contrat, self).create(vals)
 class LigneContrat(models.Model):
     _name = 'cmim.contrat.line'
 
-    @api.model
-    def create(self, vals): 
-        if vals.get('name','/')=='/':
-            vals['name'] =  '%s: %s' %(obj.product_id.short_name, obj.regle_id.name) 
-        return super(LigneContrat, self).create(vals)
-    name = fields.Char('Nom', required=True)
+    @api.multi
+    def get_name(self): 
+        for obj in self:
+            obj.name = '%s: %s' %(obj.product_id.short_name, obj.regle_id.name) 
+    name = fields.Char('Nom', compute="get_name")
     product_id = fields.Many2one('product.template', "Produit", required=True)
     code = fields.Integer("Code Produit")
     regle_id = fields.Many2one('cmim.regle.calcul', 'Regle de calcul', required=True)

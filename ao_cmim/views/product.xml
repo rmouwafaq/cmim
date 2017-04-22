@@ -30,12 +30,6 @@
 			<field name="priority" eval="7" />
 			<field name="inherit_id" ref="product.product_template_form_view" />
 			<field name="arch" type="xml">
-
-				<group name="group_standard_price" position="replace">
-					<group name="group_standard_price">
-						<field name="type_product_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create' : True}" />
-					</group>
-				</group>
 				<xpath expr="//notebook/page[2]" position="replace"/>
 				<xpath expr="//notebook/page[3]" position="replace"/>
 			</field>

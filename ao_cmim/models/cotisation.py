@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from datetime import datetime
 from openerp.osv import osv, fields
 from openerp import models, fields,exceptions, api, _
@@ -7,7 +7,7 @@ from openerp.exceptions import UserError
 
 class Cotisation(models.Model):
     _name ='cmim.cotisation'
-    
+
     @api.multi
     def unlink(self):
         for cotisation in self:
@@ -16,24 +16,25 @@ class Cotisation(models.Model):
             self.env['account.invoice'].search([('id', '=', cotisation.invoice_id.id)]).unlink()
         super(Cotisation, self).unlink()
         
-        
-    def _get_cotisation_assure_line_ids(self):
-        self.cotisation_assure_line_ids = self.env['cmim.cotisation.assure.line'].search([('cotisation_id.id', '=', self.id)], order="product_id")
+    @api.multi
+    def open_invoice(self):
+        return True
+#     def _get_cotisation_assure_line_ids(self):
+#         self.cotisation_assure_line_ids = self.env['cmim.cotisation.assure.line'].search([('cotisation_id.id', '=', self.id)], order="product_id")
     def _getmontant_total(self):
     
-        if(self.cotisation_line_ids):
-            self.montant = sum(line.montant for line in self.cotisation_line_ids)
+        if(self.cotisation_assure_ids):
+            self.montant = sum(line.montant for line in self.cotisation_assure_ids)
         elif(self.cotisation_product_ids):
             self.montant = sum(line.montant for line in self.cotisation_product_ids)
                 
     name =  fields.Char('Libelle')
     collectivite_id = fields.Many2one('res.partner', 'Collectivite',required=True,  domain = "[('customer','=',True),('is_company','=',True)]")
-    invoice_id = cotisation_id = fields.Many2one('account.invoice', 'Facture', domain=[('type', '=', 'out_invoice')],  ondelete='cascade')
-    cotisation_assure_ids = fields.One2many('cmim.cotisation.assure', 'cotisation_id', 'Ligne de calcul par assure')    
+    invoice_id = fields.Many2one('account.invoice', 'Facture', domain=[('type', '=', 'out_invoice')],  ondelete='cascade')
+    cotisation_assure_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_id', 'Ligne de calcul par assure')    
     cotisation_product_ids = fields.One2many('cmim.cotisation.product', 'cotisation_id', 'Ligne de calcul par produit')    
-    cotisation_assure_line_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_id', compute = "_get_cotisation_assure_line_ids") 
-    montant = fields.Float(compute="_getmontant_total", string='Montant', default= 0.0, digits=0, store=True)
-    #montant = fields.Float(string='Montant', default= 0.0)
+#     cotisation_assure_line_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_id', compute = "_get_cotisation_assure_line_ids") 
+    montant = fields.Float(compute="_getmontant_total", string='Montant')
     
     state = fields.Selection(selection=[('draft', 'Brouillon'),
                                         ('valide', 'Validee')],
@@ -45,8 +46,6 @@ class Cotisation(models.Model):
         related='collectivite_id.secteur_id', store=True
     )
     
-    
-        
     @api.onchange('fiscal_date')
     def onchange_fiscal_date(self):
         if(self.fiscal_date):
@@ -82,6 +81,7 @@ class Cotisation(models.Model):
             if not invoice.invoice_line_ids:
                 raise UserError(_('Pas de lignes facturables.'))
         self.state = 'valide'
+        self.name = self.env['ir.sequence'].next_by_code('cmim.cotisation') 
         return [inv.id for inv in invoices.values()]
     
     @api.multi
@@ -103,42 +103,73 @@ class Cotisation(models.Model):
         return invoice_vals
   
 
-class cotisation_assure(models.Model):
-    _name = 'cmim.cotisation.assure'
-    _description = "Cotisation Assure"
-
-    def _getmontant_total(self):
-        self.montant = sum(line.montant for line in self.cotisation_assure_line_ids)
-        
-        
-    cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation',  ondelete='cascade')
-    collectivite_id = fields.Many2one('res.partner',related='cotisation_id.collectivite_id', store=True)
-    assure_id = fields.Many2one('cmim.assure', 'Assure', domain="[('collectivite_id', '=','collectivite_id' ]")
-    name =  fields.Char('Libelle')
-    cotisation_assure_line_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_assure_id', 'Ligne de calcul par assure')  
-    montant = fields.Float(compute="_getmontant_total", string='Montant', default= 0.0, digits=0, store=True)
+# class cotisation_assure(models.Model):
+#     _name = 'cmim.cotisation.assure'
+#     _description = "Cotisation Assure"
+# 
+#     def _getmontant_total(self):
+#         self.montant = sum(line.montant for line in self.cotisation_assure_line_ids)
+#         
+#         
+#     cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation',  ondelete='cascade')
+#     collectivite_id = fields.Many2one('res.partner',related='cotisation_id.collectivite_id', store=True)
+#     assure_id = fields.Many2one('cmim.assure', 'Assure', domain="[('collectivite_id', '=','collectivite_id' ]")
+#     name =  fields.Char('Libelle')
+#     cotisation_assure_line_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_assure_id', 'Ligne de calcul par assure')  
+#     montant = fields.Float(compute="_getmontant_total", string='Montant', default= 0.0, digits=0, store=True)
 
 class cotisation_assure_line(models.Model):
     _name = 'cmim.cotisation.assure.line'
     _description = "Lignes ou details du calcul des cotisations_assure"
-    _order = 'cotisation_assure_id'
+    _order = 'contrat_line_id'
 
+#     @api.multi
+#     def get_montant(self):
+#         for obj in self:
+#             obj.montant = obj.base * obj.taux
     @api.multi
-    def get_montant(self):
-        for obj in self:
-            obj.montant = obj.base * obj.taux
+    def update_cotisation_product(self):
+        cotisation_product_obj = self.env['cmim.cotisation.product']
+        cotisation_product_obj = cotisation_product_obj.search([('cotisation_id.id', '=', self.cotisation_id.id),
+                                                                ('product_id.id', '=', self.product_id.id),
+                                                                ('code', '=', self.code)])
+        
+        if(cotisation_product_obj):
+            cotisation_product_obj.write({'montant': cotisation_product_obj.montant + self.montant})
+        else:
+            cotisation_product_obj = cotisation_product_obj.create({'cotisation_id': self.cotisation_id.id,
+                                                                    'product_id': self.product_id.id,
+                                                                    'code': self.code,
+                                                                    'montant' : self.montant
+                                                                    })
+        self.cotisation_id.write({'cotisation_product_ids': [(4, cotisation_product_obj.id)]})
+    @api.model
+    def create(self, vals):
+        if vals['base'] == -1:
+            vals.update({
+                    'montant': vals['taux'],
+                    'base' : 1,
+                })
+        else:
+            vals['montant'] = vals['base'] * vals['taux']
             
-    cotisation_assure_id = fields.Many2one('cmim.cotisation.assure', 'Cotisation assure',  ondelete='cascade')
-    cotisation_id = fields.Many2one('cmim.cotisation', string='Cotisation',related='cotisation_assure_id.cotisation_id', store=True)
-    assure_id = fields.Many2one('cmim.assure', string='Assure',related='cotisation_assure_id.assure_id', store=True )
-    contrat_line_id = fields.Many2one('cmim.contrat.line', 'Ligne contrat')
+        cotisation_line =  super(cotisation_assure_line, self).create(vals)
+        
+        cotisation_line.update_cotisation_product()
+        return cotisation_line
+#     cotisation_assure_id = fields.Many2one('cmim.cotisation.assure', 'Cotisation assure',  ondelete='cascade')
+    cotisation_id = fields.Many2one('cmim.cotisation', string='Cotisation')
+    declaration_id = fields.Many2one('cmim.declaration', string=u'Déclaration')
+    assure_id = fields.Many2one('cmim.assure', string='Assure',related='declaration_id.assure_id', store=True )
+    sal_mensuel = fields.Float(related='declaration_id.sal_mensuel')
+    contrat_line_id = fields.Many2one('cmim.contrat.line', 'Ligne contrat', required=True)
     product_id  = fields.Many2one('product.template', related='contrat_line_id.product_id', store=True)
     code = fields.Integer(related='contrat_line_id.code',)
     regle_id = fields.Many2one('cmim.regle.calcul',  related='contrat_line_id.regle_id')
-    name = fields.Char('Libelle')
+    name = fields.Char('Description')
     base = fields.Float('Base')
     taux = fields.Float('Taux 1')
-    montant = fields.Float('Montant', compute="get_montant") 
+    montant = fields.Float('Montant') 
     
 class cotisation_product(models.Model):
     _name = 'cmim.cotisation.product'

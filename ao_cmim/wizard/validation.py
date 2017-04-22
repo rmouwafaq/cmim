@@ -20,8 +20,8 @@ class validation_cotisation (models.TransientModel):
                     ids.append(periode.id)
             return {'domain':{'date_range_id': [('id', 'in', ids)]}}
         
-    fiscal_date = fields.Integer(string="Annee Comptable")
-    date_range_id = fields.Many2one('date.range', 'Periode')
+    fiscal_date = fields.Integer(string="Annee Comptable", required=True)
+    date_range_id = fields.Many2one('date.range', 'Periode', required=True)
     
     collectivite_ids = fields.Many2many('res.partner','validation_collectivite', 'validation_id', 'partner_id', "Collectivites", domain = "[('customer','=',True),('is_company','=',True)]")
     cotisation_ids = fields.Many2many('cmim.cotisation','validation_cotisation', 'validation_id', 'cotisaion_id', "Cotisations")

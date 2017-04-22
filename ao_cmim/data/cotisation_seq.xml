@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="seq_cmim_cotisation" model="ir.sequence">
+			<field name="name">CMIM Cotisation</field>
+			<field name="code">cmim.cotisation</field>
+			<field name="prefix">COT</field>
+			<field name="padding">7</field>
+		</record>
+	</data>
+</odoo>

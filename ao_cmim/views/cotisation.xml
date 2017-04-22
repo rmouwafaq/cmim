@@ -2,24 +2,26 @@
 <openerp>
 	<data>
 		<!--****************************** cotisation ******************************** -->
-<!-- 		<record id="cotisation_search_view" model="ir.ui.view"> -->
-<!-- 			<field name="name">cmim.cotisation.search</field> -->
-<!-- 			<field name="model">cmim.cotisation</field> -->
-<!-- 			<field name="arch" type="xml"> -->
-<!-- 				<search string="Cotisation filtre"> -->
-<!-- 					<field name="name" string="Nom" filter_domain="[('name','ilike',self)" /> -->
-<!-- 					<field name="secteur_id" string="Secteur" filter_domain="[('secteur_id','=',self)" /> -->
-<!-- 					<group expand="0" string="Group By"> -->
-<!-- 						<filter name="collectivite_id" string="Collectivité" -->
-<!-- 							domain="[]" context="{'group_by':'collectivite_id'}" /> -->
-<!-- 						<filter name="secteur_id" string="Secteur" domain="[]" -->
-<!-- 							context="{'group_by':'secteur_id'}" /> -->
-<!-- 						<filter name="state" string="Etat" domain="[]" -->
-<!-- 							context="{'group_by':'state'}" /> -->
-<!-- 					</group> -->
-<!-- 				</search> -->
-<!-- 			</field> -->
-<!-- 		</record> -->
+		<!-- <record id="cotisation_search_view" model="ir.ui.view"> -->
+		<!-- <field name="name">cmim.cotisation.search</field> -->
+		<!-- <field name="model">cmim.cotisation</field> -->
+		<!-- <field name="arch" type="xml"> -->
+		<!-- <search string="Cotisation filtre"> -->
+		<!-- <field name="name" string="Nom" filter_domain="[('name','ilike',self)" 
+			/> -->
+		<!-- <field name="secteur_id" string="Secteur" filter_domain="[('secteur_id','=',self)" 
+			/> -->
+		<!-- <group expand="0" string="Group By"> -->
+		<!-- <filter name="collectivite_id" string="Collectivité" -->
+		<!-- domain="[]" context="{'group_by':'collectivite_id'}" /> -->
+		<!-- <filter name="secteur_id" string="Secteur" domain="[]" -->
+		<!-- context="{'group_by':'secteur_id'}" /> -->
+		<!-- <filter name="state" string="Etat" domain="[]" -->
+		<!-- context="{'group_by':'state'}" /> -->
+		<!-- </group> -->
+		<!-- </search> -->
+		<!-- </field> -->
+		<!-- </record> -->
 		<record id="cotisation_tree_view" model="ir.ui.view">
 			<field name="name">cmim.cotisation.tree</field>
 			<field name="model">cmim.cotisation</field>
@@ -30,7 +32,7 @@
 					<field name="name" />
 					<field name="collectivite_id" />
 					<field name="secteur_id" />
-					<field name="fiscal_date" string="Année comptable"/>
+					<field name="fiscal_date" string="Année comptable" />
 					<field name="date_range_id" />
 					<field name="montant" />
 					<field name="state" />
@@ -50,19 +52,20 @@
 							statusbar_visible="draft,valide" />
 					</header>
 					<sheet string="Cotisation">
+						<div class="oe_button_box" name="button_box">
+							<button name="open_invoice" type="object" string="Facture"
+								class="oe_inline oe_stat_button" icon="fa-edit" attrs="{'invisible':[('state', '=', 'draft')]}" />
+						</div>
 						<h1 class="mt0">
-							<label string="Cotisation Brouillon" attrs="{'invisible': [('state','!=','draft')]}" />
-							<field name="name" readonly="1" class="oe_inline"
-								attrs="{'invisible': [('state','=','draft')]}" />
+							<field name="name" readonly="1" class="oe_inline"  />
 						</h1>
 						<group>
 							<group>
 								<field string="Colectivité" name="collectivite_id"
 									options='{"always_reload": True}' />
-								<field name="invoice_id"/>
 							</group>
 							<group>
-								<field name="fiscal_date" string="Année comptable"/>
+								<field name="fiscal_date" string="Année comptable" />
 								<field name="date_range_id" />
 							</group>
 						</group>
@@ -109,24 +112,25 @@
 										</templates>
 									</kanban>
 								</field>
-								<group class="oe_subtotal_footer oe_right">
-									<field name="montant" class="oe_subtotal_footer_separator" />
-								</group>
 							</page>
 							<page string="Détails" readonly='1'>
-								<field name="cotisation_assure_line_ids" nolabel="1"
+								<field name="cotisation_assure_ids" nolabel="1" readonly='1'
 									widget="one2many_list" mode="tree,kanban">
-									<tree string="Cotisation assure Lines" editable="bottom">
-										<field name="assure_id" />
+									<tree string="Cotisation assure Lines">
+										<field name="contrat_line_id" />
 										<field name="product_id" />
 										<field name="code" />
+										<field name="assure_id" />
+										<field name="sal_mensuel" />
 										<field name="regle_id" />
 										<field name="base" />
 										<field name="taux" />
 										<field name="montant" />
+
 									</tree>
 									<kanban class="o_kanban_mobile">
 										<field name="assure_id" />
+										<field name="contrat_line_id" />
 										<field name="product_id" />
 										<field name="code" />
 										<field name="regle_id" />
@@ -140,6 +144,7 @@
 														<div class="col-xs-12">
 															<strong>
 																<span>
+																	<t t-esc="record.contrat_line_id.value or 'None'" />
 																	<t t-esc="record.assure_id.value or 'None'" />
 																	<t t-esc="record.product_id.value or 'None'" />
 																</span>
@@ -170,8 +175,14 @@
 										</templates>
 									</kanban>
 								</field>
+
 							</page>
 						</notebook>
+						<group>
+							<group class="oe_subtotal_footer oe_right">
+								<field name="montant" class="oe_subtotal_footer_separator" />
+							</group>
+						</group>
 					</sheet>
 				</form>
 			</field>
@@ -182,7 +193,7 @@
 			<field name="name">Cotisations</field>
 			<field name="res_model">cmim.cotisation</field>
 			<field name="view_id" ref="cotisation_tree_view" />
-<!-- 			<field name="search_id" ref="cotisation_search_view" /> -->
+			<!-- <field name="search_id" ref="cotisation_search_view" /> -->
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
 		</record>

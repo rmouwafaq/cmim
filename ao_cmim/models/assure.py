@@ -19,7 +19,6 @@ class assure(models.Model):
             image = f.read()
         return tools.image_resize_image_big(image.encode('base64'))
                 
-    code_compose = fields.Char(string="Ancien Code")
     import_flag = fields.Boolean('Par import', default=False)      
     name = fields.Char('Nom', required=True)
     image = openerp.fields.Binary("Image", attachment=True,
@@ -45,32 +44,24 @@ class assure(models.Model):
                                            string='Statut')
     
     date_naissance = fields.Date(string="Date de naissance", required=True)
-    is_normal = fields.Boolean('Est Normal')
     
-    parent_id =  fields.Many2one('cmim.assure', 'Assure contractant')
     epoux_id =  fields.Many2one('cmim.assure', 'Epoux (se)')
     declaration_ids = fields.Many2one('cmim.declaration', 'Declarations')          
             
     @api.onchange('epoux_id', 'collectivite_id')
     def onchange_assure(self):
         if(self.epoux_id):
-            self.id_num_famille =  self.epoux_id.id_num_famille       
+            self.id_num_famille = self.epoux_id.id_num_famille       
         else:
             self.id_num_famille=None     
         if (self.collectivite_id):
             return {'domain': {'epoux_id': [('collectivite_id.id', '=', self.collectivite_id.id)]}}
         
-    def _get_code(self, code_col, numero, name ):
-        return str(code_col) + str(numero) + str(name)
+
     
     @api.model
     def create(self, vals):
-        print vals
         tools.image_resize_images(vals)
-        if (not 'code_compose' in vals.keys()):
-            code_col = self.env['res.partner'].search([('id', '=', vals['collectivite_id'])]).code
-            vals['code_compose'] = self._get_code(code_col, vals['numero'], str(vals['name'])[:2])
-        print '<<<<<<<', vals['code_compose']
         partner = super(assure, self).create(vals)
         return partner
 
@@ -85,7 +76,7 @@ class assure(models.Model):
                 'views' : [(view_id, 'tree'),(False, 'form')],
                 'view_id': 'ao_cmim.view_assure_tree',
                 'target':'self',
-                'domain':[('parent_id.id', '=', self.id)],
+#                 'domain':[('parent_id.id', '=', self.id)],
                 }
 
     @api.multi
