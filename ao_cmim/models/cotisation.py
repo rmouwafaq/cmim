@@ -18,15 +18,26 @@ class Cotisation(models.Model):
         
     @api.multi
     def open_invoice(self):
-        return True
+        view_id = self.env.ref('account.invoice_form').id
+        return{ 
+                'res_model':'account.invoice',
+                'type': 'ir.actions.act_window',
+                'res_id': self.invoice_id.id,
+                'view_mode':'tree,form',
+                'views' : [(view_id, 'form'),(False, 'tree')],
+                'view_id': 'account.invoice_form',
+                'target':'self',
+#                  'domain':[('parent_id.id', '=', self.id)],
+                }
 #     def _get_cotisation_assure_line_ids(self):
 #         self.cotisation_assure_line_ids = self.env['cmim.cotisation.assure.line'].search([('cotisation_id.id', '=', self.id)], order="product_id")
+    @api.multi
     def _getmontant_total(self):
-    
-        if(self.cotisation_assure_ids):
-            self.montant = sum(line.montant for line in self.cotisation_assure_ids)
-        elif(self.cotisation_product_ids):
-            self.montant = sum(line.montant for line in self.cotisation_product_ids)
+        for obj in self:
+            if(obj.cotisation_assure_ids):
+                obj.montant = sum(line.montant for line in obj.cotisation_assure_ids)
+            elif(obj.cotisation_product_ids):
+                obj.montant = sum(line.montant for line in obj.cotisation_product_ids)
                 
     name =  fields.Char('Libelle')
     collectivite_id = fields.Many2one('res.partner', 'Collectivite',required=True,  domain = "[('customer','=',True),('is_company','=',True)]")
@@ -63,28 +74,29 @@ class Cotisation(models.Model):
     def action_validate(self):
         
         inv_obj = self.env['account.invoice']
-        invoices = {}
-        group_key = self.id 
-        for line in self.cotisation_product_ids:
-            if group_key not in invoices:
-                inv_data = self._prepare_invoice()
-                invoice = inv_obj.create(inv_data)
-                invoices[group_key] = invoice
-            line.invoice_line_create(invoices[group_key].id)
-            self.invoice_id = invoice.id
-            self.name='Cot/ ' + invoice.name+"/ "+ self.date_range_id.name
-
-        if not invoices:
-            raise UserError(_('Pas de lignes facturables.'))
-
-        for invoice in invoices.values():
-            if not invoice.invoice_line_ids:
-                raise UserError(_('Pas de lignes facturables.'))
-        self.state = 'valide'
-        self.name = self.env['ir.sequence'].next_by_code('cmim.cotisation') 
-        return [inv.id for inv in invoices.values()]
+        for obj in self:
+            invoices = {}
+            group_key = obj.id 
+            for line in obj.cotisation_product_ids:
+                if group_key not in invoices:
+                    inv_data = obj._prepare_invoice()
+                    invoice = inv_obj.create(inv_data)
+                    invoices[group_key] = invoice
+                line.invoice_line_create(invoices[group_key].id)
+                obj.invoice_id = invoice.id
+#                 obj.name='Cot/ ' + invoice.name+"/ "+ self.date_range_id.name
     
-    @api.multi
+            if not invoices:
+                raise UserError(_('Pas de lignes facturables.'))
+    
+            for invoice in invoices.values():
+                if not invoice.invoice_line_ids:
+                    raise UserError(_('Pas de lignes facturables.'))
+            obj.state = 'valide'
+            obj.name = self.env['ir.sequence'].next_by_code('cmim.cotisation') 
+            obj.invoice_id.origin = obj.name
+            return [inv.id for inv in invoices.values()]
+        
     def _prepare_invoice(self):
         journal_id = self.env['account.invoice'].default_get(['journal_id'])['journal_id']
         if not journal_id:
@@ -101,32 +113,12 @@ class Cotisation(models.Model):
             'residual_signed' : self.montant
         }
         return invoice_vals
-  
-
-# class cotisation_assure(models.Model):
-#     _name = 'cmim.cotisation.assure'
-#     _description = "Cotisation Assure"
-# 
-#     def _getmontant_total(self):
-#         self.montant = sum(line.montant for line in self.cotisation_assure_line_ids)
-#         
-#         
-#     cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation',  ondelete='cascade')
-#     collectivite_id = fields.Many2one('res.partner',related='cotisation_id.collectivite_id', store=True)
-#     assure_id = fields.Many2one('cmim.assure', 'Assure', domain="[('collectivite_id', '=','collectivite_id' ]")
-#     name =  fields.Char('Libelle')
-#     cotisation_assure_line_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_assure_id', 'Ligne de calcul par assure')  
-#     montant = fields.Float(compute="_getmontant_total", string='Montant', default= 0.0, digits=0, store=True)
 
 class cotisation_assure_line(models.Model):
     _name = 'cmim.cotisation.assure.line'
     _description = "Lignes ou details du calcul des cotisations_assure"
     _order = 'contrat_line_id'
 
-#     @api.multi
-#     def get_montant(self):
-#         for obj in self:
-#             obj.montant = obj.base * obj.taux
     @api.multi
     def update_cotisation_product(self):
         cotisation_product_obj = self.env['cmim.cotisation.product']

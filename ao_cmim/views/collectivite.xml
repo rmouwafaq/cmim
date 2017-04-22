@@ -55,7 +55,7 @@
 					<button name="import_declaration" type="object"
 						string="Importer les déclarations" class="oe_inline oe_stat_button"
 						icon="fa-level-up" />
-					<button name="get_cotisations" type="object" string="Cotisations"
+					<button name="get_cotisations" type="object" string="Cotisations à valider"
 						class="oe_inline oe_stat_button" icon="fa-sign-out" />
 					<button name="get_payments" type="object" string="Réglements"
 						class="oe_inline oe_stat_button" icon="fa-sign-in" />

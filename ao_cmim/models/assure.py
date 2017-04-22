@@ -94,20 +94,7 @@ class assure(models.Model):
                 'context':{'group_by':'date_range_id'},
                 }
     
-    @api.multi
-    def get_cotisations(self):
-        """view_id = self.env.ref('ao_cmim.view_assure_tree').id
-        return{ 
-                'res_model':'cmim.assure',
-                'type': 'ir.actions.act_window',
-                'res_id': self.id,
-                'view_mode':'tree,form',
-                'views' : [(view_id, 'tree'),(False, 'form')],
-                'view_id': 'ao_cmim.view_assure_tree',
-                'target':'self',
-                'domain':[('parent_id.id', '=', self.id)],
-                }"""
-        return True
+
     
     def read_group(self, cr, uid, domain, fields, groupby, offset=0, limit=None, context=None, orderby=False, lazy=True):
         if 'numero' in fields:
