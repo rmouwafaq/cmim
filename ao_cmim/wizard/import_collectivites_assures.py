@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime
 from datetime import date
 from openerp import fields, models, exceptions, api, _
@@ -14,200 +15,87 @@ class cmimImportCOlAss(models.TransientModel):
     _description = 'Import des donnees'    
 
     data = fields.Binary("Fichier de l'objet", required=True)
-    data_contrat = fields.Binary("Fichier relation d'adhesion")
-    delimeter = fields.Char('Delimeter', default=',',
-                            help='Default delimeter is ","')
+    delimeter = fields.Char('Delimeter', default=';',
+                            help='Default delimeter is ";"')
     type_entite = fields.Selection(selection=[('collectivite', 'Collectivites'),
                                          ('assure', 'Assures')],
                                            required=True,
                                            string="Type d'entite",
                                            default='collectivite')
-    systeme = fields.Selection(selection=[('old', 'Ancien'), ('new', 'Nouveau')], defalut='new', required=True)
        
 ############################################################################
 
     @api.multi
-    def import_collectivites(self, reader_info , reader_info2):
+    def import_collectivites(self, reader_info):
         account_obj = self.env['account.account']
         partner_obj = self.env['res.partner']
-        codes = []
-        anomalies = []
+        list_col_dict = []
         for i in range(len(reader_info)):
             values = reader_info[i]
-            codes.append(values[0])            
-            if(partner_obj.search([('code', '=', values[0])])):
-                anomalies.append(values[0])
-        else:
-            adhesion_codes = []
-            for i in range(len(reader_info)):
-                values = reader_info[i]
-                if (values[0] not in adhesion_codes):
-                    adhesion_codes.append(values[0])
-            i = 0
-            while i < len(codes) :
-                if codes[i] not in adhesion_codes:
-                    anomalies.append(values[0])
-                else:
-                    i = i + 1
-            for i in range(len(reader_info)):
-                val = {}
-                values = reader_info[i]
-                if(not partner_obj.search([('code' , '=', values[1])])):
-                    val['code'] = values[0]
-                    val['name'] = values[1]
-                    val['street'] = values[2] or ''
-                    val['city'] = values[3] or ''
-                    val['phone'] = values[4] or ''
-                    val['fax'] = values[5] or ''
-                    val['import_flag'] = True
-                    #COLLECTIVITE MERE
-                    if (not values[8] == ""):
-                        partner_obj = self.env['res.partner'].search([('code', '=', values[8])])
-                        if partner_obj:
-                            val['parent_id'] = partner_obj.id
-                    secteur = self.env['cmim.secteur'].search([('name', 'like', values[7])])
-                    if(secteur):
-                        val['secteur_id'] = secteur.id
-                    else: 
-                        val['secteur_id'] = self.env['cmim.secteur'].search([('name', 'like', 'DIVERS')]).id
-                    try:
-                        val['date_adhesion'] = datetime.strptime(values[6], "%d/%m/%Y").strftime('%m/%d/%Y')
-                        # datetime.today().strftime('%m/%d/%Y')
-                        # datetime.strptime(values["Date d'adhesion"], "%d/%m/%Y").date()
-                    except Exception:
-                        val['date_adhesion'] = datetime.today().strftime('%m/%d/%Y')
-                    code = '34222' + values[0]   
-                    account_obj = account_obj.search([('code', '=', code)])
-                    if not account_obj:
-                        data = {
-                                    'name' : values[1] or False,
-                                    'code' : code  or False,
-                                    'user_type_id' : 1,
-                                    'reconcile' : True,
-                                    'company_id': self.env['res.users'].search([('id', '=', self._uid)]).company_id.id  
-                                        }
-                        account_obj = account_obj.create(data)
-                    val['property_account_receivable_id'] = account_obj.id or False
-                    code = '44111' + values[0]
-                    account_obj = account_obj.search([('code', '=', code)])
-                    if not account_obj:
-                        data = {
-                                    'name' : values[1] or False,
-                                    'code' : code  or False,
-                                    'user_type_id' : 2,
-                                    'reconcile' : True,
-                                    'company_id': self.env['res.users'].search([('id', '=', self._uid)]).company_id.id  
-                                        }
-                        account_obj = account_obj.create(data)
-                    val['property_account_payable_id'] = account_obj.id or False
-                    partner_obj.create(val)
-                # creation des contrat
-            contrat_obj = self.env['cmim.contrat']
-            tarif_obj = self.env['cmim.tarif']
-            type_product_id = self.env['cmim.product.type']
-            for i in range(len(reader_info2)):
-                val = {}
-                values = reader_info2[i]
-                collectivite = self.env['res.partner'].search([('code', 'like', values[0])])
-                product = self.env['product.template'].search([('name', 'ilike', values[4][0:4])])
-                val['collectivite_id'] = collectivite.id
-                val['product_id'] = product.id
-                val['name'] = 'Adhesion %s / %s' % (collectivite.name, product.name)
-                val['code'] = values[2]
-                val['import_flag'] = True
-                mt = float(values[5].replace(',','.',1))
-                if mt!=0:
-                    tarif_obj = self.env['cmim.tarif'].search([('type', '=', values[3].lower()), ('montant', '=', mt)])
-                    if(not tarif_obj):
-                        name= "%s" %mt
-                        if(values[3].lower() == 'p'):
-                            name="%s %%" %(mt)
-                        val['tarif_id'] = tarif_obj.create({'name': name,
-                                                          'type': values[3].lower(),
-                                                          'import_flag' : True,
-                                                          'montant':mt
-                                                          }).id
-                    else:
-                        val['tarif_id'] = tarif_obj.id
-                    val['type_product_id'] = type_product_id.search([('short_name', '=','MAL')]).id
-                else:
-                    #mt = float('.'.join(str(x) for x in tuple(values[8].split(','))))
-                    mt = float(values[8].replace(',','.',1))
-                    tarif_obj = self.env['cmim.tarif'].search([('type', '=', 'p'), ('montant', '=', mt)])
-                    if(not tarif_obj):
-                        val['tarif_inc_deces_id'] = tarif_obj.create({
-                                                          'name': "%s %%" %(mt),
-                                                          'montant': mt
-                                                          }).id
-                    else:
-                        val['tarif_inc_deces_id'] = tarif_obj.id
-                        
-                    #mt = float('.'.join(str(x) for x in tuple(values[9].split(','))))
-                    mt = float(values[9].replace(',','.',1))
-                    tarif_obj = self.env['cmim.tarif'].search([('type', '=', values[3].lower()), ('montant', '=', mt)])
-                    if(not tarif_obj):
-                        val['tarif_inv_id'] = tarif_obj.create({
-                                                          'name': "%s %%" %(mt),
-                                                          'import_flag' : True,
-                                                          'montant':mt
-                                                          }).id
-                    else:
-                        val['tarif_inv_id'] = tarif_obj.id
-                    val['type_product_id'] = type_product_id.search([('short_name', '=','PRV')]).id
-                collectivite.write({'contrat_ids':   [(0, 0, val)]})
-        if  not anomalies :
-            return True
-        else:
-            warning_msg = _("Les Collectivites suivantes sont existantes ou n'ont pas de relation d'adhesion definie:")
-            i = 0
-            while i < len(anomalies):
-                warning_msg += '\n- %s' % (anomalies[i])
-                i = i + 1
-            raise UserError(warning_msg)
-        # return True
-
+            if not partner_obj.search([('code' , '=', values[1])]):
+#                 account_obj = account_obj.search([('code', '=', '34222' + values[0] )])
+#                 if  account_obj:
+#                     receivable = account_obj.id
+#                 else
+                list_col_dict.append({
+                    'code' : values[0],
+                    'name' : values[1],
+                    'street' : values[2] or '',
+                    'city' : values[3] or '',
+                    'phone' : values[4] or '',
+                    'fax' : values[5] or '',
+                    'import_flag' : True,
+                    'secteur_id' : self.env['cmim.secteur'].search([('name', '=', values[7])]).id \
+                                    or self.env['cmim.secteur'].search([('name', '=', 'DIVERS')]).id,
+                    'siege_id' : self.env['res.partner'].search([('code', '=', values[8])]).id,
+                    'date_adhesion' : datetime.strptime(values[6], "%d/%m/%Y").strftime('%m/%d/%Y') if values[6] else None,
+                    'property_account_receivable_id' :account_obj.search([('code', '=', '34222' + values[0] )]).id or  account_obj.create({
+                                                                                                                                            'name' : values[1] or False,
+                                                                                                                                            'code' : '34222' + values[0] or False,
+                                                                                                                                            'user_type_id' : 1,
+                                                                                                                                            'reconcile' : True,
+                                                                                                                                            'company_id': self.env['res.users'].search([('id', '=', self._uid)]).company_id.id  
+                                                                                                                                                }).id,
+                    'property_account_payable_id' : account_obj.search([('code', '=', '44111' + values[0])]).id or account_obj.create({
+                                                                                                                                            'name' : values[1] or False,
+                                                                                                                                            'code' : '44111' + values[0]  or False,
+                                                                                                                                            'user_type_id' : 2,
+                                                                                                                                            'reconcile' : True,
+                                                                                                                                            'company_id': self.env['res.users'].search([('id', '=', self._uid)]).company_id.id  
+                                                                                                                                                }).id
+                    })
+        for col in list_col_dict:
+            partner_obj.create(col)
 ############################################################################
 
     @api.multi
     def import_assures(self, reader_info):
-
+        list_assure_dict = []
         assure_obj = self.env['cmim.assure']
+        collectivite_obj = self.env['res.partner']
         for i in range(len(reader_info)):
-            val = {}
             values = reader_info[i]
-            code_compose = assure_obj._get_code(values[0], values[3], str(values[5])[:1] + str(values[6])[:1] )
-            if(not assure_obj.search([('code_compose', '=',code_compose)])):
-                collectivite_obj = self.env['res.partner'].search([('code', '=', values[0])])
-                if(collectivite_obj):
-                    val['collectivite_id'] = collectivite_obj.id
-                    val['name'] = '%s %s' % (values[5], values[6])
-                    val['numero'] = values[3]
-                    val['code_compose'] = code_compose
-                    epoux_obj = self.env['cmim.assure'].search([("id_num_famille", '=', values[2])], limit=1)
-                    if(epoux_obj):
-                        val['epoux_id'] = epoux_obj.id
-                    val['id_num_famille'] = values[2]
-                    val['import_flag'] = True
-                    try:
-                        val['date_naissance'] = datetime.strptime(values[7], "%d/%m/%Y").date()
-                    except Exception:
-                        val['date_naissance'] = None
-                        
-                    if(values[4].upper() == 'RETRAITE'):
-                        val['statut'] = 'retraite'
-                    elif(values[4].upper() == 'INVALIDE'):
-                        val['statut'] = 'invalide'
-                    else:
-                        val['statut'] = 'active'
-                    assure_obj = assure_obj.create(val)
-                    epoux_obj.write({'epoux_id':assure_obj.id})
-        return True
+            if(not assure_obj.search([('numero', '=', values[3]),('collectivite_id.code', '=', values[0])])):
+                list_assure_dict.append({
+                                        'collectivite_id' : collectivite_obj.search([('code', '=', values[0])]).id,
+                                        'name' : '%s %s' % (values[5], values[6]),
+                                        'numero' : values[3],
+                                        'epoux_id' : assure_obj.search([("id_num_famille", '=', values[2])], limit=1).id or None,
+                                        'id_num_famille' : values[2],
+                                        'import_flag' : True,
+                                        'date_naissance' : datetime.strptime(values[7], "%d/%m/%Y").date() or None,
+                                        'statut_id' : self.env['cmim.statut.assure'].search([('code', '=',values[4] )]).id \
+                                                    or self.env['cmim.statut.assure'].search([('code', '=','ACT' )]).id 
+                })
+        for val in list_assure_dict:
+            assure_obj = assure_obj.create(val)
+            assure_obj.epoux_id.write({'epoux_id':assure_obj.id})
+                    
 ###########################################################################
     @api.multi
     def import_col_assure(self):
         if not self.data:
                 raise exceptions.Warning(_("Le fichier est obligatoire!"))
-        # Decode the file data
         data = base64.b64decode(self.data)
         file_input = cStringIO.StringIO(data)
         file_input.seek(0)
@@ -215,43 +103,21 @@ class cmimImportCOlAss(models.TransientModel):
         if self.delimeter:
             delimeter = str(self.delimeter)
         else:
-            delimeter = ','
+            delimeter = ';'
         reader = csv.reader(file_input, delimiter=delimeter,
                             lineterminator='\r\n')
         try:
             reader_info.extend(reader)
         except Exception:
-            raise exceptions.Warning(_("Le fichier selectionne n'est pas valide!"))
+            raise exceptions.Warning(_(u"Le fichier selectionné n'est pas valide!"))
+        del reader_info [0]
         if self.type_entite == 'collectivite':
-            if(not self.env['product.template'].search([])):
-                raise exceptions.Warning(_("L'import des collectivites ne peut avoir lieu si aucun produits n'est defini, veuillez creer les produits en premier"))
-            else:
-                if not self.data_contrat:
-                    raise exceptions.Warning(_("Le fichier relation des adhesions est obligatoire!"))
-                # Decode the file data_contrat
-                data_contrat = base64.b64decode(self.data_contrat)
-                file_input = cStringIO.StringIO(data_contrat)
-                file_input.seek(0)
-                reader_info2 = []
-                if self.delimeter:
-                    delimeter = str(self.delimeter)
-                else:
-                    delimeter = ','
-                reader = csv.reader(file_input, delimiter=delimeter,
-                                    lineterminator='\r\n')
-                try:
-                    reader_info2.extend(reader)
-                except Exception:
-                    raise exceptions.Warning(_("Not a valid file!"))
-                return self.import_collectivites(reader_info , reader_info2)
+            return self.import_collectivites(reader_info)
+        elif(not self.env['res.partner'].search([('customer', '=', True), ('is_company', '=', True)])):
+            raise exceptions.Warning(_(u"L'import des assurés exige l'existances des collectivités dans le système, veuillez créer les collectivités en premier"))
         else:
+            return self.import_assures(reader_info)
             
-            if self.type_entite == 'assure':
-                if(not self.env['res.partner'].search([('customer', '=', True), ('is_company', '=', True)])):
-                    raise exceptions.Warning(_("L'import des associes exige l'existances des collectivites dans le systemes, veuillez creer les collectivites en premier"))
-                else:
-                    return self.import_assures(reader_info)
-                
                 
                 
                         

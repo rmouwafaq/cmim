@@ -6,11 +6,6 @@ from openerp import models, fields, tools, api
 
 class assure(models.Model):
     _name = 'cmim.assure'
-
-    _defaults = {
-        'statut': 'active',
-        'is_normal' : True,
-        }
     
     def _get_default_image(self):
         img_path = openerp.modules.get_module_resource(
@@ -37,12 +32,7 @@ class assure(models.Model):
     id_num_famille = fields.Integer(string="Id Numero Famille")
     numero = fields.Integer(string="Numero Assure", required=True)
     collectivite_id = fields.Many2one('res.partner', string='Collectivite', domain="[('customer','=',True),('is_company','=',True)]", required=True, ondelete='cascade')
-    statut = fields.Selection(selection=[('active', 'Actif'),
-                                          ('invalide', 'Invalide'),
-                                          ('retraite', 'Retraite')],
-                                           required=True,
-                                           string='Statut')
-    
+    statut_id = fields.Many2one('cmim.statut.assure',  required=True, string='Statut')
     date_naissance = fields.Date(string="Date de naissance", required=True)
     
     epoux_id =  fields.Many2one('cmim.assure', 'Epoux (se)')

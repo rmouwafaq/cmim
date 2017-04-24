@@ -65,7 +65,8 @@
 			parent="config_menu" sequence="3" />
 		<menuitem id="tarif_menu" name="Tarifs" action="action_tarif"
 			parent="config_menu" sequence="4" />
-
+		<menuitem id="statut_assure_menu" name="Statut d'assurés" action="action_statut_assure"
+			parent="config_menu" sequence="5" />
 
 		<menuitem id="rapport_menu" name="Rapports" parent="main_menu"
 			sequence="6" />

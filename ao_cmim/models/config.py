@@ -6,10 +6,10 @@ from openerp import models, fields, tools, api, _
 from openerp.exceptions import UserError
 from numpy.fft.info import depends
  
-# class TypeProduit(models.Model):
-#     _name = "cmim.product.type"
-#     name = fields.Char('Nom du type', required=True)
-#     short_name = fields.Char("code")
+class StatutAssure(models.Model):
+    _name = "cmim.statut.assure"
+    name = fields.Char('Nom', required=True)
+    code = fields.Char("code")
     
 class Secteur(models.Model):
     _name = 'cmim.secteur'
@@ -74,14 +74,7 @@ class RegleCalcul(models.Model):
     code = fields.Char('Code')
     notes = fields.Text('Notes')   
     secteur_ids = fields.Many2many('cmim.secteur', 'cmim_regle_calcul_secteur_rel', 'regle_id', 'secteur_id', string="Secteurs")
-    type_assure = fields.Selection(selection=[  ('all', 'Tous'),
-                                                ('active', 'Actifs'),
-                                                ('invalide', 'Invalides'),
-                                                ('retraite', 'Retraites')],
-                                                string='Type Assure',
-                                                default='all',
-                                                required=True)
-
+    statut_id = fields.Many2one('cmim.statut.assure', string=u"Type d'assurés")
     tarif_id = fields.Many2one('cmim.tarif', string='Tarif', required=True)
     debut_applicabilite = fields.Date("Date debut de validite")
     fin_applicabilite = fields.Date("Date fin de validite")

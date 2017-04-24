@@ -13,7 +13,7 @@
 					<field name="tarif_id" />
 					<field name="debut_applicabilite" />
 					<field name="fin_applicabilite" />
-					<field name="type_assure" />
+					<field name="statut_id" />
 					<field name="reserved" string="Réservé système" />
 					<field name="secteur_ids" />
 				</tree>
@@ -44,7 +44,7 @@
 										<field name="fin_applicabilite" />
 									</group>
 									<group>
-										<field name="type_assure" />
+										<field name="statut_id" />
 									</group>
 								</group>
 								<field name="secteur_ids" />

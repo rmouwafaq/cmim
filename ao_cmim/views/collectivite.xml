@@ -14,13 +14,12 @@
 					<field name="code" string="Codes" domain-filter="[()'code', '=', self)]" />
 
 				</field>
-				<field name="parent_id" position="attributes">
-					<attribute name="string"> Collectivité Mère</attribute>
-				</field>
-				
+			
 				<group name="group_by" position="inside">
 					<filter name="secteur_id" string="Secteur" domain="[]"
 						context="{'group_by':'secteur_id'}" />
+					<filter name="siege_id" string="Collectivité Mère" domain="[]"
+						context="{'group_by':'siege_id'}" />
 				</group>
 			</field>
 		</record>
@@ -34,7 +33,7 @@
 				<field name="phone" position="before">
 					<field name="code" string="Code Collectivité" />
 					<field name="name" string="Raison sociale" />
-					<field name="date_adhesion" string="date d'adhesion" />
+					<field name="date_adhesion" string="date d'adhesion" required="1"/>
 					<field name="secteur_id" string="Secteur" />
 				</field>
 			</field>
@@ -60,44 +59,10 @@
 					<button name="get_payments" type="object" string="Réglements"
 						class="oe_inline oe_stat_button" icon="fa-sign-in" />
 				</button>
-<!-- 				<xpath expr="//page[@name='sales_purchases']" position="before"> -->
-<!-- 					<page string="Contrats / Adhésions"> -->
-<!-- 						<group> -->
-<!-- 							<field name="contrat_ids" nolabel="1"> -->
-<!-- 								<form string="Contrats / adhesions"> -->
-<!-- 									<group> -->
-<!-- 										<group> -->
-<!-- 											<field name="product_id" domain="[('type', '=', 'service')]" /> -->
-<!-- 											<field name="name" /> -->
-<!-- 										</group> -->
-<!-- 										<group> -->
-<!-- 											<field name="code" /> -->
-<!-- 											<field name="type_product_id" readonly='1' /> -->
-<!-- 											<field name="type_product_name" invisible='1' /> -->
-<!-- 											<field name="tarif_id" -->
-<!-- 												attrs="{'invisible': [('type_product_name','!=', 'MAL')]}" /> -->
-<!-- 											<field name="tarif_inc_deces_id" -->
-<!-- 												attrs="{'invisible': [('type_product_name','!=', 'PRV')]}" /> -->
-<!-- 											<field name="tarif_inv_id" -->
-<!-- 												attrs="{'invisible': [('type_product_name','!=', 'PRV')]}" /> -->
-<!-- 										</group> -->
-<!-- 									</group> -->
-<!-- 									<label for="name" /> -->
-<!-- 									<field name="name" /> -->
-<!-- 								</form> -->
-<!-- 								<tree string="Contrats / dhesions" editable="bottom"> -->
-<!-- 									<field name="product_id" domain="[('type', '=', 'service')]" /> -->
-<!-- 									<field name="name" /> -->
-<!-- 									<field name="code" /> -->
-<!-- 									<field name="type_product_id" /> -->
-<!-- 									<field name="tarif_id" /> -->
-<!-- 									<field name="tarif_inc_deces_id" /> -->
-<!-- 									<field name="tarif_inv_id" /> -->
-<!-- 								</tree> -->
-<!-- 							</field> -->
-<!-- 						</group> -->
-<!-- 					</page> -->
-<!-- 				</xpath> -->
+				<xpath expr="//page[1]" position="inside">
+					<separator string="Filliales"/>
+					<field name="filliale_ids" widget="many2many"></field>
+				</xpath>
 				<page name='sales_purchases' position="attributes">
 					<attribute name="invisible">True</attribute>
 				</page>
@@ -116,25 +81,21 @@
 				</field>
 				<h1 position="replace">
 					<h1>
-						<field name="name" default_focus="1" placeholder="Raison Sociale"
+						<field name="name" default_focus="1" placeholder="Nom"
 							attrs="{'required' : [('type', '=', 'contact')]}" />
 					</h1>
 
 					<h5>
 						<div>
-							<label for="code" class="oe_inline" string="Code" />
+							<label for="code" class="oe_inline" string="Code:" />
 							<field name="code" class="oe_inline" nolabel="1" />
 						</div>
-						<!-- <h2> -->
-						<!-- <field name="code" placeholder="Code Collectivité" -->
-						<!-- attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', 
-							False)]}" /> -->
 					</h5>
 				</h1>
 				<xpath expr="//label[@for='street']" position="before">
 					<field name="secteur_id"
 						attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
-					<field name="parent_id" string="Collectivité mère"
+					<field name="siege_id" 
 						attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
 					<field name="date_adhesion"
 						attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />

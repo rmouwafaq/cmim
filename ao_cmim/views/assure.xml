@@ -15,7 +15,7 @@
 					<field name="collectivite_id" />
 					<field name="date_naissance" />
 					<field name="email" />
-					<field name="statut" />
+					<field name="statut_id" />
 				</tree>
 			</field>
 		</record>
@@ -65,23 +65,24 @@
 			<field name="model">cmim.assure</field>
 			<field name="arch" type="xml">
 				<search string="Assure filtre">
-					<field name="statut" />
+					<field name="statut_id" />
 					<group expand="0" string="Group By">
 						<filter name="collectivite_id" string="Collectivité"
 							domain="[]" context="{'group_by':'collectivite_id'}" />
-						<filter name="statut" string="Statut" domain="[]"
-							context="{'group_by':'statut'}" />
+						<filter name="statut_id" string="Statut" domain="[]"
+							context="{'group_by':'statut_id'}" />
 					</group>
-					<filter name="statut" string="Statut" icon="terp-stock_symbol-selection"
-						domain-filter="[('statut', '=', self)]" />
-
 				</search>
 			</field>
 		</record>
 		<record id="view_assure_form" model="ir.ui.view">
 			<field name="name">cmim.assure.form</field>
 			<field name="model">cmim.assure</field>
-			<field name="priority" eval="1" />
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Cliquez ici pour ajouter un nouveau document.
+              </p>
+            </field>
 			<field name="arch" type="xml">
 				<form string="Assurés">
 					<sheet>
@@ -101,7 +102,7 @@
 						</div>
 						<group>
 							<group>
-								<field name="statut" />
+								<field name="statut_id" />
 								<field name="collectivite_id" />
 								<field name="epoux_id" />
 								<field name="id_num_famille" />
@@ -133,7 +134,6 @@
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
 			<field name="context">{}</field>
-			<!-- "search_default_statut":1 -->
 			<field name="view_id" ref="view_assure_kanban" />
 			<field name="search_id" ref="assure_search_view" />
 		</record>

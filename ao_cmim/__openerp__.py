@@ -13,7 +13,7 @@
             'data/data_range_tye.xml',
             'data/product_template.xml',
             'data/secteurs.xml',
-#             'data/type_product.xml',
+            'data/statut_assure.xml',
             'data/constante_calcul.xml',
             'data/cotisation_seq.xml',
             'data/contrat_seq.xml',

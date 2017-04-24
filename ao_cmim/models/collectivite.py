@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 import openerp
 from datetime import datetime
 from openerp.osv import osv, fields
@@ -25,12 +25,12 @@ class collectivite(models.Model):
     import_flag = fields.Boolean('Par import', default=False)      
     code = fields.Char(string="Code collectivite", required=True, copy=False)
     name = fields.Char(string="Raison sociale", required=True)
-    date_adhesion = fields.Date(string="date d\'adhesion", required=True)
+    date_adhesion = fields.Date(string="date d\'adhesion")
     secteur_id = fields.Many2one('cmim.secteur', "Secteur", required=True, ondelete="restrict")
     assure_ids = fields.One2many('cmim.assure', 'collectivite_id', string="Assures associes")
     assures_count = fields.Integer(compute='_assures_count', string="Nb assures")
-    parent_id = fields.Many2one('res.partner', domain="[('customer','=',True),('is_company','=',True)]")
-    
+    siege_id = fields.Many2one('res.partner', string=u'Collectivité mère', domain="[('customer','=',True),('is_company','=',True)]")
+    filliale_ids = fields.One2many('res.partner', 'siege_id', 'Filliales', domain=[('customer','=',True),('is_company','=',True)])
     
     contrat_id = fields.Many2one('cmim.contrat', string="Contrat", required=True)
     

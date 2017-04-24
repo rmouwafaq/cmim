@@ -14,12 +14,9 @@
 					<group>
 						<group>
 							<field name="type_entite" />
-							<field name="systeme" string="Type code Collectivité"/>
 						</group>
 						<group>
 							<field name="data" />
-							<field name="data_contrat"
-								attrs="{'invisible': [('type_entite','!=', 'collectivite')]}" />
 						</group>
 					</group>
 					<separator string="" colspan="4" />
