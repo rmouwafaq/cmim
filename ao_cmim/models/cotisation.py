@@ -143,7 +143,7 @@ class cotisation_assure_line(models.Model):
                     'base' : 1,
                 })
         else:
-            vals['montant'] = vals['base'] * vals['taux']
+            vals['montant'] = (vals['base'] * vals['taux'])/100
             
         cotisation_line =  super(cotisation_assure_line, self).create(vals)
         
@@ -152,7 +152,7 @@ class cotisation_assure_line(models.Model):
 #     cotisation_assure_id = fields.Many2one('cmim.cotisation.assure', 'Cotisation assure',  ondelete='cascade')
     cotisation_id = fields.Many2one('cmim.cotisation', string='Cotisation')
     declaration_id = fields.Many2one('cmim.declaration', string=u'Déclaration')
-    assure_id = fields.Many2one('cmim.assure', string='Assure',related='declaration_id.assure_id', store=True )
+    assure_id = fields.Many2one('res.partner', string='Assure',related='declaration_id.assure_id', store=True )
     sal_mensuel = fields.Float(related='declaration_id.sal_mensuel')
     contrat_line_id = fields.Many2one('cmim.contrat.line', 'Ligne contrat', required=True)
     product_id  = fields.Many2one('product.template', related='contrat_line_id.product_id', store=True)

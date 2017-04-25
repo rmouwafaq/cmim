@@ -1,66 +1,112 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 	<data>
-
-		<!-- *************************************** Collectivites ************************************** -->
-		<record id="partner_search_view" model="ir.ui.view">
-			<field name="name">ao.res.partner.search</field>
+		<!-- SEARCH VIEWS -->
+		<record id="assure_search_view" model="ir.ui.view">
+			<field name="name">assure.res.partner.search</field>
 			<field name="model">res.partner</field>
-			<field name="inherit_id" ref="base.view_res_partner_filter" />
 			<field name="arch" type="xml">
+				<search string="Assure filtre">
+					<field name="name" />
+					<field name="collectivite_id" string="Collectivité"
+						domain-filter="['|',('name', '=', self),('code', '=', self)]" />
+					<field name="statut_id" string="Statut"
+						domain-filter="['|',('name', '=', self),('code', '=', self)]" />
+					<field name="code" string="Matricules"
+						domain-filter="['|',('numero', '=', self),('id_num_famille', '=', self)]" />
 
-				<field name="name" position="after">
-					<separator />
-					<field name="code" string="Codes" domain-filter="[()'code', '=', self)]" />
-
-				</field>
-			
-				<group name="group_by" position="inside">
-					<filter name="secteur_id" string="Secteur" domain="[]"
-						context="{'group_by':'secteur_id'}" />
-					<filter name="siege_id" string="Collectivité Mère" domain="[]"
-						context="{'group_by':'siege_id'}" />
-				</group>
+					<group expand="0" string="Group By">
+						<filter name="collectivite_id" string="Collectivité"
+							domain="[]" context="{'group_by':'collectivite_id'}" />
+						<filter name="statut_id" string="Statut" domain="[]"
+							context="{'group_by':'statut_id'}" />
+					</group>
+				</search>
 			</field>
 		</record>
-		<record id="view_partner_tree" model="ir.ui.view">
-			<field name="name">cmim.collectivite.tree</field>
+		<record id="collectivite_search_view" model="ir.ui.view">
+			<field name="name">collectivite.res.partner.search</field>
 			<field name="model">res.partner</field>
-			<field eval="7" name="priority" />
-			<field name="inherit_id" ref="base.view_partner_tree" />
 			<field name="arch" type="xml">
-				<field name="display_name" position="replace"></field>
-				<field name="phone" position="before">
+				<search>
+					<field name="secteur_id" />
+					<field name="name" string="Raison Sociale" domain-filter="[('name', '=', self)]" />
+					<field name="siege_id" />
+					<field name="code" string="Code" domain-filter="[('code', '=', self)]" />
+					<group expand="0" string="Group By">
+						<filter name="secteur_id" string="Secteur" domain="[]"
+							context="{'group_by':'secteur_id'}" />
+						<filter name="siege_id" string="Collectivité Mère" domain="[]"
+							context="{'group_by':'siege_id'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+		<!-- TREE VIEWS -->
+		<record id="view_assure_tree" model="ir.ui.view">
+			<field name="name">ao.cmim.assure.tree</field>
+			<field name="model">res.partner</field>
+			<field name="search_view_id" ref="assure_search_view" />
+			<field name="arch" type="xml">
+				<tree>
+					<field name="display_name" />
+					<field name="numero" />
+					<field name="id_num_famille" />
+					<field name="collectivite_id" />
+					<field name="statut_id" />
+					<field name="date_naissance" />
+					<field name="function" invisible="1" />
+					<field name="phone" />
+					<field name="email" />
+				</tree>
+			</field>
+		</record>
+		<record id="view_collectivite_tree" model="ir.ui.view">
+			<field name="name">ao.cmim.collectivite.tree</field>
+			<field name="model">res.partner</field>
+			<field name="search_view_id" ref="collectivite_search_view" />
+			<field name="arch" type="xml">
+				<tree>
+					<field name="display_name" />
 					<field name="code" string="Code Collectivité" />
-					<field name="name" string="Raison sociale" />
-					<field name="date_adhesion" string="date d'adhesion" required="1"/>
-					<field name="secteur_id" string="Secteur" />
-				</field>
+					<field name="date_adhesion" />
+					<field name="secteur_id" />
+					<field name="siege_id" />
+					<field name="function" invisible="1" />
+					<field name="phone" />
+					<field name="email" />
+				</tree>
 			</field>
 		</record>
+		<!-- FORM VIEW -->
 		<record id="view_collectivite_form" model="ir.ui.view">
 			<field name="name">cmim.collectivite.form</field>
 			<field name="model">res.partner</field>
 			<field name="inherit_id" ref="base.view_partner_form" />
 			<field name="arch" type="xml">
 				<button name="toggle_active" position="after">
-
 					<button name="get_assures" type="object" class="oe_inline oe_stat_button"
-						icon="fa-users">
+						icon="fa-users" attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}">
 						<field string="Assurés" name="assures_count" widget="statinfo" />
 					</button>
 					<button name="get_declarations" type="object" string="Déclarations"
-						class="oe_inline oe_stat_button" icon="fa-align-justify" />
+						class="oe_inline oe_stat_button" icon="fa-align-justify"
+						attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}" />
+					<button name="get_declarations_for_assure" type="object" string="Déclarations"
+						class="oe_inline oe_stat_button" icon="fa-align-justify"
+						attrs="{'invisible' : [('is_collectivite' ,'=', True)]}" />
 					<button name="import_declaration" type="object"
 						string="Importer les déclarations" class="oe_inline oe_stat_button"
-						icon="fa-level-up" />
+						icon="fa-level-up" attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}" />
 					<button name="get_cotisations" type="object" string="Cotisations à valider"
-						class="oe_inline oe_stat_button" icon="fa-sign-out" />
+						class="oe_inline oe_stat_button" icon="fa-sign-out"
+						attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}" />
 					<button name="get_payments" type="object" string="Réglements"
-						class="oe_inline oe_stat_button" icon="fa-sign-in" />
+						class="oe_inline oe_stat_button" icon="fa-sign-in"
+						attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}" />
 				</button>
 				<xpath expr="//page[1]" position="inside">
-					<separator string="Filliales"/>
+					<separator string="Filliales" />
 					<field name="filliale_ids" widget="many2many"></field>
 				</xpath>
 				<page name='sales_purchases' position="attributes">
@@ -69,55 +115,125 @@
 				<field name="is_company" position="attributes">
 					<attribute name="readonly">True</attribute>
 				</field>
-				<field name="website" position="replace"> </field>
-				<field name="company_type" position="attributes">
-					<attribute name="readonly">True</attribute>
+				<field name="website" position="replace">
 				</field>
+				<field name="parent_id" position="attributes">
+					<attribute name="invisible">True</attribute>
+				</field>
+
 				<field name="customer" position="attributes">
 					<attribute name="readonly">True</attribute>
+				</field>
+				<field name="name" position="before">
+					<field name="is_collectivite" invisible="1" />
 				</field>
 				<field name="supplier" position="attributes">
 					<attribute name="readonly">True</attribute>
 				</field>
-				<h1 position="replace">
-					<h1>
-						<field name="name" default_focus="1" placeholder="Nom"
-							attrs="{'required' : [('type', '=', 'contact')]}" />
-					</h1>
+				<h1 position="after">
+					<!-- <h1> -->
+					<!-- <field name="name" default_focus="1" placeholder="Nom" -->
+					<!-- attrs="{'required' : [('type', '=', 'contact')]}" /> -->
+					<!-- </h1> -->
 
-					<h5>
+					<h5 attrs="{'invisible' : [('is_collectivite', '!=', True)]}">
 						<div>
 							<label for="code" class="oe_inline" string="Code:" />
-							<field name="code" class="oe_inline" nolabel="1" />
+							<field name="code" class="oe_inline" nolabel="1"
+								attrs="{'required' : [('is_collectivite', '=', True)]}" />
+						</div>
+					</h5>
+					<h5 attrs="{'invisible' : [('is_collectivite', '=', True)]}">
+						<div>
+							<label for="numero" class="oe_inline" string="Matricule:" />
+							<field name="numero" class="oe_inline" nolabel="1"
+								attrs="{'required' : [('is_collectivite', '!=', True)]}" />
 						</div>
 					</h5>
 				</h1>
 				<xpath expr="//label[@for='street']" position="before">
 					<field name="secteur_id"
-						attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
-					<field name="siege_id" 
-						attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
+						attrs="{'required' : [('is_collectivite', '=', True)], 'invisible' : [('is_collectivite', '!=', True)],'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
+					<field name="siege_id"
+						attrs="{'invisible' : [('is_collectivite', '!=', True)],'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
 					<field name="date_adhesion"
-						attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
-					<field name="contrat_id"
-						attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
+						attrs="{'required' : [('is_collectivite', '=', True)], 'invisible' : [('is_collectivite', '!=', True)],'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
+					<field name="contrat_id" options="{'no_create': True,'no_edit':True}"
+						attrs="{'required' : [('is_collectivite', '=', True)], 'invisible' : [('is_collectivite', '!=', True)],'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
+					<field name="collectivite_id"
+						attrs="{'required' : [('is_collectivite', '=', False)], 'invisible' : [('is_collectivite', '=', True)]}" />
+					<field name="id_num_famille"
+						attrs="{'required' : [('is_collectivite', '=', False)], 'invisible' : [('is_collectivite', '=', True)]}" />
+					<field name="epoux_id"
+						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
+					<field name="statut_id"
+						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
+					<field name="date_naissance"
+						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
 				</xpath>
+
 			</field>
 		</record>
+		<!-- KANBAN -->
+		<record id="res_partner_kanban_view" model="ir.ui.view">
+			<field name="name">cmim.collectivite.kanban</field>
+			<field name="model">res.partner</field>
+			<field name="inherit_id" ref="base.res_partner_kanban_view" />
+			<field name="arch" type="xml">
+				<field name="type" position="after">
+					<field name="code" />
+					<field name="secteur_id" />
+					<field name="numero" />
+					<field name="collectivite_id" />
+					<field name="statut_id" />
+				</field>
+				<ul position="before">
+					<ul>
+						<li t-if="record.numero.raw_value and record.collectivite_id.raw_value">
+							<field name="numero" /> 
+							, 
+							<field name="collectivite_id" />
+						</li>
+						<li t-if="record.statut_id.raw_value">
+							<field name="statut_id" />
+						</li>
+						<li t-if="record.code.raw_value and record.secteur_id.raw_value">
+							<field name="code" />
+							,
+							<field name="secteur_id" />
+						</li>
+					</ul>
+				</ul>
 
-		<!-- ************************************ action *************************************** -->
+			</field>
+		</record>
+		<!-- ACTIONS -->
 
 		<record id="action_collectivite" model="ir.actions.act_window">
 			<field name="name">Collectivités</field>
 			<field name="res_model">res.partner</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
-			<field name="domain" eval="[('customer','=',True),('is_company','=',True)]" />
-			<field name="context">{}</field>
-<!-- 			"search_default_secteur_id":1 -->
-			<field name="view_id" ref="base.res_partner_kanban_view" />
-			<field name="search_id" ref="partner_search_view" />
+			<field name="domain"
+				eval="[('is_collectivite' ,'=', True),('customer','=',True),('is_company','=',True)]" />
+			<field name="context">{'default_is_collectivite' : True,
+				'default_company_type' : 'company', 'default_is_company' : True,
+				'default_customer' : True}
+			</field>
+			<field name="view_id" ref="ao_cmim.res_partner_kanban_view" />
+			<field name="search_view_id" ref="collectivite_search_view" />
 		</record>
-
+		<record id="action_assure" model="ir.actions.act_window">
+			<field name="name">Assurés </field>
+			<field name="res_model">res.partner</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+			<field name="context">{'default_company_type' : 'person',
+				'default_is_collectivite' : False, 'default_customer' : True}
+			</field>
+			<field name="domain" eval="[('is_collectivite' ,'=', False)]" />
+			<field name="view_id" ref="ao_cmim.res_partner_kanban_view" />
+			<field name="search_view_id" ref="assure_search_view" />
+		</record>
 	</data>
 </odoo>

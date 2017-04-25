@@ -1,5 +1,4 @@
 import collectivite
-import assure
 import product
 import cotisation
 import rapport

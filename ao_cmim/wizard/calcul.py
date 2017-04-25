@@ -76,6 +76,7 @@ class calcul_cotisation (models.TransientModel):
                                         'contrat_line_id' : contrat.id}
                 
                 cotisation_line_dict['taux'] = contrat.regle_id.tarif_id.montant
+                cotisation_line_dict['base'] = -1
                 if contrat.regle_id.tarif_id.type == 'p':
                     if contrat.regle_id.regle_base_id.code == 'SALPL':
                         cotisation_line_dict['base'] = declaration_id.base_calcul
@@ -85,8 +86,7 @@ class calcul_cotisation (models.TransientModel):
                         cotisation_line_dict['base'] = declaration_id.base_trancheB
                     elif contrat.regle_id.regle_base_id:
                         cotisation_line_dict['base'] = self.env['cmim.cotisation.assure.line'].search([('regle_id', '=', contrat.regle_id.regle_base_id.id)]).montant
-                else:
-                    cotisation_line_dict['base'] = -1
+                    
                 
                 cotisation_line_list.append((0, 0, cotisation_line_dict))
         return cotisation_line_list

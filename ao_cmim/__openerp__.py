@@ -31,7 +31,7 @@
             'views/product.xml',
             'views/cotisation.xml',
             'views/collectivite.xml',
-            'views/assure.xml',
+#             'views/assure.xml',
             'views/config.xml',
             'views/regle_calcul.xml',
             'views/contrat.xml',
