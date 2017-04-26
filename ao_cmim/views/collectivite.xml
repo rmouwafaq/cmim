@@ -106,8 +106,8 @@
 						attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}" />
 				</button>
 				<xpath expr="//page[1]" position="inside">
-					<separator string="Filliales" />
-					<field name="filliale_ids" widget="many2many"></field>
+					<separator string="Filliales" invisible="context.get('default_is_collectivite') == False" />
+					<field name="filliale_ids" widget="many2many" invisible="context.get('default_is_collectivite') == False"></field>
 				</xpath>
 				<page name='sales_purchases' position="attributes">
 					<attribute name="invisible">True</attribute>
@@ -131,11 +131,6 @@
 					<attribute name="readonly">True</attribute>
 				</field>
 				<h1 position="after">
-					<!-- <h1> -->
-					<!-- <field name="name" default_focus="1" placeholder="Nom" -->
-					<!-- attrs="{'required' : [('type', '=', 'contact')]}" /> -->
-					<!-- </h1> -->
-
 					<h5 attrs="{'invisible' : [('is_collectivite', '!=', True)]}">
 						<div>
 							<label for="code" class="oe_inline" string="Code:" />

@@ -93,7 +93,7 @@ class cmimImportCOlAss(models.TransientModel):
                                         'epoux_id' :  epoux_id.id or None,
                                         'id_num_famille' : values[2],
                                         'import_flag' : True,
-                                        'date_naissance' : datetime.strptime(values[7], "%d/%m/%Y").date() or None,
+#                                         'date_naissance' : datetime.strptime(values[7], "%d/%m/%Y").date() or None,
                                         'statut_id' : self.env['cmim.statut.assure'].search([('code', '=',values[4] )]).id \
                                                     or self.env['cmim.statut.assure'].search([('code', '=','ACT' )]).id 
                 })

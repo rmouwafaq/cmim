@@ -10,7 +10,6 @@
 				<form>
 					<br></br>
 					<field name="state" invisible="1" />
-					
 					<div name="select_collectivities" states="init">
 						<group>
 							<group>

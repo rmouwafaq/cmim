@@ -8,9 +8,6 @@
 			<field name="arch" type="xml">
 				<form string="Import Collectivites assures">
 					<br></br>
-					<label
-						string="L'intégration des collectivités ou adhérents nécessite l'upload de 2 fichiers, le premier correspond aux informations globales sur l'ensemble des adhérents, tandis que le deuxième permet de définir la totalités des adhesions de ces adhérents par rapport aux produit offerts par la CMIM "
-						attrs="{'invisible': [('type_entite','!=', 'collectivite')]}" />
 					<group>
 						<group>
 							<field name="type_entite" />
