@@ -4,7 +4,6 @@ from datetime import datetime
 from openerp.osv import osv, fields
 from openerp import models, fields, tools, api, _
 from openerp.exceptions import UserError
-from numpy.fft.info import depends
  
 class StatutAssure(models.Model):
     _name = "cmim.statut.assure"
