@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from datetime import datetime
 from openerp.osv import osv, fields
 from openerp import models, fields,exceptions, api, _
@@ -60,18 +60,18 @@ class validation_cotisation (models.TransientModel):
             cotisation.action_validate()
             
         self.state="validate"    
-        return {
+        view_id = self.env.ref('ao_cmim.cotisation_tree_view').id
+        return {'name' : u'Cotisations validées',
+                'views' : [(view_id, 'tree'),(False, 'form')],
                 'type': 'ir.actions.act_window',
                 'res_model': 'cmim.cotisation',
-                'view_type': 'form',
-                'view_mode': 'form',
+                'view_mode': 'tree,form',
                 'res_id': self.id,
                 'view_id': 'ao_cmim.cotisation_tree_view',
-                'views': [(False, 'tree')],
                 'domain':[('id', 'in', [x.id for x in self.cotisation_ids])],
                 'target':'self',
             }
-                
+            
     @api.multi 
     def retour_act(self):
         self.state="init"
