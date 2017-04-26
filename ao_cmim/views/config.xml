@@ -93,8 +93,6 @@
 					</group>
 					<filter name="type"  string="Pourcentage" icon="terp-stock_symbol-selection"
 						domain="[('type', '=', 'p')]" />
-					<filter name="import_flag"  string="Importés" icon="terp-stock_symbol-selection"
-						domain="[('import_flag', '=', 'True')]" />
 					<filter name="type" string="Forfait" icon="terp-stock_symbol-selection"
 						domain="[('type', '=', 'f')]" />
 				</search>

@@ -30,14 +30,14 @@ class declaration(models.Model):
     )
     
     base_calcul = fields.Float(u'Salaire Plafonné par Secteur', compute="get_base_calcul", default=0.0, 
-                   help="La base de calcul = Salaire si compris entre plancher et plafond du Secteur de la collectivite.\
+                   help=u"La base de calcul = Salaire si compris entre plancher et plafond du Secteur de la collectivité.\
                         , si le Salaire < plancher du secteur la base de calcul prend pour valeur ce dernier.\
-                        idem, si le salaire depasse le plafond du secteur de la collectivite le plafond est lui-meme la base de calcul qui sera prise")
+                        idem, si le salaire dépasse le plafond du secteur de la collectivité le plafond est lui-même la base de calcul qui sera prise")
     base_trancheA = fields.Float(u'TrancheA', compute="get_base_calcul", default=0.0,
                                  help="La tranche A = Salaire si salaire < Plafond CNSS, sinon Plafond CNSS.") 
     base_trancheB = fields.Float(u'trancheB', compute="get_base_calcul", default=0.0,
-                                 help=" trancheB = salaire - Tranche A si salaire > TrancheA, sinon  0.\
-                                      La tranche B plafonnee= trancheB si trancheB < SRP, sinon  SRP.")  
+                                 help=u" trancheB = salaire - Tranche A si salaire > TrancheA, sinon  0.\
+                                      La tranche B plafonnée= trancheB si trancheB < SRP, sinon  SRP.")  
     
     @api.multi
     @api.depends('salaire', 'secteur_id')
@@ -56,7 +56,7 @@ class declaration(models.Model):
                     res = obj.sal_mensuel - obj.base_trancheA
                 obj.base_trancheB = min(float(srp.valeur) ,float(res))
         else:
-            raise osv.except_osv(_('Error!'), _("Veuillez verifier la configuration des constantes de calcul" ))
+            raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
     
     @api.onchange('fiscal_date')
     def onchange_fiscal_date(self):
@@ -69,5 +69,5 @@ class declaration(models.Model):
                     ids.append(periode.id)
             return {'domain':{'date_range_id': [('id', 'in', ids)]}}
         
-    fiscal_date = fields.Integer(string="Annee Comptable", required=True)
+    fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default= datetime.now().year )
     date_range_id = fields.Many2one('date.range', 'Periode', required=True)

@@ -3,7 +3,6 @@ from datetime import datetime
 from openerp.osv import osv, fields
 from openerp import models, fields, exceptions, api, _
 from openerp.exceptions import UserError
-from zope.interface.declarations import Declaration
 class calcul_cotisation (models.TransientModel):
     _name = 'cmim.calcul.cotisation'
     _sql_constraints = [
@@ -20,8 +19,8 @@ class calcul_cotisation (models.TransientModel):
                 if duree > 88 and duree < 92 and self.fiscal_date == datetime.strptime(periode.date_end, '%Y-%m-%d').year and self.fiscal_date == datetime.strptime(periode.date_start, '%Y-%m-%d').year:
                     ids.append(periode.id)
             return {'domain':{'date_range_id': [('id', 'in', ids)]}}
-        
-    fiscal_date = fields.Integer(string="Annee Comptable", required=True)
+    
+    fiscal_date = fields.Integer(string="Annee Comptable", required=True, default= datetime.now().year )
     date_range_id = fields.Many2one('date.range', 'Periode', required=True)
     collectivite_ids = fields.Many2many('res.partner', 'calcul_cotisation_collectivite', 'calcul_id', 'partner_id', "Collectivites", domain="[('customer','=',True),('is_company','=',True)]", required=True)
     

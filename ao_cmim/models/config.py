@@ -40,7 +40,6 @@ class Tarif(models.Model):
                                         default="p",
                                         string='Type de tarif')
     montant = fields.Float('Tarif')    
-    import_flag = fields.Boolean('Par import', default=False)     
     
 class RegleCalcul(models.Model):
     _name = "cmim.regle.calcul"
@@ -75,17 +74,9 @@ class RegleCalcul(models.Model):
     notes = fields.Text('Notes')   
     secteur_ids = fields.Many2many('cmim.secteur', 'cmim_regle_calcul_secteur_rel', 'regle_id', 'secteur_id', string="Secteurs")
     statut_id = fields.Many2one('cmim.statut.assure', string=u"Type d'assurés")
-    tarif_id = fields.Many2one('cmim.tarif', string='Tarif', required=True)
+    tarif_id = fields.Many2one('cmim.tarif', string='Tarif', required=True, ondelete = 'restrict')
     debut_applicabilite = fields.Date("Date debut de validite")
     fin_applicabilite = fields.Date("Date fin de validite")
-    regle_base_id = fields.Many2one('cmim.regle.calcul', 'Base Calcul')
+    regle_base_id = fields.Many2one('cmim.regle.calcul', 'Base Calcul', ondelete = 'restrict')
     
-#     base = fields.Selection(selection=[ ('sal', 'Salaire'),
-#                                         ('sal_pl', 'Salaire Plafonne par le secteur'),
-#                                         ('tB', 'Tranche B'),
-#                                         ('tA', 'Tranche A'),
-#                                         ('pl_cnss', 'Plafond CNSS'),
-#                                         ('srp', 'SRP')],
-#                                            string='Base')
- 
-    
+

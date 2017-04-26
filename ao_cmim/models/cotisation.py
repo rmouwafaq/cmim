@@ -44,7 +44,6 @@ class Cotisation(models.Model):
     invoice_id = fields.Many2one('account.invoice', 'Facture', domain=[('type', '=', 'out_invoice')],  ondelete='cascade')
     cotisation_assure_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_id', 'Ligne de calcul par assure')    
     cotisation_product_ids = fields.One2many('cmim.cotisation.product', 'cotisation_id', 'Ligne de calcul par produit')    
-#     cotisation_assure_line_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_id', compute = "_get_cotisation_assure_line_ids") 
     montant = fields.Float(compute="_getmontant_total", string='Montant')
     
     state = fields.Selection(selection=[('draft', 'Brouillon'),
@@ -68,7 +67,7 @@ class Cotisation(models.Model):
                     ids.append(periode.id)
             return {'domain':{'date_range_id': [('id', 'in', ids)]}}
         
-    fiscal_date = fields.Integer(string="Annee Comptable", required=True)
+    fiscal_date = fields.Integer(string="Annee Comptable", required=True, default= datetime.now().year )
     date_range_id = fields.Many2one('date.range', 'Periode', required=True)
     @api.multi
     def action_validate(self):
@@ -84,7 +83,6 @@ class Cotisation(models.Model):
                     invoices[group_key] = invoice
                 line.invoice_line_create(invoices[group_key].id)
                 obj.invoice_id = invoice.id
-#                 obj.name='Cot/ ' + invoice.name+"/ "+ self.date_range_id.name
     
             if not invoices:
                 raise UserError(_('Pas de lignes facturables.'))
@@ -104,7 +102,6 @@ class Cotisation(models.Model):
         invoice_vals = {
             'name': self.collectivite_id.name ,
             'origin':self.collectivite_id.name,
-#             'cotisation_id.id' : self.id,
             'type': 'out_invoice',
             'account_id': self.collectivite_id.property_account_receivable_id.id,
             'partner_id': self.collectivite_id.id,
@@ -150,7 +147,7 @@ class cotisation_assure_line(models.Model):
         cotisation_line.update_cotisation_product()
         return cotisation_line
 #     cotisation_assure_id = fields.Many2one('cmim.cotisation.assure', 'Cotisation assure',  ondelete='cascade')
-    cotisation_id = fields.Many2one('cmim.cotisation', string='Cotisation')
+    cotisation_id = fields.Many2one('cmim.cotisation', string='Cotisation',  ondelete='cascade')
     declaration_id = fields.Many2one('cmim.declaration', string=u'Déclaration')
     assure_id = fields.Many2one('res.partner', string='Assure',related='declaration_id.assure_id', store=True )
     sal_mensuel = fields.Float(related='declaration_id.sal_mensuel')
@@ -186,11 +183,8 @@ class cotisation_product(models.Model):
             'account_id': account.id,
             'price_unit': self.montant,
             'quantity': 1,
-            #'discount': self.discount,
             'uom_id': 1,
             'product_id': self.product_id.id or False,
-            #'invoice_line_tax_ids': [(6, 0, self.tax_id.ids)],
-            #'account_analytic_id': self.order_id.project_id.id,
         }
         return res
     @api.multi
