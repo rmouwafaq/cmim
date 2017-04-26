@@ -10,7 +10,7 @@
                'product', 
                'date_range'],
     'data':[
-            'data/data_range_tye.xml',
+#             'data/data_range_tye.xml',
             'data/product_template.xml',
             'data/secteurs.xml',
             'data/statut_assure.xml',
