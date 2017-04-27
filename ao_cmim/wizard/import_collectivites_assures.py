@@ -14,13 +14,13 @@ class cmimImportCOlAss(models.TransientModel):
     _name = 'cmim.import.col.ass'
     _description = 'Import des donnees'    
 
-    data = fields.Binary("Fichier de l'objet", required=True)
+    data = fields.Binary("Fichier des données", required=True)
     delimeter = fields.Char('Delimeter', default=';',
                             help='Default delimeter is ";"')
-    type_entite = fields.Selection(selection=[('collectivite', 'Collectivites'),
-                                         ('assure', 'Assures')],
+    type_entite = fields.Selection(selection=[('collectivite', u'Collectivités'),
+                                         ('assure', u'Assurés')],
                                            required=True,
-                                           string="Type d'entite",
+                                           string=u"Type d'entité",
                                            default='collectivite')
        
 ############################################################################

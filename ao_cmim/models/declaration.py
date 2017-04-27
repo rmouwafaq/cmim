@@ -70,4 +70,4 @@ class declaration(models.Model):
             return {'domain':{'date_range_id': [('id', 'in', ids)]}}
         
     fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default= datetime.now().year )
-    date_range_id = fields.Many2one('date.range', 'Periode', required=True)
+    date_range_id = fields.Many2one('date.range', u'Période', required=True)

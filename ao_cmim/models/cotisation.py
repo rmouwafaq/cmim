@@ -67,8 +67,8 @@ class Cotisation(models.Model):
                     ids.append(periode.id)
             return {'domain':{'date_range_id': [('id', 'in', ids)]}}
         
-    fiscal_date = fields.Integer(string="Annee Comptable", required=True, default= datetime.now().year )
-    date_range_id = fields.Many2one('date.range', 'Periode', required=True)
+    fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default= datetime.now().year )
+    date_range_id = fields.Many2one('date.range', u'Période', required=True)
     @api.multi
     def action_validate(self):
         

@@ -7,7 +7,7 @@ from openerp.exceptions import UserError
 class validation_cotisation (models.TransientModel):
     _name = 'cmim.validation.cotisation'
     _sql_constraints = [
-        ('fiscal_date', "check(fiscal_date > 1999)", _("Valeur incorrecte pour l'an comptable !"))
+        ('fiscal_date', "check(fiscal_date > 1999)", _(u"Valeur incorrecte pour l'année comptable !"))
     ]
     @api.onchange('fiscal_date')
     def onchange_fiscal_date(self):
@@ -20,10 +20,10 @@ class validation_cotisation (models.TransientModel):
                     ids.append(periode.id)
             return {'domain':{'date_range_id': [('id', 'in', ids)]}}
         
-    fiscal_date = fields.Integer(string="Annee Comptable", required=True, default= datetime.now().year )
-    date_range_id = fields.Many2one('date.range', 'Periode', required=True)
+    fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default= datetime.now().year )
+    date_range_id = fields.Many2one('date.range', u'Période', required=True)
     
-    collectivite_ids = fields.Many2many('res.partner','validation_collectivite', 'validation_id', 'partner_id', "Collectivites", domain = "[('customer','=',True),('is_company','=',True)]")
+    collectivite_ids = fields.Many2many('res.partner','validation_collectivite', 'validation_id', 'partner_id', u"Collectivités", domain = "[('customer','=',True),('is_company','=',True)]")
     cotisation_ids = fields.Many2many('cmim.cotisation','validation_cotisation', 'validation_id', 'cotisaion_id', "Cotisations")
     state = fields.Selection(selection=[('init', 'Init'),
                                         ('select', 'Select'),
