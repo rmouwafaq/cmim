@@ -80,7 +80,6 @@ class cmimImportCOlAss(models.TransientModel):
         for i in range(len(reader_info)):
             values = reader_info[i]
             collectivite_obj = partner_obj.search([('code', '=', values[0])])
-            epoux_id = partner_obj.search([("id_num_famille", '=', values[2])], limit=1)
             if not partner_obj.search([('numero', '=', values[3]),('collectivite_id.code', '=', values[0])]) and collectivite_obj:
                 list_assure_dict.append({
                                         'is_collectivite': False,
@@ -90,7 +89,6 @@ class cmimImportCOlAss(models.TransientModel):
                                         'name' : '%s %s' % (values[5], values[6]),
                                         'prenom' : '%s' % (values[6]),
                                         'numero' : values[3],
-                                        'epoux_id' :  epoux_id.id or None,
                                         'id_num_famille' : values[2],
                                         'import_flag' : True,
 #                                         'date_naissance' : datetime.strptime(values[7], "%d/%m/%Y").date() or None,
@@ -99,9 +97,7 @@ class cmimImportCOlAss(models.TransientModel):
                 })
         for val in list_assure_dict:
             partner_obj = partner_obj.create(val)
-            if epoux_id:
-                epoux_id.write({'epoux_id':partner_obj.id})
-            ids.append(partner_obj.id)   
+            ids.append(partner_obj.id)
         return ids
 ###########################################################################
     @api.multi

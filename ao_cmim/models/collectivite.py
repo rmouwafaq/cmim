@@ -10,7 +10,14 @@ class ResPartner(models.Model):
         ('code_collectivite_uniq', 'unique(code)', 'le code d\'adhérent doit être unique'),
         ('numero_uniq', 'unique(numero, collectivite_id)', 'le matricule doit être unique par collectivité'),
     ]
-    
+    @api.model
+    def create(self, vals): 
+        partner = super(ResPartner, self).create(vals)
+        epoux_id = self.search([("id_num_famille", '=', partner.id_num_famille), ("numero", '!=', partner.numero)], limit=1)
+        if epoux_id:
+            epoux_id.write({'epoux_id':partner.id})
+            partner.write({'epoux_id':epoux_id.id})
+        return partner
     @api.one
     @api.depends('assure_ids')
     def _assures_count(self):
@@ -39,7 +46,7 @@ class ResPartner(models.Model):
     statut_id = fields.Many2one('cmim.statut.assure', string='Statut')
     date_naissance = fields.Date(string="Date de naissance")
      
-    epoux_id =  fields.Many2one('res.partner', 'Epoux (se)', domain="[('is_collectivite', '=', False), ('default_company_type','=','person')]")
+    epoux_id =  fields.Many2one('res.partner', 'Epoux (se)', domain="[('id_num_famille', '=', id_num_famille),('is_collectivite', '=', False), ('default_company_type','=','person')]")
     declaration_ids = fields.One2many('cmim.declaration', 'assure_id', 'Declarations') 
     ###################
     assure_ids = fields.One2many('res.partner', 'collectivite_id', string=u"Assurés associés")
