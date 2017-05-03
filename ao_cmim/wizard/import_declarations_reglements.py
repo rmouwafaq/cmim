@@ -20,7 +20,7 @@ class cmimImportDecPay(models.TransientModel):
                                            required=True,
                                            string=u"Type d'opération",
                                            default='declaration')
-    systeme = fields.Selection(selection=[('old', 'Ancien'), ('new', 'Nouveau')],string=u"Type Matricule Assué", defalut='new', required=True)
+    systeme = fields.Selection(selection=[('old', 'id Num Famille'), ('new', 'Id Num Personne')],string=u"Type Matricule Assué", defalut='new', required=True)
     model = fields.Selection(selection=[('1', 'Trimestrielle'), ('2', 'Par mois')], string=u"Périodicité", defalut='1', required=True)
     payment_date = fields.Date(string=u"Date de réglement")
     
@@ -45,7 +45,7 @@ class cmimImportDecPay(models.TransientModel):
             return {'domain':{'date_range_id': [('id', 'in', ids)]}}
     
     fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default= datetime.now().year )
-    date_range_id = fields.Many2one('date.range', 'Periode', required=True)
+    date_range_id = fields.Many2one('date.range', u'Période', required=True)
     
     @api.multi
     def import_declarations(self, reader_info):
@@ -59,23 +59,31 @@ class cmimImportDecPay(models.TransientModel):
                 values = reader_info[i]
                 salaire = float('.'.join(str(x) for x in tuple(values[6].split(','))))
                 if(not salaire == 0):
-                    partner_obj = partner_obj.search([('numero', '=', values[3]),('collectivite_id.code', '=', values[0])])
-                    if partner_obj.search([('numero', '=', values[3]),('collectivite_id.code', '=', values[0])]):
-                            list_to_import.append({ 
-                                    'collectivite_id': collectivite_obj.search([('code', '=', values[0])]).id,
-                                    'assure_id': partner_obj.id,
-                                    'nb_jour' : values[7],
-                                    'salaire': salaire,
-                                    'import_flag': True,
-                                    'fiscal_date': self.fiscal_date,
-                                    'date_range_id': self.date_range_id.id
-                                                     })
+                    if self.systeme == 'new':
+                        partner_obj = partner_obj.search([('numero', '=', values[2]),('collectivite_id.code', '=', values[0])])
+                    else:
+#                         domain = [('id_num_famille', '=', values[2]),('name', 'like', values[3] )]
+                        domain = [('id_num_famille', '=', values[2]),('collectivite_id.code', '=', values[0])]
+                        partner_obj = partner_obj.search(domain)
+                    if partner_obj and len(partner_obj)==1 and not declaration_obj.search([('assure_id', '=', partner_obj.id),
+                                                    ('collectivite_id' ,'=', partner_obj.collectivite_id.id), 
+                                                    ('date_range_id', '=', self.date_range_id.id)]):
+                        list_to_import.append({ 
+                                'collectivite_id': partner_obj.collectivite_id.id,
+                                'assure_id': partner_obj.id,
+                                'nb_jour' : values[5],
+                                'salaire': salaire,
+                                'import_flag': True,
+                                'id_used' : 'old',
+                                'fiscal_date': self.fiscal_date,
+                                'date_range_id': self.date_range_id.id
+                                                 })
             print len(list_to_import)
+            print "________________________________"
+            print list_to_import
             for line in list_to_import:
-                declaration_obj= declaration_obj.search([('assure_id', '=', line['assure_id']), ('date_range_id', '=', line['date_range_id'])])
-                if not declaration_obj:
-                    declaration_obj = declaration_obj.create(line)
-                    ids.append(declaration_obj.id)
+                declaration_obj = declaration_obj.create(line)
+                ids.append(declaration_obj.id)
         elif(self.model == "2"):
             collectivite_obj = collectivite_obj.search([('code', '=', reader_info[i][0])])
             del reader_info[0]

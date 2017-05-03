@@ -11,7 +11,7 @@ class declaration(models.Model):
     _name = 'cmim.declaration'
     _sql_constraints = [
         ('fiscal_date', "check(fiscal_date > 1999)", _("Valeur incorrecte pour l'an comptable !")),
-        ('nb_jour', "check(nb_jour > 1)", _(u"Valeur incorrecte pour le nombre de jour déclarés !"))
+        ('nb_jour', "check(nb_jour > 0)", _(u"Valeur incorrecte pour le nombre de jour déclarés !"))
     ]
     @api.multi
     def get_salaire_mensuel(self):
@@ -28,7 +28,16 @@ class declaration(models.Model):
         string='Secteur',
         related='collectivite_id.secteur_id', store=True
     )
-    
+    @api.multi
+    @api.depends('id_used', 'collectivite_id.code', 'assure_id.id_num_famille', 'assure_id.numero')
+    def get_code(self):
+        self.ensure_one()
+        if (self.id_used == 'old'):
+            self.code = '%s%s' %(self.collectivite_id.code, self.assure_id.id_num_famille)
+        else:
+            self.code = '%s%s' %(self.collectivite_id.code, self.assure_id.numero)
+    code = fields.Char('Code', compute="get_code", store=True) 
+    id_used = fields.Selection(string="id used", selection=[('old', 'id Num Famille'), ('new', 'Id Num Personne')], default='old')
     base_calcul = fields.Float(u'Salaire Plafonné par Secteur', compute="get_base_calcul", default=0.0, 
                    help=u"La base de calcul = Salaire si compris entre plancher et plafond du Secteur de la collectivité.\
                         , si le Salaire < plancher du secteur la base de calcul prend pour valeur ce dernier.\

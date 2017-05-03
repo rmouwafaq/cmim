@@ -46,7 +46,7 @@ class ResPartner(models.Model):
     statut_id = fields.Many2one('cmim.statut.assure', string='Statut')
     date_naissance = fields.Date(string="Date de naissance")
      
-    epoux_id =  fields.Many2one('res.partner', 'Epoux (se)', domain="[('id_num_famille', '=', id_num_famille),('is_collectivite', '=', False), ('default_company_type','=','person')]")
+    epoux_id =  fields.Many2one('res.partner', 'Epoux (se)', domain="[('id_num_famille', '=', id_num_famille),('is_collectivite', '=', False), ('company_type','=','person')]")
     declaration_ids = fields.One2many('cmim.declaration', 'assure_id', 'Declarations') 
     ###################
     assure_ids = fields.One2many('res.partner', 'collectivite_id', string=u"Assurés associés")
