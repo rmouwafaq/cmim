@@ -79,19 +79,16 @@ class cmimImportCOlAss(models.TransientModel):
         collectivite_obj = self.env['res.partner']
         for i in range(len(reader_info)):
             values = reader_info[i]
-            collectivite_obj = partner_obj.search([('code', '=', values[0])])
-            if not partner_obj.search([('numero', '=', values[3]),('collectivite_id.code', '=', values[0])]) and collectivite_obj:
+            if not partner_obj.search([('numero', '=', values[1])]):
                 list_assure_dict.append({
                                         'is_collectivite': False,
                                         'company_type' : 'person',
                                         'customer' : True,
-                                        'collectivite_id' : collectivite_obj.id,
-                                        'name' : '%s %s' % (values[5], values[6]),
-                                        'prenom' : '%s' % (values[6]),
-                                        'numero' : values[3],
-                                        'id_num_famille' : values[2],
+                                        'name' : '%s %s' % (values[2], values[3]),
+                                        'prenom' : '%s' % (values[3]),
+                                        'numero' : values[1],
+                                        'id_num_famille' : values[0],
                                         'import_flag' : True,
-#                                         'date_naissance' : datetime.strptime(values[7], "%d/%m/%Y").date() or None,
                                         'statut_id' : self.env['cmim.statut.assure'].search([('code', '=',values[4] )]).id \
                                                     or self.env['cmim.statut.assure'].search([('code', '=','ACT' )]).id 
                 })
