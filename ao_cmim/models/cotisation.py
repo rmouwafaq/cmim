@@ -150,14 +150,14 @@ class cotisation_assure_line(models.Model):
     cotisation_id = fields.Many2one('cmim.cotisation', string='Cotisation',  ondelete='cascade')
     declaration_id = fields.Many2one('cmim.declaration', string=u'Déclaration')
     assure_id = fields.Many2one('res.partner', string='Assure',related='declaration_id.assure_id', store=True )
-    sal_mensuel = fields.Float(related='declaration_id.sal_mensuel')
+    salaire = fields.Float(related='declaration_id.salaire')
     contrat_line_id = fields.Many2one('cmim.contrat.line', 'Ligne contrat', required=True)
     product_id  = fields.Many2one('product.template', related='contrat_line_id.product_id', store=True)
     code = fields.Integer(related='contrat_line_id.code',)
     regle_id = fields.Many2one('cmim.regle.calcul',  related='contrat_line_id.regle_id')
     name = fields.Char('Description')
     base = fields.Float('Base')
-    taux = fields.Float('Taux 1')
+    taux = fields.Float('Taux')
     montant = fields.Float('Montant') 
     
 class cotisation_product(models.Model):

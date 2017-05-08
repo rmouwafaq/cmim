@@ -121,7 +121,7 @@
 										<field name="product_id" />
 										<field name="code" />
 										<field name="assure_id" />
-										<field name="sal_mensuel" />
+										<field name="salaire" />
 										<field name="regle_id" />
 										<field name="base" />
 										<field name="taux" />
@@ -195,7 +195,12 @@
 			<field name="view_id" ref="cotisation_tree_view" />
 			<!-- <field name="search_id" ref="cotisation_search_view" /> -->
 			<field name="view_type">form</field>
-			<field name="view_mode">tree,form,kanban</field>
+			<field name="view_mode">tree,form</field>
+			<field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Cliquez ici pour créer un nouvel enregistrement.
+              </p>
+            </field>
 		</record>
 
 
