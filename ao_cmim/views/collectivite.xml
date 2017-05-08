@@ -85,15 +85,15 @@
 			<field name="inherit_id" ref="base.view_partner_form" />
 			<field name="arch" type="xml">
 				<button name="toggle_active" position="after">
-					<button name="get_assures" type="object" class="oe_inline oe_stat_button"
+					<button name="get_assures" string="Assurés" type="object" class="oe_inline oe_stat_button"
 						icon="fa-users" attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}">
-						<field string="Assurés" name="assures_count" widget="statinfo" />
+						<!-- <field string="Assurés" name="assures_count" widget="statinfo" /> -->
 					</button>
 					<button name="get_declarations" type="object" string="Déclarations"
 						class="oe_inline oe_stat_button" icon="fa-align-justify"
 						attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}" />
-					<button name="get_declarations_for_assure" type="object" string="Déclarations"
-						class="oe_inline oe_stat_button" icon="fa-align-justify"
+					<button name="get_declarations_for_assure" type="object"
+						string="Déclarations" class="oe_inline oe_stat_button" icon="fa-align-justify"
 						attrs="{'invisible' : [('is_collectivite' ,'=', True)]}" />
 					<button name="import_declaration" type="object"
 						string="Importer les déclarations" class="oe_inline oe_stat_button"
@@ -106,8 +106,10 @@
 						attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}" />
 				</button>
 				<xpath expr="//page[1]" position="inside">
-					<separator string="Filliales" invisible="context.get('default_is_collectivite') == False" />
-					<field name="filliale_ids" widget="many2many" invisible="context.get('default_is_collectivite') == False"></field>
+					<separator string="Filliales"
+						invisible="context.get('default_is_collectivite') == False" />
+					<field name="filliale_ids" widget="many2many"
+						invisible="context.get('default_is_collectivite') == False"></field>
 				</xpath>
 				<page name='sales_purchases' position="attributes">
 					<attribute name="invisible">True</attribute>
@@ -130,6 +132,18 @@
 				<field name="supplier" position="attributes">
 					<attribute name="readonly">True</attribute>
 				</field>
+				<xpath expr="//notebook/page[@name='accounting']" position="after">
+					<page name="historique_affiliation" attrs="{'invisible' : [('is_collectivite' ,'=', True)]}"
+						string="Historiqes des affiliations">
+						<field name="declaration_ids">
+							<tree>
+								<field name="collectivite_id" />
+								<field name="date_range_id" />
+								<field name="fiscal_date" />
+							</tree>
+						</field>
+					</page>
+				</xpath>
 				<h1 position="after">
 					<h5 attrs="{'invisible' : [('is_collectivite', '!=', True)]}">
 						<div>
@@ -156,7 +170,7 @@
 					<field name="contrat_id" options="{'no_create': True,'no_edit':True}"
 						attrs="{'required' : [('is_collectivite', '=', True)], 'invisible' : [('is_collectivite', '!=', True)],'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
 					<field name="collectivite_id"
-						attrs="{'required' : [('is_collectivite', '=', False)], 'invisible' : [('is_collectivite', '=', True)]}" />
+						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
 					<field name="id_num_famille"
 						attrs="{'required' : [('is_collectivite', '=', False)], 'invisible' : [('is_collectivite', '=', True)]}" />
 					<field name="epoux_id"
@@ -184,10 +198,12 @@
 				</field>
 				<ul position="before">
 					<ul>
-						<li t-if="record.numero.raw_value and record.collectivite_id.raw_value">
-							<field name="numero" /> 
-							, 
-							<field name="collectivite_id" />
+						<li t-if="record.numero.raw_value">
+							<field name="numero" />
+							<span t-if="record.collectivite_id.raw_value">
+								,
+								<field name="collectivite_id" />
+							</span>
 						</li>
 						<li t-if="record.statut_id.raw_value">
 							<field name="statut_id" />

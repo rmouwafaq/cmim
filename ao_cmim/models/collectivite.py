@@ -18,13 +18,13 @@ class ResPartner(models.Model):
             epoux_id.write({'epoux_id':partner.id})
             partner.write({'epoux_id':epoux_id.id})
         return partner
-    @api.one
-    @api.depends('assure_ids')
-    def _assures_count(self):
-        
-        for obj in self:
-            if self.assure_ids :
-                obj.assures_count = len(self.assure_ids)
+#     @api.one
+#     @api.depends('assure_ids')
+#     def _assures_count(self):
+#         
+#         for obj in self:
+#             if self.assure_ids :
+#                 obj.assures_count = len(self.assure_ids)
             
     import_flag = fields.Boolean('Par import', default=False)      
     code = fields.Char(string="Code collectivite")
@@ -32,24 +32,34 @@ class ResPartner(models.Model):
     date_adhesion = fields.Date(string="date d\'adhesion")
     secteur_id = fields.Many2one('cmim.secteur', "Secteur", ondelete="restrict")
     
-    assures_count = fields.Integer(compute='_assures_count', string="Nb assures")
+#     assures_count = fields.Integer(compute='_assures_count', string="Nb assures")
     siege_id = fields.Many2one('res.partner', string=u'Collectivité mère', domain="[('customer','=',True),('is_company','=',True)]")
     filliale_ids = fields.One2many('res.partner', 'siege_id', 'Filliales', domain=[('customer','=',True),('is_company','=',True)])
     
     contrat_id = fields.Many2one('cmim.contrat', string="Contrat", ondelete = 'restrict')
     
     ########################
+    @api.multi
+    def get_last_collectivite(self):
+        for obj in self:
+            if obj.is_collectivite:
+                obj.collectivite_id = False
+            elif obj.declaration_ids:
+                obj.collectivite_id = self.env['cmim.declaration'].search([('assure_id', '=', obj.id)], order='date_range_id desc', limit=1).collectivite_id.id
+            else:
+                obj.collectivite_id = False
     is_collectivite = fields.Boolean(u'Est une collectivité', default=False)
     id_num_famille = fields.Integer(string="Id Numero Famille")
-    numero = fields.Integer(string="Numero Assure")
-    collectivite_id = fields.Many2one('res.partner', string='Collectivite', domain="[('is_collectivite', '=', True), ('customer','=',True),('is_company','=',True)]", ondelete='cascade')
+    numero = fields.Integer(string=u"Numero Assuré")
+
+    collectivite_id = fields.Many2one('res.partner', string='Collectivite',compute=get_last_collectivite, domain="[('is_collectivite', '=', True), ('customer','=',True),('is_company','=',True)]", ondelete='cascade')
     statut_id = fields.Many2one('cmim.statut.assure', string='Statut')
     date_naissance = fields.Date(string="Date de naissance")
      
     epoux_id =  fields.Many2one('res.partner', 'Epoux (se)', domain="[('id_num_famille', '=', id_num_famille),('is_collectivite', '=', False), ('company_type','=','person')]")
     declaration_ids = fields.One2many('cmim.declaration', 'assure_id', 'Declarations') 
     ###################
-    assure_ids = fields.One2many('res.partner', 'collectivite_id', string=u"Assurés associés")
+#     assure_ids = fields.One2many('res.partner', 'collectivite_id', string=u"Assurés associés")
     
     @api.multi
     def get_assures(self):

@@ -10,7 +10,7 @@ from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 class declaration(models.Model):
     _name = 'cmim.declaration'
     _sql_constraints = [
-        ('fiscal_date', "check(fiscal_date > 1999)", _("Valeur incorrecte pour l'an comptable !")),
+        ('fiscal_date', "check(fiscal_date > 1999)", _(u"Valeur incorrecte pour l'anné comptable !")),
         ('nb_jour', "check(nb_jour > 0)", _(u"Valeur incorrecte pour le nombre de jour déclarés !"))
     ]
     @api.multi
@@ -19,9 +19,9 @@ class declaration(models.Model):
             if obj.nb_jour != 0:
                 obj.sal_mensuel = (obj.salaire/obj.nb_jour) * 30
     import_flag = fields.Boolean('Par import', default=False)   
-    collectivite_id = fields.Many2one('res.partner', 'Collectivite', ondelete='cascade', domain="[('is_collectivite','=',True)]")   
-    assure_id = fields.Many2one('res.partner', 'Assure', domain="[('is_collectivite','=',False),('collectivite_id','=',collectivite_id)]", ondelete='cascade')  #  , 
-    nb_jour = fields.Integer('Nombre de jours declares')
+    collectivite_id = fields.Many2one('res.partner', u'Collectivité', ondelete='cascade', domain="[('is_collectivite','=',True)]", required=True)   
+    assure_id = fields.Many2one('res.partner', u'Assuré', required=True, domain="[('is_collectivite','=',False),('collectivite_id','=',collectivite_id)]", ondelete='cascade')  #  , 
+    nb_jour = fields.Integer(u'Nombre de jours déclarés')
     sal_mensuel = fields.Float('Salaire mensuel', compute="get_salaire_mensuel")
     salaire = fields.Float('salaire')
     secteur_id = fields.Many2one('cmim.secteur',
