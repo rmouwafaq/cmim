@@ -5,6 +5,10 @@
 			<field name="name">Actif</field>
 			<field name="code">ACT</field>
 		</record>
+		<record id="inact" model="cmim.statut.assure">
+			<field name="name">Inactif</field>
+			<field name="code">INACT</field>
+		</record>
 		<record id="adp" model="cmim.statut.assure">
 			<field name="name">Enfant Adoptif</field>
 			<field name="code">ADP</field>
