@@ -9,25 +9,33 @@ from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
     
 class declaration(models.Model):
     _name = 'cmim.declaration'
+    _order = "date_range_end desc"
     _sql_constraints = [
         ('fiscal_date', "check(fiscal_date > 1999)", _(u"Valeur incorrecte pour l'anné comptable !")),
         ('nb_jour', "check(nb_jour > 0)", _(u"Valeur incorrecte pour le nombre de jour déclarés !"))
     ]
-    @api.multi
-    def get_salaire_mensuel(self):
-        for obj in self:
-            if obj.nb_jour != 0:
-                obj.sal_mensuel = (obj.salaire/obj.nb_jour) * 30
+#     @api.multi
+#     def get_salaire_mensuel(self):
+#         for obj in self:
+#             if obj.nb_jour != 0:
+#                 obj.sal_mensuel = (obj.salaire/obj.nb_jour) * 30
     import_flag = fields.Boolean('Par import', default=False)   
     collectivite_id = fields.Many2one('res.partner', u'Collectivité', ondelete='cascade', domain="[('is_collectivite','=',True)]", required=True)   
-    assure_id = fields.Many2one('res.partner', u'Assuré', required=True, domain="[('is_collectivite','=',False),('collectivite_id','=',collectivite_id)]", ondelete='cascade')  #  , 
-    nb_jour = fields.Integer(u'Nombre de jours déclarés')
-    sal_mensuel = fields.Float('Salaire mensuel', compute="get_salaire_mensuel")
-    salaire = fields.Float('salaire')
+    assure_id = fields.Many2one('res.partner', u'Assuré', required=True, domain="[('is_collectivite','=',False)]", ondelete='cascade')  #  , 
+    nb_jour = fields.Integer(u'Nombre de jours déclarés', required=True)
+#     sal_mensuel = fields.Float('Salaire mensuel', compute="get_salaire_mensuel")
+    salaire = fields.Float('salaire', required=True)
     secteur_id = fields.Many2one('cmim.secteur',
         string='Secteur',
         related='collectivite_id.secteur_id', store=True
     )
+    @api.multi
+    def action_validate(self):
+        for obj in self:
+            obj.state = 'valide'
+            
+    state = fields.Selection(selection=[('non_valide', u'Non Validée'), ('valide', u'Validée')],default='non_valide', string="Etat")
+    notes = fields.Text('Notes')
     @api.multi
     @api.depends('id_used', 'collectivite_id.code', 'assure_id.id_num_famille', 'assure_id.numero')
     def get_code(self):
@@ -56,14 +64,14 @@ class declaration(models.Model):
         if cnss and srp:
             for obj in self:
                 # calcul de base_calcul
-                obj.base_calcul = min(float(obj.secteur_id.plafond), max(float(obj.secteur_id.plancher), float(obj.sal_mensuel)))
+                obj.base_calcul = min(float(obj.secteur_id.plafond) * 3, max(float(obj.secteur_id.plancher * 3), float(obj.salaire)))
                 #calcul de base_trancheA
-                obj.base_trancheA = min(float(cnss.valeur) ,float(obj.sal_mensuel))
+                obj.base_trancheA = min(float(cnss.valeur) * 3 ,float(obj.salaire))
                 #calcul de base_trancheB 
                 res = 0.0
-                if(obj.sal_mensuel > obj.base_trancheA):
-                    res = obj.sal_mensuel - obj.base_trancheA
-                obj.base_trancheB = min(float(srp.valeur) ,float(res))
+                if(obj.salaire > obj.base_trancheA):
+                    res = obj.salaire - obj.base_trancheA
+                obj.base_trancheB = min(float(srp.valeur) * 3 ,float(res))
         else:
             raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
     
@@ -80,3 +88,6 @@ class declaration(models.Model):
         
     fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default= datetime.now().year )
     date_range_id = fields.Many2one('date.range', u'Période', required=True)
+    date_range_end = fields.Date('date.range',
+        related='date_range_id.date_end', store=True
+    )
