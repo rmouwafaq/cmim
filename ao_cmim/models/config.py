@@ -8,14 +8,14 @@ from openerp.exceptions import UserError
 class StatutAssure(models.Model):
     _name = "cmim.statut.assure"
     name = fields.Char('Nom', required=True)
-    code = fields.Char("code")
+    code = fields.Char("code", required=True)
     
 class Secteur(models.Model):
     _name = 'cmim.secteur'
     
     name = fields.Char('nom du secteur', reduired=True)
-    plancher = fields.Float('Plancher du secteur')
-    plafond = fields.Float('Plafond du secteur')
+    plancher = fields.Float('Plancher du secteur', required=True)
+    plafond = fields.Float('Plafond du secteur', required=True)
 
 class ConstanteCalcul(models.Model):
     _name = 'cmim.constante'
@@ -38,7 +38,7 @@ class Tarif(models.Model):
                                         required=True,
                                         default="p",
                                         string='Type de tarif')
-    montant = fields.Float('Tarif')    
+    montant = fields.Float('Tarif', required=True)    
     
 class RegleCalcul(models.Model):
     _name = "cmim.regle.calcul"
