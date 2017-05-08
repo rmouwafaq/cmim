@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="True">
-
         <record id="data_range_type_overlap" model="date.range.type">
             <field name="name">Avec Chevauchement</field>
             <field name="allow_overlap">1</field>
