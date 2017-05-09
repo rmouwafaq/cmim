@@ -8,12 +8,10 @@
 			<field name="arch" type="xml">
 				<search string="Assure filtre">
 					<field name="name" />
-					<field name="collectivite_id" string="Collectivité"
-						domain-filter="['|',('name', '=', self),('code', '=', self)]" />
-					<field name="statut_id" string="Statut"
-						domain-filter="['|',('name', '=', self),('code', '=', self)]" />
-					<field name="code" string="Matricules"
-						domain-filter="['|',('numero', '=', self),('id_num_famille', '=', self)]" />
+					<field name="collectivite_id"/>
+					<field name="statut_id" string="Statut" />
+					<field name="numero" string="Matricule"/>
+					<field name="id_num_famille" string="Matricule Famille"/>
 
 					<group expand="0" string="Group By">
 						<filter name="collectivite_id" string="Collectivité"
@@ -242,7 +240,7 @@
 			<field name="context">{'default_company_type' : 'person',
 				'default_is_collectivite' : False, 'default_customer' : True}
 			</field>
-			<field name="domain" eval="[('is_collectivite' ,'=', False)]" />
+			<field name="domain" eval="[('is_collectivite' ,'=', False), ('statut_id.code', '!=', 'INACT')]" />
 			<field name="view_id" ref="ao_cmim.res_partner_kanban_view" />
 			<field name="search_view_id" ref="assure_search_view" />
 		</record>

@@ -17,6 +17,12 @@
 							context="{'group_by':'assure_id'}" />
 						<filter name="secteur_id" string="Secteur" domain="[]"
 							context="{'group_by':'secteur_id'}" />
+						<filter name="date_range_id" string="Période" domain="[]"
+							context="{'group_by':'date_range_id'}" />
+						<filter name="fiscal_date" string="Année" domain="[]"
+							context="{'group_by':'fiscal_date'}" />
+						<filter name="state" string="Statut" domain="[]"
+							context="{'group_by':'state'}" />
 					</group>
 				</search>
 			</field>
@@ -95,8 +101,7 @@
 		<record id="action_declaration" model="ir.actions.act_window">
 			<field name="name">Déclarations des salaires</field>
 			<field name="res_model">cmim.declaration</field>
-			<field name="context">{'search_default_fiscal_date' :
-				1,'search_default_date_range_id': 1}
+			<field name="context">{'group_by':['state','fiscal_date','date_range_id']}
 			</field>
 			<field name="view_id" ref="declaration_tree_view" />
 			<field name="view_type">form</field>

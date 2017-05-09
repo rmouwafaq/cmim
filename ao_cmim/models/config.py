@@ -74,8 +74,8 @@ class RegleCalcul(models.Model):
     secteur_ids = fields.Many2many('cmim.secteur', 'cmim_regle_calcul_secteur_rel', 'regle_id', 'secteur_id', string="Secteurs")
     statut_id = fields.Many2one('cmim.statut.assure', string=u"Type d'assurés")
     tarif_id = fields.Many2one('cmim.tarif', string='Tarif', required=True, ondelete = 'restrict')
-    debut_applicabilite = fields.Date("Date debut de validite")
-    fin_applicabilite = fields.Date("Date fin de validite")
+    debut_applicabilite = fields.Date(u"Date début de validité")
+    fin_applicabilite = fields.Date(u"Date fin de validité")
     regle_base_id = fields.Many2one('cmim.regle.calcul', 'Base Calcul', ondelete = 'restrict')
     
 

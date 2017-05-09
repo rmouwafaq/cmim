@@ -45,7 +45,7 @@ class ResPartner(models.Model):
             if obj.is_collectivite:
                 obj.collectivite_id = False
             elif obj.declaration_ids:
-                obj.collectivite_id = self.env['cmim.declaration'].search([('assure_id', '=', obj.id)], order='date_range_id desc', limit=1).collectivite_id.id
+                obj.collectivite_id = self.env['cmim.declaration'].search([('assure_id', '=', obj.id)], order='date_range_end desc', limit=1).collectivite_id.id
             else:
                 obj.collectivite_id = False
     is_collectivite = fields.Boolean(u'Est une collectivité', default=False)
@@ -162,9 +162,9 @@ class ResPartner(models.Model):
                     }
         else:
             return True
-    def read_group(self, cr, uid, domain, fields, groupby, offset=0, limit=None, context=None, orderby=False, lazy=True):
-        if 'numero' in fields:
-            fields.remove('numero')
-        if 'id_num_famille' in fields:
-            fields.remove('id_num_famille')
-        return super(ResPartner, self).read_group(cr, uid, domain, fields, groupby, offset, limit=limit, context=context, orderby=orderby, lazy=True)
+#     def read_group(self, cr, uid, domain, fields, groupby, offset=0, limit=None, context=None, orderby=False, lazy=True):
+#         if 'numero' in fields:
+#             fields.remove('numero')
+#         if 'id_num_famille' in fields:
+#             fields.remove('id_num_famille')
+#         return super(ResPartner, self).read_group(cr, uid, domain, fields, groupby, offset, limit=limit, context=context, orderby=orderby, lazy=True)
