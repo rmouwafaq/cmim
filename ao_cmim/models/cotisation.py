@@ -157,7 +157,7 @@ class cotisation_assure_line(models.Model):
     regle_id = fields.Many2one('cmim.regle.calcul',  related='contrat_line_id.regle_id')
     name = fields.Char('Description')
     base = fields.Float('Base')
-    taux = fields.Float('Taux')
+    taux = fields.Float('Tarif')
     montant = fields.Float('Montant') 
     
 class cotisation_product(models.Model):
