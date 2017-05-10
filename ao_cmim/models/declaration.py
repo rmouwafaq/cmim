@@ -32,7 +32,14 @@ class declaration(models.Model):
     @api.multi
     def action_validate(self):
         for obj in self:
-            obj.state = 'valide'
+            if not self.search([   ('assure_id.id', '=', obj.assure_id.id), 
+                                   ('collectivite_id.id', '=', obj.collectivite_id.id), 
+                                   ('date_range_id.id', '=', obj.date_range_id.id),
+                                   ('state', '=', 'valide')]):
+                obj.state = 'valide'
+            else:
+                raise UserError(
+                _(u"Erreur de validation!! Une déclaration a été déjà validée pour le même assuré, la même collectivité durant cette période"))
             
     state = fields.Selection(selection=[('non_valide', u'Non Validée'), ('valide', u'Validée')],default='non_valide', string="Etat")
     notes = fields.Text('Notes')

@@ -127,9 +127,9 @@ class calcul_cotisation (models.TransientModel):
                                     }
                 cotisation_dict.setdefault('cotisation_assure_ids', [])
                 declaration_ids = self.env['cmim.declaration'].search([('collectivite_id.id', '=', col.id),
-                                                                       ('date_range_id.id', '=', self.date_range_id.id)])
+                                                                       ('date_range_id.id', '=', self.date_range_id.id),
+                                                                       ('state', '=', 'valide')])
                 for declaration_id in declaration_ids:
-                    
                     cotisation_dict['cotisation_assure_ids'].extend(self.calcul_per_collectivite(declaration_id, col.contrat_id.contrat_line_ids))
                     
                 cotiation_to_create.append(cotisation_dict)

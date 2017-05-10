@@ -53,7 +53,6 @@ class cmimImportDecPay(models.TransientModel):
         collectivite_id = self.env['res.partner']
         list_to_import = []
         ids = []
-        state= 'valide'
         statut = self.env['cmim.statut.assure'].search([('code', '=','INACT' )]).id
         assure_obj = self.env['res.partner']
         if(self.model == "trim"):
@@ -64,10 +63,12 @@ class cmimImportDecPay(models.TransientModel):
                     collectivite_id = collectivite_id.search([('code', '=', values[0])])
                     state= 'valide'
                     if collectivite_id:
-                        partner_obj = partner_obj.search([('id_num_famille', '=', values[2])])
-                        state= 'valide'
-                        print '%s ____ %s' % (len(partner_obj),  values[2])
-                        if not partner_obj:
+                        partner_obj = partner_obj.search([('id_num_famille', '=', values[2]), ('name', 'like', values[3] )])
+                        if partner_obj and len(partner_obj) > 1:
+                            state = 'non_valide'
+                            partner_obj = partner_obj[0]
+                        
+                        elif not partner_obj:
                             partner_obj = partner_obj.create({  'is_collectivite': False,
                                                                 'company_type' : 'person',
                                                                 'customer' : True,
@@ -75,24 +76,23 @@ class cmimImportDecPay(models.TransientModel):
                                                                 'id_num_famille' : values[2],
                                                                 'import_flag' : True,
                                                                 'statut_id' : statut, 
-                                })
-                        elif len(partner_obj)!=1:
-                            state = "non_valide"
-                            partner_obj = partner_obj[0]
-                        elif not declaration_obj.search([('assure_id', '=', partner_obj.id),
-                                                         ('collectivite_id' ,'=', collectivite_id.id), 
-                                                         ('date_range_id', '=', self.date_range_id.id)]):
-                            list_to_import.append({ 
-                                    'collectivite_id': collectivite_id.id,
-                                    'assure_id': partner_obj.id,
-                                    'nb_jour' : values[5],
-                                    'salaire': salaire,
-                                    'import_flag': True,
-                                    'id_used' : 'old',
-                                    'fiscal_date': self.fiscal_date,
-                                    'date_range_id': self.date_range_id.id,
-                                    'state' : state
-                                                     })
+                                                            })
+                        if declaration_obj.search([ ('assure_id', '=', partner_obj.id),
+                                                    ('collectivite_id' ,'=', collectivite_id.id), 
+                                                    ('date_range_id', '=', self.date_range_id.id)]):
+                            state = 'non_valide'
+                        list_to_import.append({ 
+                                'collectivite_id': collectivite_id.id,
+                                'assure_id': partner_obj.id,
+                                'nb_jour' : values[5],
+                                'salaire': salaire,
+                                'import_flag': True,
+                                'id_used' : 'old',
+                                'fiscal_date': self.fiscal_date,
+                                'date_range_id': self.date_range_id.id,
+                                'state' : state
+                                                 })
+            print 'list_to_import', len(list_to_import)
             for line in list_to_import:
                 declaration_obj = declaration_obj.create(line)
                 ids.append(declaration_obj.id)
@@ -102,17 +102,35 @@ class cmimImportDecPay(models.TransientModel):
                 salaire = float('.'.join(str(x) for x in tuple(values[1].split(',')))) + float('.'.join(str(x) for x in tuple(values[3].split(',')))) + float('.'.join(str(x) for x in tuple(values[5].split(','))))
                 if(not salaire == 0):
                     collectivite_obj = collectivite_obj.search([('code', '=', value[0])])
-                    assure = self.env['cmim.assure'].search([('numero', '=', values[0]), ('collectivite_id.id', '=', collectivite_obj.id)])
-                    if(assure):
-                        if(not declaration_obj.search([('assure_id.id', '=', assure.id), ('fiscal_date', '=', self.fiscal_date), ('date_range_id.id', '=', self.date_range_id.id)])):
-                            declaration_obj.create({ 'collectivite_id': collectivite_obj.id,
-                                                     'assure_id': assure.id,
-                                                     'nb_jour' : values[2] + values[4] + values[6],
-                                                     'salaire': salaire,
-                                                     'import_flag': True,
-                                                     'fiscal_date': self.fiscal_date,
-                                                    'date_range_id': self.date_range_id.id
-                                                    })
+                    assure = self.env['res.partner'].search([('numero', '=', values[0])])
+                    state = 'valide'
+                    if collectivite_obj :
+                        if not assure:
+                            assure = assure.create({   'is_collectivite': False,
+                                                        'company_type' : 'person',
+                                                        'customer' : True,
+                                                        'name' : '%s' % values[3],
+                                                        'numero' : values[2],
+                                                        'import_flag' : True,
+                                                        'statut_id' : statut, 
+                                                            })
+                        if declaration_obj.search([('assure_id.id', '=', assure.id), 
+                                                   ('collectivite_id.id', '=', collectivite_obj.id), 
+                                                   ('date_range_id.id', '=', self.date_range_id.id)]):
+                            state="non_valide"
+                        list_to_import.append({ 'collectivite_id': collectivite_obj.id,
+                                                 'assure_id': assure.id,
+                                                 'nb_jour' : values[2] + values[4] + values[6],
+                                                 'salaire': salaire,
+                                                 'import_flag': True,
+                                                 'fiscal_date': self.fiscal_date,
+                                                 'date_range_id': self.date_range_id.id,
+                                                 'state' : state
+                                                })
+            print 'list_to_import', len(list_to_import)
+            for line in list_to_import:
+                declaration_obj = declaration_obj.create(line)
+                ids.append(declaration_obj.id)
         if len(ids)>0: 
                 view_id = self.env.ref('ao_cmim.declaration_tree_view').id
                 return{ 
