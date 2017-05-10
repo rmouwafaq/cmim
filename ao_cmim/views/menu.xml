@@ -54,8 +54,8 @@
 			sequence="1" parent="config_menu" />
 		<menuitem id="contrat_config_menu" name="Contrats"
 			sequence='1' action="action_contrat" parent="contrat_regle_config_menu" />
-		<menuitem id="contrat_ligne_config_menu" name="Lignes de contrats"
-			sequence='2' action="action_contrat_ligne" parent="contrat_regle_config_menu" />
+<!-- 		<menuitem id="contrat_ligne_config_menu" name="Lignes de contrats" -->
+<!-- 			sequence='2' action="action_contrat_ligne" parent="contrat_regle_config_menu" /> -->
 		<menuitem id="regle_config_menu" name="Règles de calcul"
 			sequence='3' action="action_regle_calcul" parent="contrat_regle_config_menu" />
 			

@@ -58,13 +58,6 @@ class RegleCalcul(models.Model):
         else:
             return super(RegleCalcul, self).unlink()
            
-    @api.multi
-    def write(self, vals):
-        if self.reserved:
-            raise UserError(
-                _(u"Impossible de modifier les règles de calcul réservées au système"))
-        else:
-            return super(RegleCalcul, self).write(vals)
             
     name = fields.Char('Nom', required=True)
     reserved = fields.Boolean('Reserved')

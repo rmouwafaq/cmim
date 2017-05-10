@@ -26,28 +26,31 @@
 				<form>
 					<sheet>
 						<group>
-							<field name="name" />
+							<field name="name" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
 						</group>
 						<group>
 							<group>
-								<field name="regle_base_id" required="1" />
+								<field name="reserved" invisible="1" />
+								<field name="regle_base_id" required="1"
+									attrs="{'readonly' : [('reserved' ,'=', True)]}" />
 							</group>
 							<group>
-								<field name="tarif_id" />
+								<field name="tarif_id" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
 							</group>
 						</group>
 						<notebook>
 							<page string="Applicabilité">
 								<group>
 									<group>
-										<field name="debut_applicabilite" />
-										<field name="fin_applicabilite" />
+										<field name="debut_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+										<field name="fin_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
 									</group>
 									<group>
-										<field name="statut_id" />
+										<field name="statut_id" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
 									</group>
 								</group>
-								<field name="secteur_ids" />
+								<separator string="Applicable aux secteurs suivants" />
+								<field name="secteur_ids" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
 							</page>
 							<page string="Notes">
 								<field name="notes" />

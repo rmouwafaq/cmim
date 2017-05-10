@@ -3,6 +3,7 @@ from datetime import datetime
 from openerp.osv import osv, fields
 from openerp import models, fields, exceptions, api, _
 from openerp.exceptions import UserError
+import test
 class calcul_cotisation (models.TransientModel):
     _name = 'cmim.calcul.cotisation'
     _sql_constraints = [
@@ -20,10 +21,9 @@ class calcul_cotisation (models.TransientModel):
                     ids.append(periode.id)
             return {'domain':{'date_range_id': [('id', 'in', ids)]}}
     
-    fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default= datetime.now().year )
+    fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default=datetime.now().year)
     date_range_id = fields.Many2one('date.range', u'Période', required=True)
     collectivite_ids = fields.Many2many('res.partner', 'calcul_cotisation_collectivite', 'calcul_id', 'partner_id', "Collectivites", domain="[('is_collectivite', '=', True), ('contrat_id', '!=', None), ('customer','=',True),('is_company','=',True)]", required=True)
-    
     
     @api.multi
     def create_cotisation_product_lines(self, cotisation_obj):
@@ -45,7 +45,6 @@ class calcul_cotisation (models.TransientModel):
                 cotisation_obj.write({'cotisation_product_ids': [(4, cotisation_product_obj.id)]})
         return True
     
-    
     @api.multi
     def can_calculate(self, collectivite_id):
         res = True
@@ -60,20 +59,41 @@ class calcul_cotisation (models.TransientModel):
             draft_cotisation.unlink()
         return res
         
-    
     @api.multi
     def calcul_per_collectivite(self, declaration_id, contrat_line_ids):
         cotisation_line_list = []
         for contrat in contrat_line_ids:
-            #test sur applicabilite regle
-#             if (contrat.regle_id.type_assure == 'all' or contrat.regle_id.type_assure == declaration_id.assure_id.statut)\
-#                 and not contrat.regle_id.secteur_id or contrat.regle_id.secteur_id.id == declaration_id.assure_id.collectivite_id.secteur_id.id\
-#                 and datetime.datetime.strptime(valid_date, '%Y-%m-%d').date()>= datetime.datetime.now().date() :
-            if 1==1:
+            test_applicabilite_statut = True
+            test_applicabilite_secteur = True
+            test_applicabilite_date = True
+            if not contrat.regle_id.statut_id:
+                test_applicabilite_statut = True
+            elif contrat.regle_id.statut_id.id == declaration_id.assure_id.statut_id.id:
+                test_applicabilite_statut = True
+            else:
+                test_applicabilite_statut = False
+            #############################################################
+            if not contrat.regle_id.secteur_ids:
+                test_applicabilite_secteur = True
+            elif declaration_id.secteur_id.id in [x.id for x in contrat.regle_id.secteur_ids]:
+                test_applicabilite_secteur = True
+            else:
+                test_applicabilite_secteur = False
+            #############################################################
+            if not contrat.regle_id.debut_applicabilite and not contrat.regle_id.fin_applicabilite:
+                test_applicabilite_date = True
+            elif contrat.regle_id.debut_applicabilite and declaration_id.date_range_id.date_start >= contrat.regle_id.debut_applicabilite:
+                test_applicabilite_date = True
+            elif contrat.regle_id.fin_applicabilite and contrat.regle_id.fin_applicabilite >= declaration_id.date_range_id.date_end:
+                test_applicabilite_date = True
+            else:
+                test_applicabilite_date = False
+
+            if test_applicabilite_statut and test_applicabilite_secteur and test_applicabilite_date:
                 cotisation_line_dict = {'declaration_id': declaration_id.id,
                                         'name': contrat.product_id.short_name,
                                         'contrat_line_id' : contrat.id}
-                
+                 
                 cotisation_line_dict['taux'] = contrat.regle_id.tarif_id.montant
                 cotisation_line_dict['base'] = -1
                 if contrat.regle_id.tarif_id.type == 'p':
@@ -85,16 +105,15 @@ class calcul_cotisation (models.TransientModel):
                         cotisation_line_dict['base'] = declaration_id.base_trancheB
                     elif contrat.regle_id.regle_base_id:
                         cotisation_line_dict['base'] = self.env['cmim.cotisation.assure.line'].search([('regle_id', '=', contrat.regle_id.regle_base_id.id)]).montant
-                    
-                
+                     
+                 
                 cotisation_line_list.append((0, 0, cotisation_line_dict))
         return cotisation_line_list
-    
     
     @api.multi 
     def calcul_engine(self):
         cotisation_ids = []
-        cotiation_to_create=[]
+        cotiation_to_create = []
         for col in self.collectivite_ids:
             if not self.can_calculate(col.id):
                 raise exceptions.Warning(
@@ -107,7 +126,7 @@ class calcul_cotisation (models.TransientModel):
                                     'name' : 'Cotisation Brouillon',
                                     }
                 cotisation_dict.setdefault('cotisation_assure_ids', [])
-                declaration_ids = self.env['cmim.declaration'].search([('collectivite_id.id', '=', col.id), 
+                declaration_ids = self.env['cmim.declaration'].search([('collectivite_id.id', '=', col.id),
                                                                        ('date_range_id.id', '=', self.date_range_id.id)])
                 for declaration_id in declaration_ids:
                     
