@@ -43,20 +43,14 @@ class Tarif(models.Model):
 class RegleCalcul(models.Model):
     _name = "cmim.regle.calcul"
     _order = 'sequence, regle_base_id desc'
-#     @api.multi
-#     def get_name_type(self):
-#         for obj in self:
-#             if obj.tarif_id.type == 'f':
-#                 obj.name ='%s pr %s' %(obj.tarif_id.montant,obj.type_assure)
-#             else:
-#                 obj.name="(%s)%s * %s " %(obj.type_assure, obj.base, obj.tarif_id.montant)
     @api.multi
     def unlink(self):
-        if self.reserved:
-            raise UserError(
-                _(u"Impossible de supprimer les règles de calcul réservées au système"))
-        else:
-            return super(RegleCalcul, self).unlink()
+        for obj in self:
+            if obj.reserved:
+                raise UserError(
+                    _(u"Impossible de supprimer les règles de calcul réservées au système"))
+            else:
+                return super(RegleCalcul, self).unlink()
            
             
     name = fields.Char('Nom', required=True)
@@ -66,9 +60,13 @@ class RegleCalcul(models.Model):
     notes = fields.Text('Notes')   
     secteur_ids = fields.Many2many('cmim.secteur', 'cmim_regle_calcul_secteur_rel', 'regle_id', 'secteur_id', string="Secteurs")
     statut_id = fields.Many2one('cmim.statut.assure', string=u"Type d'assurés")
-    tarif_id = fields.Many2one('cmim.tarif', string='Tarif', required=True, ondelete = 'restrict')
+    default_tarif_id = fields.Many2one('cmim.tarif', string=u'Tarif par défaut',  ondelete = 'restrict')
     debut_applicabilite = fields.Date(u"Date début de validité")
     fin_applicabilite = fields.Date(u"Date fin de validité")
-    regle_base_id = fields.Many2one('cmim.regle.calcul', 'Base Calcul', ondelete = 'restrict')
-    
+    regle_base_id = fields.Many2one('cmim.regle.calcul', 'Base Calcul', domain=[('type', '!=', 'taux')], ondelete = 'restrict')
+    regle_tarif_id = fields.Many2one('cmim.regle.calcul', 'Taux Calcul', domain=[('type', '=', 'taux')], ondelete = 'restrict')
+    type = fields.Selection(selection=[('taux', 'Règle Tarif'),
+                                        ('base', 'Règle Base')], 
+                                        default="base", string='Type de règle',
+                                        help=u"Les règles de calcul intermédaires servent à définir les bons tarifs tandis que les règles de calcul contractuelles définissent les bases de calul , le tarif pris en compte lors du calcul est soit le tarif associé à la règle intermédiaire dans le paramétrage de la collectivité, soit le tarif par défaut définit dans la règle de calcul contractuelle.")
 

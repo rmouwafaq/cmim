@@ -18,13 +18,15 @@ class ResPartner(models.Model):
             epoux_id.write({'epoux_id':partner.id})
             partner.write({'epoux_id':epoux_id.id})
         return partner
-#     @api.one
-#     @api.depends('assure_ids')
-#     def _assures_count(self):
-#         
+#     @api.multi
+#     def get_tarif_of_regle(self, regle_id):
 #         for obj in self:
-#             if self.assure_ids :
-#                 obj.assures_count = len(self.assure_ids)
+#             if obj.parametrage_ids:
+#                 parametrage = self.env['cmim.parametrage.collectivite'].search([('collectivite_id', '=', obj.id), ('regle_id', '=', regle_id)])
+#                 if parametrage:
+#                     return parametrage.tarif_id
+#                 else:
+#                     return False
             
     import_flag = fields.Boolean('Par import', default=False)      
     code = fields.Char(string="Code collectivite")
@@ -37,7 +39,7 @@ class ResPartner(models.Model):
     filliale_ids = fields.One2many('res.partner', 'siege_id', 'Filliales', domain=[('customer','=',True),('is_company','=',True)])
     
     contrat_id = fields.Many2one('cmim.contrat', string="Contrat", ondelete = 'restrict')
-    
+    parametrage_ids = fields.One2many('cmim.parametrage.collectivite', 'collectivite_id', u'Paramétrage')
     ########################
     @api.multi
     def get_last_collectivite(self):

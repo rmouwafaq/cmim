@@ -14,16 +14,10 @@ class declaration(models.Model):
         ('fiscal_date', "check(fiscal_date > 1999)", _(u"Valeur incorrecte pour l'anné comptable !")),
         ('nb_jour', "check(nb_jour > 0)", _(u"Valeur incorrecte pour le nombre de jour déclarés !"))
     ]
-#     @api.multi
-#     def get_salaire_mensuel(self):
-#         for obj in self:
-#             if obj.nb_jour != 0:
-#                 obj.sal_mensuel = (obj.salaire/obj.nb_jour) * 30
     import_flag = fields.Boolean('Par import', default=False)   
     collectivite_id = fields.Many2one('res.partner', u'Collectivité', ondelete='cascade', domain="[('is_collectivite','=',True)]", required=True)   
     assure_id = fields.Many2one('res.partner', u'Assuré', required=True, domain="[('is_collectivite','=',False)]", ondelete='cascade')  #  , 
     nb_jour = fields.Integer(u'Nombre de jours déclarés', required=True)
-#     sal_mensuel = fields.Float('Salaire mensuel', compute="get_salaire_mensuel")
     salaire = fields.Float('salaire', required=True)
     secteur_id = fields.Many2one('cmim.secteur',
         string='Secteur',

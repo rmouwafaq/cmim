@@ -99,18 +99,19 @@ class cmimImportDecPay(models.TransientModel):
         elif(self.model == "sep"):
             for i in range(len(reader_info)):
                 values = reader_info[i]
-                salaire = float('.'.join(str(x) for x in tuple(values[1].split(',')))) + float('.'.join(str(x) for x in tuple(values[3].split(',')))) + float('.'.join(str(x) for x in tuple(values[5].split(','))))
+                salaire = float('.'.join(str(x) for x in tuple(values[6].split(',')))) + float('.'.join(str(x) for x in tuple(values[8].split(',')))) + float('.'.join(str(x) for x in tuple(values[10].split(','))))
                 if(not salaire == 0):
                     collectivite_obj = collectivite_obj.search([('code', '=', value[0])])
-                    assure = self.env['res.partner'].search([('numero', '=', values[0])])
+                    assure = self.env['res.partner'].search([('numero', '=', values[3])])
                     state = 'valide'
                     if collectivite_obj :
                         if not assure:
                             assure = assure.create({   'is_collectivite': False,
                                                         'company_type' : 'person',
                                                         'customer' : True,
-                                                        'name' : '%s' % values[3],
-                                                        'numero' : values[2],
+                                                        'id_num_famille' : values[2],
+                                                        'numero' : values[3],
+                                                        'name' : '%s %s' % (values[4],values[5]),
                                                         'import_flag' : True,
                                                         'statut_id' : statut, 
                                                             })
@@ -120,7 +121,7 @@ class cmimImportDecPay(models.TransientModel):
                             state="non_valide"
                         list_to_import.append({ 'collectivite_id': collectivite_obj.id,
                                                  'assure_id': assure.id,
-                                                 'nb_jour' : values[2] + values[4] + values[6],
+                                                 'nb_jour' : values[7] + values[9] + values[11],
                                                  'salaire': salaire,
                                                  'import_flag': True,
                                                  'fiscal_date': self.fiscal_date,

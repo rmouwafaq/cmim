@@ -58,10 +58,11 @@ class calcul_cotisation (models.TransientModel):
         if draft_cotisation:
             draft_cotisation.unlink()
         return res
-        
+    
     @api.multi
-    def calcul_per_collectivite(self, declaration_id, contrat_line_ids):
+    def calcul_per_collectivite(self, declaration_id, contrat_line_ids, dict_tarifs):
         cotisation_line_list = []
+        dict_bases = {}
         for contrat in contrat_line_ids:
             test_applicabilite_statut = True
             test_applicabilite_secteur = True
@@ -93,23 +94,35 @@ class calcul_cotisation (models.TransientModel):
                 cotisation_line_dict = {'declaration_id': declaration_id.id,
                                         'name': contrat.product_id.short_name,
                                         'contrat_line_id' : contrat.id}
-                 
-                cotisation_line_dict['taux'] = contrat.regle_id.tarif_id.montant
+                
+                selected_tarif_id = dict_tarifs.get(contrat.regle_id.regle_tarif_id.id, False) or contrat.regle_id.regle_tarif_id.default_tarif_id
+                cotisation_line_dict['taux'] = selected_tarif_id.montant
                 cotisation_line_dict['base'] = -1
-                if contrat.regle_id.tarif_id.type == 'p':
+                if selected_tarif_id.type == 'p':
                     if contrat.regle_id.regle_base_id.code == 'SALPL':
                         cotisation_line_dict['base'] = declaration_id.base_calcul
+                        dict_bases.update({contrat.regle_id.regle_base_id.id : declaration_id.base_calcul })
                     elif contrat.regle_id.regle_base_id.code == 'TA':
                         cotisation_line_dict['base'] = declaration_id.base_trancheA
+                        dict_bases.update({contrat.regle_id.regle_base_id.id : declaration_id.base_trancheA })
                     elif contrat.regle_id.regle_base_id.code == 'TB':
                         cotisation_line_dict['base'] = declaration_id.base_trancheB
-                    elif contrat.regle_id.regle_base_id:
-                        cotisation_line_dict['base'] = self.env['cmim.cotisation.assure.line'].search([('regle_id', '=', contrat.regle_id.regle_base_id.id)]).montant
-                     
+                        dict_bases.update({contrat.regle_id.regle_base_id.id : declaration_id.base_trancheB })
+                    elif contrat.regle_id.regle_base_id and contrat.regle_id.regle_base_id.id in dict_bases.keys():
+                        cotisation_line_dict['base'] = dict_bases[contrat.regle_id.regle_base_id.id]
+                    else:
+                        print "probleme "
                  
                 cotisation_line_list.append((0, 0, cotisation_line_dict))
         return cotisation_line_list
     
+    @api.multi
+    def get_tarifs(self, collectivite_id):
+        res = {}
+        for param in collectivite_id.parametrage_ids:
+            if not param.regle_id.id in res.keys():
+                res.update({param.regle_id.id : param.tarif_id})
+        return res
     @api.multi 
     def calcul_engine(self):
         cotisation_ids = []
@@ -117,7 +130,7 @@ class calcul_cotisation (models.TransientModel):
         for col in self.collectivite_ids:
             if not self.can_calculate(col.id):
                 raise exceptions.Warning(
-                    _("vous avez valide des cotisations pour une ou plusieurs collectivites. \nImpossible de lancer le calcul pour les memes periodes"))
+                    _(u"vous avez validé des cotisations pour une ou plusieurs collectivités. \nImpossible de lancer le calcul pour les mêmes périodes"))
             else:
                 cotisation_dict = { 'date_range_id': self.date_range_id.id,
                                     'fiscal_date': self.fiscal_date,
@@ -129,9 +142,9 @@ class calcul_cotisation (models.TransientModel):
                 declaration_ids = self.env['cmim.declaration'].search([('collectivite_id.id', '=', col.id),
                                                                        ('date_range_id.id', '=', self.date_range_id.id),
                                                                        ('state', '=', 'valide')])
+                dict_tarifs = self.get_tarifs(col)
                 for declaration_id in declaration_ids:
-                    cotisation_dict['cotisation_assure_ids'].extend(self.calcul_per_collectivite(declaration_id, col.contrat_id.contrat_line_ids))
-                    
+                    cotisation_dict['cotisation_assure_ids'].extend(self.calcul_per_collectivite(declaration_id, col.contrat_id.contrat_line_ids, dict_tarifs))
                 cotiation_to_create.append(cotisation_dict)
         for c in cotiation_to_create:
             cotisation_ids.append(self.env['cmim.cotisation'].create(c).id)
@@ -150,3 +163,94 @@ class calcul_cotisation (models.TransientModel):
         else:
             return True
             
+#     @api.multi
+#     def calcul_per_collectivite(self, declaration_id, contrat_line_ids):
+#         cotisation_line_list = []
+#         for contrat in contrat_line_ids:
+#             test_applicabilite_statut = True
+#             test_applicabilite_secteur = True
+#             test_applicabilite_date = True
+#             if not contrat.regle_id.statut_id:
+#                 test_applicabilite_statut = True
+#             elif contrat.regle_id.statut_id.id == declaration_id.assure_id.statut_id.id:
+#                 test_applicabilite_statut = True
+#             else:
+#                 test_applicabilite_statut = False
+#             #############################################################
+#             if not contrat.regle_id.secteur_ids:
+#                 test_applicabilite_secteur = True
+#             elif declaration_id.secteur_id.id in [x.id for x in contrat.regle_id.secteur_ids]:
+#                 test_applicabilite_secteur = True
+#             else:
+#                 test_applicabilite_secteur = False
+#             #############################################################
+#             if not contrat.regle_id.debut_applicabilite and not contrat.regle_id.fin_applicabilite:
+#                 test_applicabilite_date = True
+#             elif contrat.regle_id.debut_applicabilite and declaration_id.date_range_id.date_start >= contrat.regle_id.debut_applicabilite:
+#                 test_applicabilite_date = True
+#             elif contrat.regle_id.fin_applicabilite and contrat.regle_id.fin_applicabilite >= declaration_id.date_range_id.date_end:
+#                 test_applicabilite_date = True
+#             else:
+#                 test_applicabilite_date = False
+# 
+#             if test_applicabilite_statut and test_applicabilite_secteur and test_applicabilite_date:
+#                 cotisation_line_dict = {'declaration_id': declaration_id.id,
+#                                         'name': contrat.product_id.short_name,
+#                                         'contrat_line_id' : contrat.id}
+#                  
+#                 cotisation_line_dict['taux'] = contrat.regle_id.tarif_id.montant
+#                 cotisation_line_dict['base'] = -1
+#                 if contrat.regle_id.tarif_id.type == 'p':
+#                     if contrat.regle_id.regle_base_id.code == 'SALPL':
+#                         cotisation_line_dict['base'] = declaration_id.base_calcul
+#                     elif contrat.regle_id.regle_base_id.code == 'TA':
+#                         cotisation_line_dict['base'] = declaration_id.base_trancheA
+#                     elif contrat.regle_id.regle_base_id.code == 'TB':
+#                         cotisation_line_dict['base'] = declaration_id.base_trancheB
+#                     elif contrat.regle_id.regle_base_id:
+#                         cotisation_line_dict['base'] = self.env['cmim.cotisation.assure.line'].search([('regle_id', '=', contrat.regle_id.regle_base_id.id)]).montant
+#                      
+#                  
+#                 cotisation_line_list.append((0, 0, cotisation_line_dict))
+#         return cotisation_line_list
+#     
+#     @api.multi 
+#     def calcul_engine(self):
+#         cotisation_ids = []
+#         cotiation_to_create = []
+#         for col in self.collectivite_ids:
+#             if not self.can_calculate(col.id):
+#                 raise exceptions.Warning(
+#                     _("vous avez valide des cotisations pour une ou plusieurs collectivites. \nImpossible de lancer le calcul pour les memes periodes"))
+#             else:
+#                 cotisation_dict = { 'date_range_id': self.date_range_id.id,
+#                                     'fiscal_date': self.fiscal_date,
+#                                     'collectivite_id': col.id,
+#                                     'cotisation_assure_ids' : [],
+#                                     'name' : 'Cotisation Brouillon',
+#                                     }
+#                 cotisation_dict.setdefault('cotisation_assure_ids', [])
+#                 declaration_ids = self.env['cmim.declaration'].search([('collectivite_id.id', '=', col.id),
+#                                                                        ('date_range_id.id', '=', self.date_range_id.id),
+#                                                                        ('state', '=', 'valide')])
+#                 for declaration_id in declaration_ids:
+#                     cotisation_dict['cotisation_assure_ids'].extend(self.calcul_per_collectivite(declaration_id, col.contrat_id.contrat_line_ids))
+#                     
+#                 cotiation_to_create.append(cotisation_dict)
+#         for c in cotiation_to_create:
+#             cotisation_ids.append(self.env['cmim.cotisation'].create(c).id)
+#         view_id = self.env.ref('ao_cmim.cotisation_tree_view').id
+#         if len(cotisation_ids) > 0:
+#             return{ 
+#                     'res_model':'cmim.cotisation',
+#                     'type': 'ir.actions.act_window',
+#                     'res_id': self.id,
+#                     'view_mode':'tree,form',
+#                     'views' : [(view_id, 'tree'), (False, 'form')],
+#                     'view_id': 'ao_cmim.cotisation_tree_view',
+#                     'domain':[('id', 'in', cotisation_ids)],
+#                     'target':'self',
+#                     }
+#         else:
+#             return True
+#             

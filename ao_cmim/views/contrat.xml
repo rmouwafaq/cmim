@@ -20,6 +20,7 @@
 			<field name="arch" type="xml">
 				<tree>
 					<field name="name" />
+					<field name="description" />
 				</tree>
 			</field>
 		</record>
@@ -34,13 +35,27 @@
 						<field name="name" />
 						<group>
 							<group>
-								<field name="collectivite_ids" widget="many2many_tags" />
+								<field name="description" />
 							</group>
 						</group>
 						<notebook>
-							<page string="Règles de calcul">
+							<page string="Collectivités">
+								<field name="collectivite_ids" widget="many2many" />
+							</page>
+							<page string="Lignes de contrat">
 								<field name="contrat_line_ids" widget="many2many">
-									<tree>
+									<form>
+										<group>
+											<group>
+												<field name="product_id" />
+												<field name="regle_id" />
+											</group>
+											<group>
+												<field name="code" required="1" />
+											</group>
+										</group>
+									</form>
+									<tree editable="buttom">
 										<field name="product_id" />
 										<field name="code" />
 										<field name="regle_id" />

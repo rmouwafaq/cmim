@@ -10,12 +10,12 @@
 					<field name="sequence" widget="handle" />
 					<field name="name" />
 					<field name="regle_base_id" />
-					<field name="tarif_id" />
+					<!-- <field name="tarif_id" /> -->
 					<field name="debut_applicabilite" />
 					<field name="fin_applicabilite" />
 					<field name="statut_id" />
-					<field name="reserved" string="Réservé système" />
 					<field name="secteur_ids" />
+					<field name="reserved" string="Réservé système" />
 				</tree>
 			</field>
 		</record>
@@ -26,16 +26,21 @@
 				<form>
 					<sheet>
 						<group>
-							<field name="name" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+							<group>
+								<field name="name" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+							</group>
+							<group>
+								<field name="type" required="1"  attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+							</group>
 						</group>
 						<group>
 							<group>
 								<field name="reserved" invisible="1" />
-								<field name="regle_base_id" required="1"
-									attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+								<field name="regle_base_id" attrs="{'readonly' : [('reserved' ,'=', True)], 'required' : [('type' ,'=', 'base')]}" />
 							</group>
 							<group>
-								<field name="tarif_id" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+								<field name="regle_tarif_id" attrs="{'readonly' : [('reserved' ,'=',  True)], 'required' : [('type' ,'=', 'base')]}" />
+								<field name="default_tarif_id" attrs="{'readonly' : [('reserved' ,'=',  True)], 'required' : [('type' ,'!=', 'base')]}"/>
 							</group>
 						</group>
 						<notebook>
