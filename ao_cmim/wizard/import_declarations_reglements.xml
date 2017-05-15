@@ -25,20 +25,20 @@
 					</span>
 					<group>
 						<group>
-							<field name="type_operation" />
+							<field name="type_operation"/>
 							<field name="company_id" invisible="1" />
 							<field name="journal_id"
 								attrs="{'invisible': [('type_operation','!=', 'reglement')]}" />
 							<field name="model" string="Périodicité"
-								attrs="{'invisible': [('type_operation','!=', 'declaration')]}" />
+								attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')]}" />
 
 						</group>
 						<group>
 							<field name="data" />
 							<field name="fiscal_date" string="Année Comptable"
-								attrs="{'invisible': [('type_operation','!=', 'declaration')]}" />
+								attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')]}" />
 							<field name="date_range_id"
-								attrs="{'invisible': [('type_operation','!=', 'declaration')]}" />
+								attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')]}" />
 							<field name="payment_date"
 								attrs="{'invisible': [('type_operation','!=', 'reglement')]}" />
 						</group>

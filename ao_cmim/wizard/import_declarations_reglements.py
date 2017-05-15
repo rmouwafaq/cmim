@@ -20,7 +20,7 @@ class cmimImportDecPay(models.TransientModel):
                                            required=True,
                                            string=u"Type d'opération",
                                            default='declaration')
-    model = fields.Selection(selection=[('trim', 'Trimestrielle'), ('sep', 'Mois séparés')], string=u"Périodicité", default='sep', required=True)
+    model = fields.Selection(selection=[('trim', 'Trimestrielle'), ('sep', 'Mois séparés')], string=u"Périodicité", default='sep')
     payment_date = fields.Date(string=u"Date de réglement")
     
     def _default_journal(self):
@@ -43,8 +43,8 @@ class cmimImportDecPay(models.TransientModel):
                     ids.append(periode.id)
             return {'domain':{'date_range_id': [('id', 'in', ids)]}}
     
-    fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default= datetime.now().year )
-    date_range_id = fields.Many2one('date.range', u'Période', required=True)
+    fiscal_date = fields.Integer(string=u"Année Comptable", default= datetime.now().year )
+    date_range_id = fields.Many2one('date.range', u'Période')
     
     @api.multi
     def import_declarations(self, reader_info):
