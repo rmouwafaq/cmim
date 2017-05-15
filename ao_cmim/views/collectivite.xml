@@ -113,13 +113,15 @@
 				</xpath>
 				<xpath expr="//page[@name='accounting']" position="after">
 					<page string="Paramétrage">
-						<field name="parametrage_ids">
-							<tree editable="buttom">
-								<field name="name" />
-								<field name="regle_id" />
-								<field name="tarif_id" />
-							</tree>
-						</field>
+						<button name="create_lines" string="Générateurs tarifs" type="object"
+							attrs="{'invisible' : [('contrat_id' ,'=', None)]}" />
+							<field name="parametrage_ids">
+								<tree editable="buttom">
+									<field name="name" invisible="1" />
+									<field name="regle_id" />
+									<field name="tarif_id" />
+								</tree>
+							</field>
 					</page>
 				</xpath>
 				<page name='sales_purchases' position="attributes">

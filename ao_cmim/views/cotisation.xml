@@ -75,12 +75,14 @@
 									widget="one2many_list" mode="tree,kanban">
 									<tree string="Cotisation Lines" editable="bottom">
 										<field name="product_id" />
-										<field name="code" />
+										<field name="regle_id" />
+										<field name="tarif" />
 										<field name="montant" />
 									</tree>
 									<kanban class="o_kanban_mobile">
 										<field name="product_id" />
-										<field name="code" />
+										<field name="regle_id" />
+										<field name="tarif" />
 										<field name="montant" />
 										<templates>
 											<t t-name="kanban-box">
@@ -97,7 +99,8 @@
 													<div class="row">
 														<div class="col-xs-8 text-muted">
 															<span>
-																<t t-esc="record.code.value" />
+																<t t-esc="record.regle_id.value" />
+																<t t-esc="record.tarif.value" />
 															</span>
 														</div>
 
@@ -119,7 +122,6 @@
 									<tree string="Cotisation assure Lines">
 										<field name="contrat_line_id" />
 										<field name="product_id" />
-										<field name="code" />
 										<field name="assure_id" />
 										<field name="salaire" />
 										<field name="regle_id" />
@@ -132,7 +134,6 @@
 										<field name="assure_id" />
 										<field name="contrat_line_id" />
 										<field name="product_id" />
-										<field name="code" />
 										<field name="regle_id" />
 										<field name="base" />
 										<field name="taux" />
@@ -154,7 +155,6 @@
 													<div class="row">
 														<div class="col-xs-8 text-muted">
 															<span>
-																<t t-esc="record.code.value" />
 																<t t-esc="record.regle_id.value or 'None'" />
 															</span>
 														</div>

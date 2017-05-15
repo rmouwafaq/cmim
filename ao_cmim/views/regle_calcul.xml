@@ -9,13 +9,15 @@
 				<tree>
 					<field name="sequence" widget="handle" />
 					<field name="name" />
+					<field name="type" />
 					<field name="regle_base_id" />
-					<!-- <field name="tarif_id" /> -->
+					<field name="regle_tarif_id" />
+					<field name="default_tarif_id" />
 					<field name="debut_applicabilite" />
 					<field name="fin_applicabilite" />
-					<field name="statut_id" />
-					<field name="secteur_ids" />
-					<field name="reserved" string="Réservé système" />
+					<!-- <field name="statut_id" /> -->
+					<!-- <field name="secteur_ids" /> -->
+					<!-- <field name="reserved" string="Réservé système" /> -->
 				</tree>
 			</field>
 		</record>
@@ -30,21 +32,25 @@
 								<field name="name" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
 							</group>
 							<group>
-								<field name="type" required="1"  attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+								<field name="type" required="1"
+									attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+								<field name="default_tarif_id"
+									attrs="{'readonly' : [('reserved' ,'=',  True)], 'required' : [('type' ,'!=', 'base')], 'invisible' : [('type' ,'=', 'base')]}" />
 							</group>
 						</group>
 						<group>
 							<group>
 								<field name="reserved" invisible="1" />
-								<field name="regle_base_id" attrs="{'readonly' : [('reserved' ,'=', True)], 'required' : [('type' ,'=', 'base')]}" />
+								<field name="regle_base_id"
+									attrs="{'readonly' : [('reserved' ,'=', True)], 'required' : [('type' ,'=', 'base')], 'invisible' : [('type' ,'!=', 'base')]}" />
 							</group>
 							<group>
-								<field name="regle_tarif_id" attrs="{'readonly' : [('reserved' ,'=',  True)], 'required' : [('type' ,'=', 'base')]}" />
-								<field name="default_tarif_id" attrs="{'readonly' : [('reserved' ,'=',  True)], 'required' : [('type' ,'!=', 'base')]}"/>
+								<field name="regle_tarif_id"
+									attrs="{'readonly' : [('reserved' ,'=',  True)], 'required' : [('type' ,'=', 'base')], 'invisible' : [('type' ,'!=', 'base')]}" />
 							</group>
 						</group>
 						<notebook>
-							<page string="Applicabilité">
+							<page string="Applicabilité" attrs="{'invisible' : [('type' ,'!=', 'base')]}" >
 								<group>
 									<group>
 										<field name="debut_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />

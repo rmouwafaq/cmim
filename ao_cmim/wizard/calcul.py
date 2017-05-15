@@ -112,8 +112,9 @@ class calcul_cotisation (models.TransientModel):
                         cotisation_line_dict['base'] = dict_bases[contrat.regle_id.regle_base_id.id]
                     else:
                         print "probleme "
+                if cotisation_line_dict['base'] != 0 and cotisation_line_dict['taux'] !=0:
+                    cotisation_line_list.append((0, 0, cotisation_line_dict))
                  
-                cotisation_line_list.append((0, 0, cotisation_line_dict))
         return cotisation_line_list
     
     @api.multi

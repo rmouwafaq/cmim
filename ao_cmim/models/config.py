@@ -42,7 +42,7 @@ class Tarif(models.Model):
     
 class RegleCalcul(models.Model):
     _name = "cmim.regle.calcul"
-    _order = 'sequence, regle_base_id desc'
+    _order = 'reserved desc, type desc, sequence, regle_base_id desc'
     @api.multi
     def unlink(self):
         for obj in self:

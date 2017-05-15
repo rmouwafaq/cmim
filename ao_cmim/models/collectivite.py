@@ -27,7 +27,18 @@ class ResPartner(models.Model):
 #                     return parametrage.tarif_id
 #                 else:
 #                     return False
-            
+    @api.multi
+    def create_lines(self):
+        self.ensure_one() 
+        list=[]
+        for line in self.parametrage_ids:
+            line.unlink()
+        for cl in self.contrat_id.contrat_line_ids:
+            list.append((0,0, {'name': cl.regle_id.name, 
+                               'regle_id': cl.regle_id.id,
+                               'tarif_id': cl.regle_id.regle_tarif_id.default_tarif_id.id
+                               }))
+        self.update({"parametrage_ids" : list})
     import_flag = fields.Boolean('Par import', default=False)      
     code = fields.Char(string="Code collectivite")
     prenom = fields.Char(string=u'Prénom')

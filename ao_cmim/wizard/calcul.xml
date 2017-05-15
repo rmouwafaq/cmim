@@ -2,7 +2,7 @@
 <openerp>
 	<data>
 		<record id="view_calcul_cotisation" model="ir.ui.view">
-			<field name="name">Assistant de lancement de calcul des cotisations
+			<field name="name">Assistant de calcul des cotisations
 			</field>
 			<field name="model">cmim.calcul.cotisation</field>
 			<field name="type">form</field>
@@ -32,7 +32,7 @@
 			</field>
 		</record>
 		<record id="action_calcul_cotisation" model="ir.actions.act_window">
-			<field name="name">Assistant de lancement de calcul des cotisations
+			<field name="name">Assistant de  calcul des cotisations
 			</field>
 			<field name="res_model">cmim.calcul.cotisation</field>
 			<field name="view_type">form</field>

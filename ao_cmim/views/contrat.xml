@@ -9,7 +9,6 @@
 				<tree editable='buttom'>
 					<field name="name" />
 					<field name="product_id" />
-					<field name="code" />
 					<field name="regle_id" />
 				</tree>
 			</field>
@@ -48,16 +47,14 @@
 										<group>
 											<group>
 												<field name="product_id" />
-												<field name="regle_id" />
 											</group>
 											<group>
-												<field name="code" required="1" />
+												<field name="regle_id"  />
 											</group>
 										</group>
 									</form>
 									<tree editable="buttom">
 										<field name="product_id" />
-										<field name="code" />
 										<field name="regle_id" />
 									</tree>
 								</field>

@@ -5,7 +5,7 @@ class Contrat(models.Model):
     _name = 'cmim.contrat'
     
     description = fields.Char('Description', required=True)
-    collectivite_ids = fields.One2many('res.partner', 'contrat_id', string='Collectivites', domain=[('contrat_id','=',None),('customer','=',True),('is_collectivite','=',True),('is_company','=',True)])
+    collectivite_ids = fields.One2many('res.partner', 'contrat_id', string='Collectivites', domain=[('customer','=',True),('is_collectivite','=',True),('is_company','=',True)])
     contrat_line_ids = fields.Many2many('cmim.contrat.line','cmim_contrat_contrat_ligne_rel', 'contrat_id', 'contrat_ligne_id', string="Lignes de contrat", required=True)
     name = fields.Char('Nom', readonly=True)  
     notes = fields.Text('Notes')   
@@ -24,6 +24,5 @@ class LigneContrat(models.Model):
             obj.name = '%s: %s' %(obj.product_id.short_name, obj.regle_id.name) 
     name = fields.Char('Nom', compute="get_name")
     product_id = fields.Many2one('product.template', "Produit", required=True)
-    code = fields.Integer("Code Produit")
     regle_id = fields.Many2one('cmim.regle.calcul', 'Regle de calcul', required=True, domain=[('type', '=', 'base'),('reserved', '=', False), ('regle_tarif_id', '!=', None), ('regle_base_id', '!=', None)])
     regle_id_sequence = fields.Integer(related='regle_id.sequence', store=True)

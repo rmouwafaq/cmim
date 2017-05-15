@@ -121,14 +121,15 @@ class cotisation_assure_line(models.Model):
         cotisation_product_obj = self.env['cmim.cotisation.product']
         cotisation_product_obj = cotisation_product_obj.search([('cotisation_id.id', '=', self.cotisation_id.id),
                                                                 ('product_id.id', '=', self.product_id.id),
-                                                                ('code', '=', self.code)])
+                                                                ('regle_id', '=', self.regle_id.id)])
         
         if(cotisation_product_obj):
             cotisation_product_obj.write({'montant': cotisation_product_obj.montant + self.montant})
         else:
             cotisation_product_obj = cotisation_product_obj.create({'cotisation_id': self.cotisation_id.id,
                                                                     'product_id': self.product_id.id,
-                                                                    'code': self.code,
+                                                                    'regle_id': self.regle_id.id,
+                                                                    'tarif': self.taux,
                                                                     'montant' : self.montant
                                                                     })
         self.cotisation_id.write({'cotisation_product_ids': [(4, cotisation_product_obj.id)]})
@@ -141,11 +142,12 @@ class cotisation_assure_line(models.Model):
                 })
         else:
             vals['montant'] = (vals['base'] * vals['taux'])/100
-            
-        cotisation_line =  super(cotisation_assure_line, self).create(vals)
         
+        cotisation_line =  super(cotisation_assure_line, self).create(vals)
         cotisation_line.update_cotisation_product()
         return cotisation_line
+
+    
 #     cotisation_assure_id = fields.Many2one('cmim.cotisation.assure', 'Cotisation assure',  ondelete='cascade')
     cotisation_id = fields.Many2one('cmim.cotisation', string='Cotisation',  ondelete='cascade')
     declaration_id = fields.Many2one('cmim.declaration', string=u'Déclaration')
@@ -153,7 +155,6 @@ class cotisation_assure_line(models.Model):
     salaire = fields.Float(related='declaration_id.salaire')
     contrat_line_id = fields.Many2one('cmim.contrat.line', 'Ligne contrat', required=True)
     product_id  = fields.Many2one('product.template', related='contrat_line_id.product_id', store=True)
-    code = fields.Integer(related='contrat_line_id.code',)
     regle_id = fields.Many2one('cmim.regle.calcul',  related='contrat_line_id.regle_id')
     name = fields.Char('Description')
     base = fields.Float('Base')
@@ -166,7 +167,8 @@ class cotisation_product(models.Model):
 
     cotisation_id = fields.Many2one('cmim.cotisation', 'Cotisation',  ondelete='cascade')
     product_id = fields.Many2one('product.template', 'Produit') 
-    code = fields.Char('Code Produit')
+    regle_id = fields.Many2one('cmim.regle.calcul',"Règle de calcul" )
+    tarif = fields.Float("Tarif")
     montant = fields.Float('Montant', default= 0.0) 
     
     @api.multi
