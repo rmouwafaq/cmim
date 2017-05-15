@@ -43,8 +43,9 @@
 
 
 
-		<menuitem id="produit_menu" name="Produits CMIM" parent="main_menu"
-			action="action_produit" sequence="5" />
+		<menuitem id="produit_menu" name="Produits" parent="main_menu" sequence="5" />
+		<menuitem id="produit_cmim_menu" name="Produits CMIM" parent="produit_menu"
+			action="action_produit" sequence="1" />
 
 
 
@@ -58,13 +59,14 @@
 <!-- 			sequence='2' action="action_contrat_ligne" parent="contrat_regle_config_menu" /> -->
 		<menuitem id="regle_config_menu" name="Règles de calcul"
 			sequence='3' action="action_regle_calcul" parent="contrat_regle_config_menu" />
+		
+		<menuitem id="tarif_menu" name="Tarifs" action="action_tarif"
+			parent="contrat_regle_config_menu" />
 			
 		<menuitem id="cts_config_menu" name="Constantes de calcul"
 			sequence="2" action="action_constante_calcul" parent="config_menu" />
 		<menuitem id="secteur_menu" name="Secteurs" action="action_secteur"
 			parent="config_menu" sequence="3" />
-		<menuitem id="tarif_menu" name="Tarifs" action="action_tarif"
-			parent="config_menu" sequence="4" />
 		<menuitem id="statut_assure_menu" name="Statut d'assurés" action="action_statut_assure"
 			parent="config_menu" sequence="5" />
 

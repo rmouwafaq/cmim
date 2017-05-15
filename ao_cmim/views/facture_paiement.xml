@@ -23,6 +23,7 @@
 		<record id="action_reglement" model="ir.actions.act_window">
 			<field name="name">Réglements</field>
 			<field name="res_model">account.payment</field>
+			<field name="context">{'default_payment_type' : 'inbound'}</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
 		</record>

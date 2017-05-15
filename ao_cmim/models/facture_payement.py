@@ -15,7 +15,12 @@ class reglement(models.Model):
         string='Secteur',
         related='partner_id.secteur_id', store=True
     )
-     
+    @api.onchange('partner_type')
+    def _onchange_partner_type(self):
+        # Set partner_id domain
+        if self.partner_type:
+            return {'domain': {'partner_id': [(self.partner_type, '=', True),
+                                              ('is_collectivite', '=', True)]}}
 class AccountInvoice(models.Model):
      
     _inherit = "account.invoice"

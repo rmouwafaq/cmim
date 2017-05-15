@@ -51,6 +51,7 @@ class cmimImportDecPay(models.TransientModel):
         declaration_obj = self.env['cmim.declaration']
         partner_obj = self.env['res.partner']
         collectivite_id = self.env['res.partner']
+        collectivite_obj = self.env['res.partner']
         list_to_import = []
         ids = []
         statut = self.env['cmim.statut.assure'].search([('code', '=','INACT' )]).id
@@ -97,21 +98,22 @@ class cmimImportDecPay(models.TransientModel):
                 declaration_obj = declaration_obj.create(line)
                 ids.append(declaration_obj.id)
         elif(self.model == "sep"):
-            for i in range(len(reader_info)):
-                values = reader_info[i]
-                salaire = float('.'.join(str(x) for x in tuple(values[6].split(',')))) + float('.'.join(str(x) for x in tuple(values[8].split(',')))) + float('.'.join(str(x) for x in tuple(values[10].split(','))))
-                if(not salaire == 0):
-                    collectivite_obj = collectivite_obj.search([('code', '=', value[0])])
-                    assure = self.env['res.partner'].search([('numero', '=', values[3])])
-                    state = 'valide'
-                    if collectivite_obj :
+            collectivite_obj = collectivite_obj.search([('code', '=', reader_info[0][1])])
+            del reader_info[1]
+            del reader_info[0]
+            if collectivite_obj :
+                for i in range(len(reader_info)):
+                    values = reader_info[i]
+                    salaire = float('.'.join(str(x) for x in tuple(values[3].split(',')))) + float('.'.join(str(x) for x in tuple(values[5].split(',')))) + float('.'.join(str(x) for x in tuple(values[7].split(','))))
+                    if(not salaire == 0):
+                        assure = self.env['res.partner'].search([('numero', '=', values[0])])
+                        state = 'valide'
                         if not assure:
                             assure = assure.create({   'is_collectivite': False,
                                                         'company_type' : 'person',
                                                         'customer' : True,
-                                                        'id_num_famille' : values[2],
-                                                        'numero' : values[3],
-                                                        'name' : '%s %s' % (values[4],values[5]),
+                                                        'numero' : values[0],
+                                                        'name' : '%s %s' % (values[1],values[2]),
                                                         'import_flag' : True,
                                                         'statut_id' : statut, 
                                                             })
@@ -121,14 +123,14 @@ class cmimImportDecPay(models.TransientModel):
                             state="non_valide"
                         list_to_import.append({ 'collectivite_id': collectivite_obj.id,
                                                  'assure_id': assure.id,
-                                                 'nb_jour' : values[7] + values[9] + values[11],
+                                                 'nb_jour' : values[4] + values[6] + values[8],
                                                  'salaire': salaire,
                                                  'import_flag': True,
                                                  'fiscal_date': self.fiscal_date,
                                                  'date_range_id': self.date_range_id.id,
                                                  'state' : state
                                                 })
-            print 'list_to_import', len(list_to_import)
+                print 'list_to_import', len(list_to_import)
             for line in list_to_import:
                 declaration_obj = declaration_obj.create(line)
                 ids.append(declaration_obj.id)

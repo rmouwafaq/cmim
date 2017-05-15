@@ -13,14 +13,15 @@
 						La périodicité Trimestrielle est utilisée pour les déclarations qui émanent de du nouveau système.
 						Les assuérs sont identifiés par leurs matricules <strong>id num personne</strong>, et le salaire est déclaré par mois.
 						Le format de fichier exigé est le suivant:
-						<img src='/ao_cmim/static/src/img/new_dec.jpg'  />
+						
+						<center><img src='/ao_cmim/static/src/img/new_dec.jpg'   style="max-width: 100%;"/></center>
 					</pre>
 					<pre class="oe_grey" attrs="{'invisible': [('model','!=', 'trim')]}" >
 						La périodicité Trimestrielle est utilisée pour les déclarations qui émanent de l'ancien système.
 						Les assuérs sont identifiés par leurs <strong>id num famille</strong>, et le salaire déclaré concerne bien tout le trimestre en totalité.
 						Le format de fichier exigé est le suivant:
-						<img src='/ao_cmim/static/src/img/old_dec.jpg'  />
-<!-- 						style="max-height: 90px;margin-top: 15px" -->
+						
+						<center><img src='/ao_cmim/static/src/img/old_dec.jpg' style="max-width: 100%; " /></center>
 					</pre>
 					</span>
 					<group>
