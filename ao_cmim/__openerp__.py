@@ -18,7 +18,7 @@
             'data/constante_calcul.xml',
             'data/cotisation_seq.xml',
             'data/contrat_seq.xml',
-            'data/tarif_data.xml',
+#             'data/tarif_data.xml',
             'data/regle_calcul_data.xml',
             
             'wizard/import_declarations_reglements.xml',

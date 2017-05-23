@@ -124,6 +124,7 @@
 										<field name="product_id" />
 										<field name="assure_id" />
 										<field name="salaire" />
+										<field name="nb_jour"/>
 										<field name="regle_id" />
 										<field name="base" />
 										<field name="taux" />
@@ -137,6 +138,7 @@
 										<field name="regle_id" />
 										<field name="base" />
 										<field name="taux" />
+										<field name="nb_jour"/>
 										<field name="montant" />
 										<templates>
 											<t t-name="kanban-box">
