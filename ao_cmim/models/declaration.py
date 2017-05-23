@@ -14,6 +14,11 @@ class declaration(models.Model):
         ('fiscal_date', "check(fiscal_date > 1999)", _(u"Valeur incorrecte pour l'anné comptable !")),
         ('nb_jour', "check(nb_jour > 0)", _(u"Valeur incorrecte pour le nombre de jour déclarés !"))
     ]
+#    @api.multi
+#    def update_import(self):
+#         self.import_flag = True
+#        for obj in self.search([('date_range_id.id', '=', 2)]):
+#            obj.write({'import_flag' : True})
     import_flag = fields.Boolean('Par import', default=False)   
     collectivite_id = fields.Many2one('res.partner', u'Collectivité', ondelete='cascade', domain="[('is_collectivite','=',True)]", required=True)   
     assure_id = fields.Many2one('res.partner', u'Assuré', required=True, domain="[('is_collectivite','=',False)]", ondelete='cascade')  #  , 
@@ -40,11 +45,12 @@ class declaration(models.Model):
     @api.multi
     @api.depends('id_used', 'collectivite_id.code', 'assure_id.id_num_famille', 'assure_id.numero')
     def get_code(self):
-        self.ensure_one()
-        if (self.id_used == 'old'):
-            self.code = '%s%s' %(self.collectivite_id.code, self.assure_id.id_num_famille)
-        else:
-            self.code = '%s%s' %(self.collectivite_id.code, self.assure_id.numero)
+        for obj in self:
+            if (obj.id_used == 'old'):
+                obj.code = '%s%s' %(obj.collectivite_id.code, obj.assure_id.id_num_famille)
+            else:
+                obj.code = '%s%s' %(obj.collectivite_id.code, obj.assure_id.numero)
+            
     code = fields.Char('Code', compute="get_code", store=True) 
     id_used = fields.Selection(string="id used", selection=[('old', 'id Num Famille'), ('new', 'Id Num Personne')], default='old')
     base_calcul = fields.Float(u'Salaire Plafonné par Secteur', compute="get_base_calcul", default=0.0, 

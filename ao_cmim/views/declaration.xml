@@ -55,6 +55,8 @@
 						<button name="action_validate" type="object" string="Valider"
 							attrs="{'invisible':[('state', '!=', 'non_valide')]}" class="oe_highlight"
 							groups="base.group_user" />
+<!-- 						<button name="update_import" type="object" string="UPDATE" class="oe_highlight" -->
+<!-- 							groups="base.group_user" /> -->
 						<field name="state" widget="statusbar" nolabel="1"
 							statusbar_visible="non_valide,valide" />
 					</header>

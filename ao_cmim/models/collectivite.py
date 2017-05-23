@@ -8,7 +8,7 @@ class ResPartner(models.Model):
     _inherit = "res.partner"
     _sql_constraints = [
         ('code_collectivite_uniq', 'unique(code)', 'le code d\'adhérent doit être unique'),
-        ('numero_uniq', 'unique(numero, collectivite_id)', 'le matricule doit être unique par collectivité'),
+        ('numero_uniq', 'unique(numero)', 'le matricule doit être unique.'),
     ]
     @api.model
     def create(self, vals): 
@@ -53,6 +53,7 @@ class ResPartner(models.Model):
     parametrage_ids = fields.One2many('cmim.parametrage.collectivite', 'collectivite_id', u'Paramétrage')
     ########################
     @api.multi
+    @api.depends('declaration_ids')
     def get_last_collectivite(self):
         for obj in self:
             if obj.is_collectivite:
@@ -65,7 +66,7 @@ class ResPartner(models.Model):
     id_num_famille = fields.Integer(string="Id Numero Famille")
     numero = fields.Integer(string=u"Numero Assuré")
 
-    collectivite_id = fields.Many2one('res.partner', string='Collectivite',compute=get_last_collectivite, domain="[('is_collectivite', '=', True), ('customer','=',True),('is_company','=',True)]", ondelete='cascade')
+    collectivite_id = fields.Many2one('res.partner', string='Collectivite', store= True, compute=get_last_collectivite)
     statut_id = fields.Many2one('cmim.statut.assure', string='Statut')
     date_naissance = fields.Date(string="Date de naissance")
      
@@ -85,9 +86,13 @@ class ResPartner(models.Model):
                 'views' : [(view_id, 'tree'),(False, 'form')],
                 'view_id': 'ao_cmim.view_assure_tree',
                 'target':'self',
-                'context' : {'default_company_type' : 'person',
-                             'default_is_collectivite' : False, 'default_customer' : True} ,
-                'domain':[('collectivite_id.id', '=', self.id)],
+                'domain':[ 
+                          ('company_type' , '=', 'person'),
+                          ('customer' , '=', True),
+                          ('is_collectivite' , '=', False),
+                          ('collectivite_id' , '=', self.id),
+                          ],
+#                ('collectivite_id', '=', None),
                 }
     
     @api.multi
@@ -180,4 +185,4 @@ class ResPartner(models.Model):
 #             fields.remove('numero')
 #         if 'id_num_famille' in fields:
 #             fields.remove('id_num_famille')
-#         return super(ResPartner, self).read_group(cr, uid, domain, fields, groupby, offset, limit=limit, context=context, orderby=orderby, lazy=True)
+#         return super(ResPartner, self).read_group(cr, uid, domain, fields, groupby, offset, limit=limit, context=context, orderby=orderby, lazy=True)1111
