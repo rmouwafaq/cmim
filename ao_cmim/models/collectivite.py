@@ -87,6 +87,7 @@ class ResPartner(models.Model):
                 'view_id': 'ao_cmim.view_assure_tree',
                 'target':'self',
                 'domain':[ 
+                          ('statut_id.code' , '!=', 'INACT'),
                           ('company_type' , '=', 'person'),
                           ('customer' , '=', True),
                           ('is_collectivite' , '=', False),
