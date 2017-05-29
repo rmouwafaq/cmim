@@ -61,6 +61,7 @@ class calcul_cotisation (models.TransientModel):
     
     @api.multi
     def calcul_per_collectivite(self, declaration_id, contrat_line_ids, dict_tarifs):
+        print dict_tarifs
         cotisation_line_list = []
         dict_bases = {}
         for contrat in contrat_line_ids:
@@ -95,7 +96,10 @@ class calcul_cotisation (models.TransientModel):
                                         'name': contrat.product_id.short_name,
                                         'contrat_line_id' : contrat.id}
                 
-                selected_tarif_id = dict_tarifs.get(contrat.regle_id.regle_tarif_id.id, False) or contrat.regle_id.regle_tarif_id.default_tarif_id
+                selected_tarif_id = dict_tarifs.get(contrat.regle_id.regle_tarif_id.id)
+                if not selected_tarif_id:
+                    print 'non trouvé'
+                    selected_tarif_id = contrat.regle_id.regle_tarif_id.default_tarif_id
                 cotisation_line_dict['taux'] = selected_tarif_id.montant
                 cotisation_line_dict['base'] = -1
                 if selected_tarif_id.type == 'p':
@@ -121,8 +125,8 @@ class calcul_cotisation (models.TransientModel):
     def get_tarifs(self, collectivite_id):
         res = {}
         for param in collectivite_id.parametrage_ids:
-            if not param.regle_id.id in res.keys():
-                res.update({param.regle_id.id : param.tarif_id})
+            if not param.regle_id.regle_tarif_id.id in res.keys():
+                res.update({param.regle_id.regle_tarif_id.id : param.tarif_id})
         return res
     @api.multi 
     def calcul_engine(self):
