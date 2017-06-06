@@ -110,7 +110,6 @@
 										<field name="base" />
 										<field name="taux" />
 										<field name="montant" />
-
 									</tree>
 									<kanban class="o_kanban_mobile">
 										<field name="assure_id" />

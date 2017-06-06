@@ -111,7 +111,7 @@ class Cotisation(models.Model):
 class cotisation_assure_line(models.Model):
     _name = 'cmim.cotisation.assure.line'
     _description = "Lignes ou details du calcul des cotisations_assure"
-    _order = 'contrat_line_id'
+    _order = 'assure_id, product_name desc'
 
     @api.multi
     def update_cotisation_product(self):
