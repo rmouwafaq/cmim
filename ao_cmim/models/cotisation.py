@@ -27,10 +27,7 @@ class Cotisation(models.Model):
                 'views' : [(view_id, 'form'),(False, 'tree')],
                 'view_id': 'account.invoice_form',
                 'target':'self',
-#                  'domain':[('parent_id.id', '=', self.id)],
                 }
-#     def _get_cotisation_assure_line_ids(self):
-#         self.cotisation_assure_line_ids = self.env['cmim.cotisation.assure.line'].search([('cotisation_id.id', '=', self.id)], order="product_id")
     @api.multi
     def _getmontant_total(self):
         for obj in self:
@@ -147,15 +144,20 @@ class cotisation_assure_line(models.Model):
         cotisation_line.update_cotisation_product()
         return cotisation_line
 
-    
-#     cotisation_assure_id = fields.Many2one('cmim.cotisation.assure', 'Cotisation assure',  ondelete='cascade')
+    @api.multi
+    def _get_proratat(self):
+        for obj in self:
+            obj.proratat = obj.nb_jour / 90.0
+            
     cotisation_id = fields.Many2one('cmim.cotisation', string='Cotisation',  ondelete='cascade')
     declaration_id = fields.Many2one('cmim.declaration', string=u'Déclaration')
     assure_id = fields.Many2one('res.partner', string=u'Assuré',related='declaration_id.assure_id', store=True )
     salaire = fields.Float(related='declaration_id.salaire')
     nb_jour = fields.Integer(related='declaration_id.nb_jour', string="NB Jours")
+    proratat = fields.Float(string="Proratat" , compute="_get_proratat")
     contrat_line_id = fields.Many2one('cmim.contrat.line', 'Ligne contrat', required=True)
     product_id  = fields.Many2one('product.template', related='contrat_line_id.product_id', store=True)
+    product_name  = fields.Char(related='product_id.short_name', string='Produit', store=True)
     regle_id = fields.Many2one('cmim.regle.calcul',  string=u"Règle Calcul", related='contrat_line_id.regle_id')
     name = fields.Char('Description')
     base = fields.Float('Base')

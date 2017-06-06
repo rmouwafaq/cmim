@@ -8,8 +8,9 @@
 			<field name="mode">primary</field>
 			<field name="priority" eval="1" />
 			<field name="arch" type="xml">
-				<tree editable="bottom" string="Product">
+				<tree editable="bottom">
 					<field name="name" />
+					<field name="val_mensuelle" />
 					<field name="valeur" />
 				</tree>
 			</field>
@@ -20,8 +21,6 @@
 			<field name="res_model">cmim.constante</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
-			<!-- <field name='view_id' ref='constante_calcul_tree_view' /> -->
-			<!-- <field name="target">current</field> -->
 		</record>
 
 
@@ -31,8 +30,6 @@
 			<field name="res_model">cmim.secteur</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
-			<!-- <field name='view_id' ref='constante_calcul_tree_view' /> -->
-			<!-- <field name="target">current</field> -->
 		</record>
 		<record id="secteur_tree_view" model="ir.ui.view">
 			<field name="name">cmim.secteur.tree</field>
@@ -40,14 +37,16 @@
 			<field name="mode">primary</field>
 			<field name="priority" eval="1" />
 			<field name="arch" type="xml">
-				<tree editable="bottom" string="Product">
+				<tree editable="bottom">
 					<field name="name" />
+					<field name="plancher_mensuel" />
+					<field name="plafond_mensuel" />
 					<field name="plancher" />
 					<field name="plafond" />
 				</tree>
 			</field>
 		</record>
-		
+
 		<!-- statut assurés -->
 		<record id="action_statut_assure" model="ir.actions.act_window">
 			<field name="name">Statut d'assurés</field>
@@ -59,14 +58,14 @@
 			<field name="name">cmim.statut.assure.tree</field>
 			<field name="model">cmim.statut.assure</field>
 			<field name="arch" type="xml">
-				<tree editable="bottom" >
+				<tree editable="bottom">
 					<field name="name" />
 					<field name="code" />
 				</tree>
 			</field>
 		</record>
 		<!-- tarif -->
-		
+
 		<record id="tarif_tree_view" model="ir.ui.view">
 			<field name="name">cmim.tarif.tree</field>
 			<field name="model">cmim.tarif</field>
@@ -80,18 +79,19 @@
 				</tree>
 			</field>
 		</record>
-		
+
 		<record id="tarif_search_view" model="ir.ui.view">
 			<field name="name">cmim.tarif.search</field>
 			<field name="model">cmim.tarif</field>
 			<field name="arch" type="xml">
 				<search string="Tarif filtre">
-					<field name="name"/>
-					<field name="type"/>
+					<field name="name" />
+					<field name="type" />
 					<group expand="0" string="Group By">
-						<filter name="groupby_course" string="Type fe tarif" domain="[]" context="{'group_by':'type'}"/>
+						<filter name="groupby_course" string="Type fe tarif"
+							domain="[]" context="{'group_by':'type'}" />
 					</group>
-					<filter name="type"  string="Pourcentage" icon="terp-stock_symbol-selection"
+					<filter name="type" string="Pourcentage" icon="terp-stock_symbol-selection"
 						domain="[('type', '=', 'p')]" />
 					<filter name="type" string="Forfait" icon="terp-stock_symbol-selection"
 						domain="[('type', '=', 'f')]" />
@@ -103,7 +103,7 @@
 			<field name="res_model">cmim.tarif</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
-			<field name="search_id" ref="tarif_search_view"/>
+			<field name="search_id" ref="tarif_search_view" />
 		</record>
 	</data>
 </openerp>

@@ -15,9 +15,6 @@
 					<field name="default_tarif_id" />
 					<field name="debut_applicabilite" />
 					<field name="fin_applicabilite" />
-					<!-- <field name="statut_id" /> -->
-					<!-- <field name="secteur_ids" /> -->
-					<!-- <field name="reserved" string="Réservé système" /> -->
 				</tree>
 			</field>
 		</record>
@@ -30,46 +27,41 @@
 						<group>
 							<group>
 								<field name="name" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+								<field name="reserved" invisible="1" />
+								<field name="regle_base_id"
+									attrs="{'readonly' : [('reserved' ,'=', True)], 'required' : [('type' ,'=', 'base')], 'invisible' : [('type' ,'!=', 'base')]}" />
+								<field name="applicabilite_proratat"
+									attrs="{'readonly' : [('reserved' ,'=', True)], 'invisible' : [('type' ,'!=', 'base')]}" />
 							</group>
 							<group>
 								<field name="type" required="1"
 									attrs="{'readonly' : [('reserved' ,'=', True)]}" />
 								<field name="default_tarif_id"
 									attrs="{'readonly' : [('reserved' ,'=',  True)], 'required' : [('type' ,'!=', 'base')], 'invisible' : [('type' ,'=', 'base')]}" />
-							</group>
-						</group>
-						<group>
-							<group>
-								<field name="reserved" invisible="1" />
-								<field name="regle_base_id"
-									attrs="{'readonly' : [('reserved' ,'=', True)], 'required' : [('type' ,'=', 'base')], 'invisible' : [('type' ,'!=', 'base')]}" />
-							</group>
-							<group>
 								<field name="regle_tarif_id"
 									attrs="{'readonly' : [('reserved' ,'=',  True)], 'required' : [('type' ,'=', 'base')], 'invisible' : [('type' ,'!=', 'base')]}" />
+
 							</group>
-						</group>
-						<notebook>
-							<page string="Applicabilité" attrs="{'invisible' : [('type' ,'!=', 'base')]}" >
-								<group>
+							</group>
+							<notebook>
+								<page string="Applicabilité" attrs="{'invisible' : [('type' ,'!=', 'base')]}">
 									<group>
-										<field name="debut_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
-										<field name="fin_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+										<group>
+											<field name="debut_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+											<field name="fin_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+										</group>
+										<group>
+											<field name="statut_id" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+										</group>
 									</group>
-									<group>
-										<field name="statut_id" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
-									</group>
-								</group>
-								<separator string="Applicable aux secteurs suivants" />
-								<field name="secteur_ids" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
-							</page>
-							<page string="Notes">
-								<field name="notes" />
-							</page>
-						</notebook>
+									<separator string="Applicable aux secteurs suivants" />
+									<field name="secteur_ids" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+								</page>
+								<page string="Notes">
+									<field name="notes" />
+								</page>
+							</notebook>
 					</sheet>
-
-
 				</form>
 			</field>
 		</record>

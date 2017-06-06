@@ -4,23 +4,23 @@
 
 		<record id="raib" model="cmim.secteur">
 			<field name="name">RAIB</field>
-			<field name="plancher">3500</field>
-			<field name="plafond">10000</field>
+			<field name="plancher_mensuel">3500</field>
+			<field name="plafond_mensuel">10000</field>
 		</record>
 		<record id="petrolier" model="cmim.secteur">
 			<field name="name">PETROLIERS</field>
-			<field name="plancher">3500</field>
-			<field name="plafond">12000</field>
+			<field name="plancher_mensuel">3500</field>
+			<field name="plafond_mensuel">12000</field>
 		</record>
 		<record id="divers" model="cmim.secteur">
 			<field name="name">DIVERS</field>
-			<field name="plancher">3500</field>
-			<field name="plafond">10000</field>
+			<field name="plancher_mensuel">3500</field>
+			<field name="plafond_mensuel">10000</field>
 		</record>
 		<record id="complementaire" model="cmim.secteur">
 			<field name="name">COMPLEMENTAIRE</field>
-			<field name="plancher">3500</field>
-			<field name="plafond">10000</field>
+			<field name="plancher_mensuel">3500</field>
+			<field name="plafond_mensuel">10000</field>
 		</record>
 		
 	</data>

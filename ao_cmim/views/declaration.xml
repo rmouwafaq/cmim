@@ -55,8 +55,6 @@
 						<button name="action_validate" type="object" string="Valider"
 							attrs="{'invisible':[('state', '!=', 'non_valide')]}" class="oe_highlight"
 							groups="base.group_user" />
-<!-- 						<button name="update_import" type="object" string="UPDATE" class="oe_highlight" -->
-<!-- 							groups="base.group_user" /> -->
 						<field name="state" widget="statusbar" nolabel="1"
 							statusbar_visible="non_valide,valide" />
 					</header>
@@ -92,6 +90,15 @@
 									<group>
 										<field name="base_trancheA" />
 										<field name="base_trancheB" />
+									</group>
+								</group>
+								<group>
+									<group>
+										<field name="p_base_calcul" />
+									</group>
+									<group>
+										<field name="p_base_trancheA" />
+										<field name="p_base_trancheB" />
 									</group>
 								</group>
 							</page>

@@ -14,8 +14,16 @@ class Secteur(models.Model):
     _name = 'cmim.secteur'
     
     name = fields.Char('nom du secteur', reduired=True)
-    plancher = fields.Float('Plancher du secteur', required=True)
-    plafond = fields.Float('Plafond du secteur', required=True)
+    @api.multi
+    def _get_val_trimestrielle(self):
+        for obj in self:
+            obj.plancher = obj.plancher_mensuel * 3
+            obj.plafond = obj.plafond_mensuel * 3
+            
+    plancher = fields.Float('Plancher Trimestrielle',  compute=_get_val_trimestrielle)
+    plafond = fields.Float('Plafond Trimestrielle',  compute=_get_val_trimestrielle)
+    plancher_mensuel = fields.Float('Plancher Mensuel', required=True)
+    plafond_mensuel = fields.Float('Plafond Mensuel', required=True)
 
 class ConstanteCalcul(models.Model):
     _name = 'cmim.constante'
@@ -26,9 +34,16 @@ class ConstanteCalcul(models.Model):
                 _(u"Impossible de supprimer des constantes de calcul réservées au système"))
         else:
             return super(RegleCalcul, self).unlink()
+        
+    @api.multi
+    def _get_val_trimestrielle(self):
+        for obj in self:
+            obj.valeur = obj.val_mensuelle*3
+            
     reserved = fields.Boolean(u'réservé au système', default=False)
     name = fields.Char('Nom ', required=True)
-    valeur = fields.Char('Valeur ', required=True)
+    valeur = fields.Float('Valeur ', compute=_get_val_trimestrielle)
+    val_mensuelle = fields.Float('Valeur Mensuelle', required=True)
     
 class Tarif(models.Model):
     _name = 'cmim.tarif'
@@ -51,7 +66,10 @@ class RegleCalcul(models.Model):
                     _(u"Impossible de supprimer les règles de calcul réservées au système"))
             else:
                 return super(RegleCalcul, self).unlink()
-           
+    @api.onchange('type')
+    def onchange_type(self):
+        if self.type and self.type == 'taux':
+            self.applicabilite_proratat = False
             
     name = fields.Char('Nom', required=True)
     reserved = fields.Boolean('Reserved')
@@ -69,4 +87,5 @@ class RegleCalcul(models.Model):
                                         ('base', 'Règle Base')], 
                                         default="base", string='Type de règle',
                                         help=u"Les règles de calcul intermédaires servent à définir les bons tarifs tandis que les règles de calcul contractuelles définissent les bases de calul , le tarif pris en compte lors du calcul est soit le tarif associé à la règle intermédiaire dans le paramétrage de la collectivité, soit le tarif par défaut définit dans la règle de calcul contractuelle.")
+    applicabilite_proratat = fields.Boolean(u'Applicabilité prorata', default=True)
 
