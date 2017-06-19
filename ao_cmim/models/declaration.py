@@ -84,7 +84,8 @@ class declaration(models.Model):
                 res = 0.0
                 if(obj.salaire > obj.base_trancheA):
                     res = obj.salaire - obj.base_trancheA
-                obj.base_trancheB = min(float(srp.valeur) ,float(res))
+                diff_srp = float(srp.valeur) - obj.p_base_trancheA
+                obj.base_trancheB = min(float(diff_srp) ,float(res))
         else:
             raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
     @api.multi
@@ -104,7 +105,8 @@ class declaration(models.Model):
                 res = 0.0
                 if(obj.salaire > obj.p_base_trancheA):
                     res = obj.salaire - obj.p_base_trancheA
-                obj.p_base_trancheB = min(float(srp.valeur) * proratat ,float(res))
+                diff_srp = float(srp.valeur) - obj.p_base_trancheA
+                obj.p_base_trancheB = min( diff_srp* proratat ,float(res))
         else:
             raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
     
