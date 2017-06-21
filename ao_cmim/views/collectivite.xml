@@ -113,15 +113,15 @@
 				</xpath>
 				<xpath expr="//page[@name='accounting']" position="after">
 					<page string="Paramétrage">
-						<button name="create_lines" string="Générateurs tarifs" type="object"
-							attrs="{'invisible' : [('contrat_id' ,'=', None)]}" />
-							<field name="parametrage_ids">
-								<tree editable="buttom">
-									<field name="name" invisible="1" />
-									<field name="regle_id" />
-									<field name="tarif_id" />
-								</tree>
-							</field>
+						<button name="create_lines" string="Générateurs tarifs"
+							type="object" attrs="{'invisible' : [('contrat_id' ,'=', None)]}" />
+						<field name="parametrage_ids">
+							<tree editable="buttom">
+								<field name="name" invisible="1" />
+								<field name="regle_id" />
+								<field name="tarif_id" />
+							</tree>
+						</field>
 					</page>
 				</xpath>
 				<page name='sales_purchases' position="attributes">
@@ -189,6 +189,8 @@
 					<field name="epoux_id"
 						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
 					<field name="statut_id"
+						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
+					<field name="statut_ids" widget="many2many_tags"
 						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
 					<field name="date_naissance"
 						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />

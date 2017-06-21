@@ -42,25 +42,28 @@
 									attrs="{'readonly' : [('reserved' ,'=',  True)], 'required' : [('type' ,'=', 'base')], 'invisible' : [('type' ,'!=', 'base')]}" />
 
 							</group>
-							</group>
-							<notebook>
-								<page string="Applicabilité" attrs="{'invisible' : [('type' ,'!=', 'base')]}">
+						</group>
+						<notebook>
+							<page string="Applicabilité" attrs="{'invisible' : [('type' ,'!=', 'base')]}">
+								<group>
 									<group>
-										<group>
-											<field name="debut_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
-											<field name="fin_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
-										</group>
-										<group>
-											<field name="statut_id" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
-										</group>
+										<field name="debut_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
 									</group>
-									<separator string="Applicable aux secteurs suivants" />
-									<field name="secteur_ids" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
-								</page>
-								<page string="Notes">
-									<field name="notes" />
-								</page>
-							</notebook>
+									<group>
+										<field name="fin_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+									</group>
+								</group>
+								<separator string="Applicable aux secteurs suivants :" />
+								<field name="secteur_ids" attrs="{'readonly' : [('reserved' ,'=', True)]}"></field>
+
+								<separator string="Applicable aux Positions/ Statuts suivants :" />
+								<field name="statut_ids" attrs="{'readonly' : [('reserved' ,'=', True)]}"></field>
+
+							</page>
+							<page string="Notes">
+								<field name="notes"  placeholder="Note interne..."/>
+							</page>
+						</notebook>
 					</sheet>
 				</form>
 			</field>

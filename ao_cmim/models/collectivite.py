@@ -68,8 +68,18 @@ class ResPartner(models.Model):
 
     collectivite_id = fields.Many2one('res.partner', string='Collectivite', store= True, compute=get_last_collectivite)
     statut_id = fields.Many2one('cmim.statut.assure', string='Statut')
+    statut_ids = fields.Many2many('cmim.statut.assure', 'res_partner_statut_rel', 'partner_id', 'statut_id',  string='Position/Statut')
     date_naissance = fields.Date(string="Date de naissance")
-     
+    
+    @api.model
+    def update_assure(self):
+        print 'CRON CRON'
+        for ass in self.search([('is_collectivite', '=', False), ('statut_id', '!=', False), ('numero', '!=', 0)]):
+            ass.write({'property_account_receivable_id': 227,
+                       'property_account_payable_id': 292,
+                       'statut_ids' : [(4,ass.statut_id.id)],
+                       })
+        print 'hiiiiiiiiiiiiiiiiiiiii'
     epoux_id =  fields.Many2one('res.partner', 'Epoux (se)', domain="[('id_num_famille', '=', id_num_famille),('is_collectivite', '=', False), ('company_type','=','person')]")
     declaration_ids = fields.One2many('cmim.declaration', 'assure_id', 'Declarations') 
     ###################

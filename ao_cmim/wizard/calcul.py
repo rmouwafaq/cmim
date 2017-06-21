@@ -64,15 +64,15 @@ class calcul_cotisation (models.TransientModel):
         cotisation_line_list = []
         dict_bases = {}
         for contrat in contrat_line_ids:
-            test_applicabilite_statut = True
+            test_applicabilite_statut = False
             test_applicabilite_secteur = True
             test_applicabilite_date = True
-            if not contrat.regle_id.statut_id:
-                test_applicabilite_statut = True
-            elif contrat.regle_id.statut_id.id == declaration_id.assure_id.statut_id.id:
+            if not contrat.regle_id.statut_ids:
                 test_applicabilite_statut = True
             else:
-                test_applicabilite_statut = False
+                for statut in declaration_id.assure_id.statut_ids:
+                    if statut.id in contrat.regle_id.statut_ids.ids:
+                        test_applicabilite_statut = True
             #############################################################
             if not contrat.regle_id.secteur_ids:
                 test_applicabilite_secteur = True
