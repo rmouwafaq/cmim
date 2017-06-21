@@ -24,6 +24,9 @@ class declaration(models.Model):
         string='Secteur',
         related='collectivite_id.secteur_id', store=True
     )
+    statut_id = fields.Many2one('cmim.statut.assure', string=u'Statut Assuré',
+        related='assure_id.statut_id', store=True
+    )
     @api.multi
     def action_validate(self):
         for obj in self:

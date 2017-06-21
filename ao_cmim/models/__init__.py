@@ -6,3 +6,4 @@ import cotisation
 import facture_payement
 import declaration
 import parametrage_collectivite
+import position_statut

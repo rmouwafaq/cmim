@@ -9,15 +9,15 @@
 				<search string="Assure filtre">
 					<field name="name" />
 					<field name="collectivite_id" />
-					<field name="statut_id" string="Statut" />
+<!-- 					<field name="statut_id" string="Statut" /> -->
 					<field name="numero" string="Matricule" />
 					<field name="id_num_famille" string="Matricule Famille" />
 
 					<group expand="0" string="Group By">
 						<filter name="collectivite_id" string="Collectivité"
 							domain="[]" context="{'group_by':'collectivite_id'}" />
-						<filter name="statut_id" string="Statut" domain="[]"
-							context="{'group_by':'statut_id'}" />
+<!-- 						<filter name="statut_id" string="Statut" domain="[]" -->
+<!-- 							context="{'group_by':'statut_id'}" /> -->
 					</group>
 				</search>
 			</field>
@@ -51,7 +51,7 @@
 					<field name="numero" />
 					<field name="id_num_famille" />
 					<field name="collectivite_id" />
-					<field name="statut_id" />
+<!-- 					<field name="statut_id" /> -->
 					<field name="date_naissance" />
 					<field name="function" invisible="1" />
 					<field name="phone" />
@@ -111,19 +111,6 @@
 					<field name="filliale_ids" widget="many2many"
 						invisible="context.get('default_is_collectivite') == False"></field>
 				</xpath>
-				<xpath expr="//page[@name='accounting']" position="after">
-					<page string="Paramétrage">
-						<button name="create_lines" string="Générateurs tarifs"
-							type="object" attrs="{'invisible' : [('contrat_id' ,'=', None)]}" />
-						<field name="parametrage_ids">
-							<tree editable="buttom">
-								<field name="name" invisible="1" />
-								<field name="regle_id" />
-								<field name="tarif_id" />
-							</tree>
-						</field>
-					</page>
-				</xpath>
 				<page name='sales_purchases' position="attributes">
 					<attribute name="invisible">True</attribute>
 				</page>
@@ -153,6 +140,26 @@
 								<field name="collectivite_id" />
 								<field name="date_range_id" />
 								<field name="fiscal_date" />
+							</tree>
+						</field>
+					</page>
+					<page string="Paramétrage" attrs="{'invisible' : [('is_collectivite', '!=', True)]}">
+						<button name="create_lines" string="Générateurs tarifs"
+							type="object" attrs="{'invisible' : [('contrat_id' ,'=', None)]}" />
+						<field name="parametrage_ids">
+							<tree editable="buttom">
+								<field name="name" invisible="1" />
+								<field name="regle_id" />
+								<field name="tarif_id" />
+							</tree>
+						</field>
+					</page>
+					<page string="Positions/ Statuts" attrs="{'invisible' : [('is_collectivite', '=', True)]}">
+						<field name="position_statut_ids">
+							<tree editable="buttom">
+								<field name="date_debut_appl" />
+								<field name="date_fin_appl" />
+								<field name="statut_id" />
 							</tree>
 						</field>
 					</page>
@@ -188,10 +195,10 @@
 						attrs="{'required' : [('is_collectivite', '=', False)], 'invisible' : [('is_collectivite', '=', True)]}" />
 					<field name="epoux_id"
 						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
-					<field name="statut_id"
-						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
-					<field name="statut_ids" widget="many2many_tags"
-						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
+<!-- 					<field name="statut_id" -->
+<!-- 						attrs="{'invisible' : [('is_collectivite', '=', True)]}" /> -->
+<!-- 					<field name="statut_ids" widget="many2many_tags" -->
+<!-- 						attrs="{'invisible' : [('is_collectivite', '=', True)]}" /> -->
 					<field name="date_naissance"
 						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
 				</xpath>
@@ -209,7 +216,7 @@
 					<field name="secteur_id" />
 					<field name="numero" />
 					<field name="collectivite_id" />
-					<field name="statut_id" />
+<!-- 					<field name="statut_id" /> -->
 				</field>
 				<ul position="before">
 					<ul>
@@ -220,9 +227,9 @@
 								<field name="collectivite_id" />
 							</span>
 						</li>
-						<li t-if="record.statut_id.raw_value">
-							<field name="statut_id" />
-						</li>
+<!-- 						<li t-if="record.statut_id.raw_value"> -->
+<!-- 							<field name="statut_id" /> -->
+<!-- 						</li> -->
 						<li t-if="record.code.raw_value and record.secteur_id.raw_value">
 							<field name="code" />
 							,
@@ -257,8 +264,8 @@
 			<field name="context">{'default_company_type' : 'person',
 				'default_is_collectivite' : False, 'default_customer' : True}
 			</field>
-			<field name="domain"
-				eval="[('is_collectivite' ,'=', False), ('statut_id.code', '!=', 'INACT')]" />
+			<field name="domain" eval="[('is_collectivite' ,'=', False), ('statut_id.code', '!=', 'INACT')]" />
+<!-- 			, ('statut_id.code', '!=', 'INACT') -->
 			<field name="view_id" ref="ao_cmim.res_partner_kanban_view" />
 			<field name="search_view_id" ref="assure_search_view" />
 		</record>

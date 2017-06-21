@@ -18,15 +18,7 @@ class ResPartner(models.Model):
             epoux_id.write({'epoux_id':partner.id})
             partner.write({'epoux_id':epoux_id.id})
         return partner
-#     @api.multi
-#     def get_tarif_of_regle(self, regle_id):
-#         for obj in self:
-#             if obj.parametrage_ids:
-#                 parametrage = self.env['cmim.parametrage.collectivite'].search([('collectivite_id', '=', obj.id), ('regle_id', '=', regle_id)])
-#                 if parametrage:
-#                     return parametrage.tarif_id
-#                 else:
-#                     return False
+
     @api.multi
     def create_lines(self):
         self.ensure_one() 
@@ -69,17 +61,16 @@ class ResPartner(models.Model):
     collectivite_id = fields.Many2one('res.partner', string='Collectivite', store= True, compute=get_last_collectivite)
     statut_id = fields.Many2one('cmim.statut.assure', string='Statut')
     statut_ids = fields.Many2many('cmim.statut.assure', 'res_partner_statut_rel', 'partner_id', 'statut_id',  string='Position/Statut')
+    position_statut_ids = fields.One2many('cmim.position.statut', 'assure_id',  string='Position/Statut')
     date_naissance = fields.Date(string="Date de naissance")
     
     @api.model
     def update_assure(self):
         print 'CRON CRON'
         for ass in self.search([('is_collectivite', '=', False), ('statut_id', '!=', False), ('numero', '!=', 0)]):
-            ass.write({'property_account_receivable_id': 227,
-                       'property_account_payable_id': 292,
+            ass.write({
                        'statut_ids' : [(4,ass.statut_id.id)],
                        })
-        print 'hiiiiiiiiiiiiiiiiiiiii'
     epoux_id =  fields.Many2one('res.partner', 'Epoux (se)', domain="[('id_num_famille', '=', id_num_famille),('is_collectivite', '=', False), ('company_type','=','person')]")
     declaration_ids = fields.One2many('cmim.declaration', 'assure_id', 'Declarations') 
     ###################

@@ -70,9 +70,20 @@ class calcul_cotisation (models.TransientModel):
             if not contrat.regle_id.statut_ids:
                 test_applicabilite_statut = True
             else:
-                for statut in declaration_id.assure_id.statut_ids:
-                    if statut.id in contrat.regle_id.statut_ids.ids:
-                        test_applicabilite_statut = True
+                SQL = """
+                    SELECT * FROM cmim_position_statut pos 
+                        WHERE pos.STATUT_ID IN %s
+                        AND pos.DATE_DEBUT_APPL<= %s
+                        AND pos.DATE_FIN_APPL>= %s
+                        AND pos.assure_id=%s;"""
+                self.env.cr.execute(SQL, (tuple(contrat.regle_id.statut_ids.ids),
+                                          declaration_id.date_range_id.date_start,
+                                          declaration_id.date_range_id.date_end,
+                                          declaration_id.assure_id.id))
+                res = self.env.cr.fetchall()
+                if res:
+#                 if declaration_id.assure_id.statut_id.id in contrat.regle_id.statut_ids.ids:
+                    test_applicabilite_statut = True
             #############################################################
             if not contrat.regle_id.secteur_ids:
                 test_applicabilite_secteur = True
