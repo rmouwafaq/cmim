@@ -70,7 +70,7 @@ class cmimImportDecPay(models.TransientModel):
                             partner_obj = partner_obj[0]
                         
                         elif not partner_obj:
-                            partner_obj = partner_obj.create({  'is_collectivite': False,
+                            partner_obj = partner_obj.create({  'type_entite': 'a',
                                                                 'company_type' : 'person',
                                                                 'customer' : True,
                                                                 'name' : '%s' % values[3],
@@ -109,7 +109,7 @@ class cmimImportDecPay(models.TransientModel):
                         assure = self.env['res.partner'].search([('numero', '=', values[0])])
                         state = 'valide'
                         if not assure:
-                            assure = assure.create({   'is_collectivite': False,
+                            assure = assure.create({   'type_entite': 'a',
                                                         'company_type' : 'person',
                                                         'customer' : True,
                                                         'numero' : values[0],
@@ -217,7 +217,7 @@ class cmimImportDecPay(models.TransientModel):
         except Exception:
             raise exceptions.Warning(_(u"Le fichier sélectionné n'est pas valide!"))
         del reader_info[0]
-        if(not self.env['res.partner'].search([('is_collectivite', '=', True)])):
+        if(not self.env['res.partner'].search([('type_entite', '=', 'c')])):
                 raise exceptions.Warning(_(u"L'import des encaissements exige l'existances des collectivités dans le système, veuillez créer les collectivités en premier"))
         else:
             if self.type_operation == 'declaration':

@@ -7,11 +7,13 @@
 			parent="main_menu" sequence="1" />
 
 		<menuitem id="collectivite_menu" name="Collectivités" action="action_collectivite"
-			parent="col_assure_menu" />
+			parent="col_assure_menu" sequence="1"/>
 		<menuitem id="assure_menu" name="Assurés" action="action_assure"
-			parent="col_assure_menu" />
+			parent="col_assure_menu" sequence="2"/>
+		<menuitem id="rsc_menu" name="RSC" action="action_assure_rsc"
+			parent="col_assure_menu" sequence="3"/>
 		<menuitem id="import_col_assure_menu" name="Importation collectivités/ Assurés"
-			action="action_col_assure_import" parent="col_assure_menu" />
+			action="action_col_assure_import" parent="col_assure_menu" sequence="4"/>
 
 
 		<menuitem id="declaration_cotisation_menu" name="Déclarations / Calculs"
@@ -69,6 +71,8 @@
 			parent="config_menu" sequence="3" />
 		<menuitem id="statut_assure_menu" name="Statut d'assurés" action="action_statut_assure"
 			parent="config_menu" sequence="5" />
+		<menuitem id="garantie_menu" name="Garanties" action="action_garantie"
+			parent="config_menu" sequence="6" />
 
 		<menuitem id="rapport_menu" name="Rapports" parent="main_menu"
 			sequence="6" />

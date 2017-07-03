@@ -35,7 +35,7 @@ class cmimImportCOlAss(models.TransientModel):
             values = reader_info[i]
             if not partner_obj.search([('code' , '=', values[1])]):
                 list_col_dict.append({
-                    'is_collectivite': True,
+                    'type_entite': 'c',
                     'company_type' : 'company',
                     'customer' : True,
                     'is_company' : True,
@@ -81,7 +81,7 @@ class cmimImportCOlAss(models.TransientModel):
             values = reader_info[i]
             if not partner_obj.search([('numero', '=', values[1])]):
                 list_assure_dict.append({
-                                        'is_collectivite': False,
+                                        'type_entite': 'a',
                                         'company_type' : 'person',
                                         'customer' : True,
                                         'name' : '%s %s' % (values[2], values[3]),
@@ -132,7 +132,7 @@ class cmimImportCOlAss(models.TransientModel):
                         }
             else:
                 return True
-        elif(not self.env['res.partner'].search([('is_collectivite', '=', True)])):
+        elif(not self.env['res.partner'].search([('type_entite', '=', 'c')])):
             raise exceptions.Warning(_(u"L'import des assurés exige l'existances des collectivités dans le système, veuillez créer les collectivités en premier"))
         else:
             view_id = self.env.ref('ao_cmim.view_assure_tree').id

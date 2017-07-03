@@ -4,22 +4,27 @@
 		<record id="act" model="cmim.statut.assure">
 			<field name="name">Actif</field>
 			<field name="code">ACT</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="inact" model="cmim.statut.assure">
 			<field name="name">Inactif</field>
 			<field name="code">INACT</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="adp" model="cmim.statut.assure">
 			<field name="name">Enfant Adoptif</field>
 			<field name="code">ADP</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="auc" model="cmim.statut.assure">
 			<field name="name">Aucun</field>
 			<field name="code">AUC</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="caa" model="cmim.statut.assure">
 			<field name="name">Conjoint Avec Activité</field>
 			<field name="code">CAA</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="cet" model="cmim.statut.assure">
 			<field name="name">Conjoint Enfant</field>
@@ -28,50 +33,62 @@
 		<record id="epd" model="cmim.statut.assure">
 			<field name="name">Epouse Adhérente</field>
 			<field name="code">EPD</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="etd" model="cmim.statut.assure">
 			<field name="name">Etudiant</field>
 			<field name="code">ETD</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="fsa" model="cmim.statut.assure">
 			<field name="name">Femme Sans Activité</field>
 			<field name="code">FSA</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="hpo" model="cmim.statut.assure">
 			<field name="name">Homme Postulant</field>
 			<field name="code">HPO</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="inc" model="cmim.statut.assure">
 			<field name="name">En Incapacité</field>
 			<field name="code">INC</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="inv" model="cmim.statut.assure">
 			<field name="name">Invalide</field>
 			<field name="code">INV</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="orp" model="cmim.statut.assure">
 			<field name="name">Enfant Orphelin</field>
 			<field name="code">ORP</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="ret" model="cmim.statut.assure">
 			<field name="name">Retraité</field>
 			<field name="code">RET</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="rli" model="cmim.statut.assure">
 			<field name="name">Régime Spécial cjt Libéral</field>
 			<field name="code">RLI</field>
+			<field name="regime">rsc</field>
 		</record>
 		<record id="rsa" model="cmim.statut.assure">
 			<field name="name">Régime Spécial cjt Salarié</field>
 			<field name="code">RSA</field>
+			<field name="regime">rsc</field>
 		</record>
 		<record id="tut" model="cmim.statut.assure">
 			<field name="name">Tuteur</field>
 			<field name="code">TUT</field>
+			<field name="regime">n</field>
 		</record>
 		<record id="vnr" model="cmim.statut.assure">
 			<field name="name">Veuve Non Mariée</field>
 			<field name="code">VNR</field>
+			<field name="regime">n</field>
 		</record>
 	</data>
 </odoo>

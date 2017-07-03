@@ -1,7 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 	<data>
-
+		<record id="regle_calcul_search_view" model="ir.ui.view">
+			<field name="name">cmim.regle.calcul.search</field>
+			<field name="model">cmim.regle.calcul</field>
+			<field name="arch" type="xml">
+				<search string="Règle Calcul Filtre">
+					<field name="name" />
+					<field name="type" />
+					<field name="regle_base_id" />
+					<field name="regle_tarif_id" />
+					<field name="applicabilite_proratat" />
+					<field name="applicabilite_abattement" />
+					<group expand="0" string="Group By">
+						<filter name="type" string="Type de Règle" domain="[]"
+							context="{'group_by':'type'}" />
+						<filter name="regle_base_id" string="Base de calcul" domain="[]"
+							context="{'group_by':'regle_base_id'}" />
+					</group>
+				</search>
+			</field>
+		</record>
 		<record id="view_regle_tree" model="ir.ui.view">
 			<field name="name">cmim.regle.calcul.tree</field>
 			<field name="model">cmim.regle.calcul</field>
@@ -29,22 +48,24 @@
 								<field name="name" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
 								<field name="reserved" invisible="1" />
 								<field name="regle_base_id"
-									attrs="{'readonly' : [('reserved' ,'=', True)], 'required' : [('type' ,'=', 'base')], 'invisible' : [('type' ,'!=', 'base')]}" />
+									attrs="{'readonly' : [('reserved' ,'=', True)], 'required' : [('type' ,'in', ['tbase', 'trsc'])], 'invisible' : [('type' ,'not in', ['tbase', 'trsc'])]}" />
 								<field name="applicabilite_proratat"
-									attrs="{'readonly' : [('reserved' ,'=', True)], 'invisible' : [('type' ,'!=', 'base')]}" />
+									attrs="{'readonly' : [('reserved' ,'=', True)], 'invisible' : [('type' ,'!=', 'tbase')]}" />
+								<field name="applicabilite_abattement"
+									attrs="{'readonly' : [('reserved' ,'=', True)], 'invisible' : [('type' ,'!=', 'tbase')]}" />
 							</group>
 							<group>
 								<field name="type" required="1"
 									attrs="{'readonly' : [('reserved' ,'=', True)]}" />
 								<field name="default_tarif_id"
-									attrs="{'readonly' : [('reserved' ,'=',  True)], 'required' : [('type' ,'!=', 'base')], 'invisible' : [('type' ,'=', 'base')]}" />
+									attrs="{'readonly' : [('reserved' ,'=',  True)], 'required' : [('type' ,'in', ['taux', 'tabat'])], 'invisible' : [('type' ,'not in', ['taux', 'tabat'])]}" />
 								<field name="regle_tarif_id"
-									attrs="{'readonly' : [('reserved' ,'=',  True)], 'required' : [('type' ,'=', 'base')], 'invisible' : [('type' ,'!=', 'base')]}" />
+									attrs="{'readonly' : [('reserved' ,'=',  True)], 'required' : [('type' ,'in', ['tbase', 'trsc'])], 'invisible' : [('type' ,'not in', ['tbase', 'trsc'])]}" />
 
 							</group>
 						</group>
 						<notebook>
-							<page string="Applicabilité" attrs="{'invisible' : [('type' ,'!=', 'base')]}">
+							<page string="Applicabilité" attrs="{'invisible' : [('type' ,'=', 'taux')]}">
 								<group>
 									<group>
 										<field name="debut_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
@@ -57,11 +78,12 @@
 								<field name="secteur_ids" attrs="{'readonly' : [('reserved' ,'=', True)]}"></field>
 
 								<separator string="Applicable aux Positions/ Statuts suivants :" />
-								<field name="statut_ids" attrs="{'readonly' : [('reserved' ,'=', True)]}"></field>
+								<field name="statut_ids"
+									attrs="{'required' : [('type' ,'=', ['trsc'])], 'readonly' : [('reserved' ,'=', True)]}"></field>
 
 							</page>
 							<page string="Notes">
-								<field name="notes"  placeholder="Note interne..."/>
+								<field name="notes" placeholder="Note interne..." />
 							</page>
 						</notebook>
 					</sheet>
@@ -74,7 +96,8 @@
 			<field name="res_model">cmim.regle.calcul</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
-			<!-- <field name="context">{"search_default_secteur_id":1}</field> -->
+			<field name="context">{}</field>
+			<field name="search_view_id" ref="regle_calcul_search_view" />
 			<field name="view_id" ref="view_regle_tree" />
 		</record>
 	</data>

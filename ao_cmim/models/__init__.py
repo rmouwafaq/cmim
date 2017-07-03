@@ -1,5 +1,6 @@
 import contrat
 import config
+import config_calcul
 import collectivite
 import product
 import cotisation

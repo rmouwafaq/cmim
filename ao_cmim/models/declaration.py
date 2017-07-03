@@ -16,8 +16,8 @@ class declaration(models.Model):
     ]
 
     import_flag = fields.Boolean('Par import', default=False)   
-    collectivite_id = fields.Many2one('res.partner', u'Collectivité', ondelete='cascade', domain="[('is_collectivite','=',True)]", required=True)   
-    assure_id = fields.Many2one('res.partner', u'Assuré', required=True, domain="[('is_collectivite','=',False)]", ondelete='cascade')  #  , 
+    collectivite_id = fields.Many2one('res.partner', u'Collectivité', ondelete='cascade', domain="[('type_entite','=','c')]", required=True)   
+    assure_id = fields.Many2one('res.partner', u'Assuré', required=True, domain="[('type_entite','=','a')]", ondelete='cascade')  #  , 
     nb_jour = fields.Integer(u'Nombre de jours déclarés', required=True)
     salaire = fields.Float('salaire', required=True)
     secteur_id = fields.Many2one('cmim.secteur',

@@ -10,6 +10,33 @@ class ResPartner(models.Model):
         ('code_collectivite_uniq', 'unique(code)', 'le code d\'adhérent doit être unique'),
         ('numero_uniq', 'unique(numero)', 'le matricule doit être unique.'),
     ]
+
+    import_flag = fields.Boolean('Par import', default=False)      
+    code = fields.Char(string="Code collectivite")
+    prenom = fields.Char(string=u'Prénom')
+    date_adhesion = fields.Date(string="date d\'adhesion")
+    secteur_id = fields.Many2one('cmim.secteur', "Secteur", ondelete="restrict")
+    
+    siege_id = fields.Many2one('res.partner', string=u'Collectivité mère', domain="[('customer','=',True),('is_company','=',True)]")
+    filliale_ids = fields.One2many('res.partner', 'siege_id', 'Filliales', domain=[('customer','=',True),('is_company','=',True)])
+    
+    contrat_id = fields.Many2one('cmim.contrat', string="Contrat", ondelete = 'restrict')
+    parametrage_ids = fields.One2many('cmim.parametrage.collectivite', 'collectivite_id', u'Paramétrage')
+    ########################
+
+    is_collectivite = fields.Boolean(u'Est une collectivité', default=False)
+    type_entite = fields.Selection(selection=[('c', u'Collectivité'), ('a', u'Assuré'),('rsc', u'RSC') ])
+    lib_qualite = fields.Char(u'Libellé Qualité')
+    id_num_famille = fields.Integer(string="Id Numero Famille")
+    numero = fields.Integer(string=u"Numero Assuré")
+
+    collectivite_id = fields.Many2one('res.partner', string='Collectivite', store= True, compute='get_last_collectivite')
+    statut_id = fields.Many2one('cmim.statut.assure', string='Statut')
+    statut_ids = fields.Many2many('cmim.statut.assure', 'res_partner_statut_rel', 'partner_id', 'statut_id',  string='Position/Statut')
+    position_statut_ids = fields.One2many('cmim.position.statut', 'assure_id',  string='Position/Statut')
+    date_naissance = fields.Date(string="Date de naissance")
+    epoux_id =  fields.Many2one('res.partner', 'Epoux (se)', domain="[('id_num_famille', '=', id_num_famille),('type_entite', '=', 'a'), ('company_type','=','person')]")
+    declaration_ids = fields.One2many('cmim.declaration', 'assure_id', 'Declarations') 
     @api.model
     def create(self, vals): 
         partner = super(ResPartner, self).create(vals)
@@ -18,63 +45,59 @@ class ResPartner(models.Model):
             epoux_id.write({'epoux_id':partner.id})
             partner.write({'epoux_id':epoux_id.id})
         return partner
-
+    
+    def get_statut_in_periode(self, statut_ids, date_start, date_end): 
+        res = []
+        for pos in self.position_statut_ids:
+            if pos.statut_id.id in statut_ids and pos.date_debut_appl <= date_start and pos.date_fin_appl >= date_end:
+                res.append(pos.id)
+        return res
+    def get_rsc(self, regle_id, declaration_id):
+        res = []
+        rsc_ids = self.search([('id_num_famille', '=', self.id_num_famille), ('type_entite', '=', 'rsc')])
+        for rsc in rsc_ids :
+            if len(rsc.get_statut_in_periode(regle_id.statut_ids.ids, 
+                                            declaration_id.date_range_id.date_start, 
+                                            declaration_id.date_range_id.date_end)) > 0:
+                res.append(rsc)
+        return rsc_ids
+                
     @api.multi
     def create_lines(self):
         self.ensure_one() 
         list=[]
-        for line in self.parametrage_ids:
-            line.unlink()
+        self.parametrage_ids = [(5,)]
         for cl in self.contrat_id.contrat_line_ids:
             list.append((0,0, {'name': cl.regle_id.name, 
                                'regle_id': cl.regle_id.id,
                                'tarif_id': cl.regle_id.regle_tarif_id.default_tarif_id.id
                                }))
+        for r in self.env['cmim.regle.calcul'].search([('type', '=', 'tabat')]):
+            if self.secteur_id.id in r.secteur_ids.ids or r.secteur_ids.ids == [] :
+                list.append((0,0, {'name': r.name, 
+                                   'regle_id': r.id,
+                                   'tarif_id': r.default_tarif_id.id
+                                   }))
         self.update({"parametrage_ids" : list})
-    import_flag = fields.Boolean('Par import', default=False)      
-    code = fields.Char(string="Code collectivite")
-    prenom = fields.Char(string=u'Prénom')
-    date_adhesion = fields.Date(string="date d\'adhesion")
-    secteur_id = fields.Many2one('cmim.secteur', "Secteur", ondelete="restrict")
     
-#     assures_count = fields.Integer(compute='_assures_count', string="Nb assures")
-    siege_id = fields.Many2one('res.partner', string=u'Collectivité mère', domain="[('customer','=',True),('is_company','=',True)]")
-    filliale_ids = fields.One2many('res.partner', 'siege_id', 'Filliales', domain=[('customer','=',True),('is_company','=',True)])
-    
-    contrat_id = fields.Many2one('cmim.contrat', string="Contrat", ondelete = 'restrict')
-    parametrage_ids = fields.One2many('cmim.parametrage.collectivite', 'collectivite_id', u'Paramétrage')
-    ########################
     @api.multi
     @api.depends('declaration_ids')
     def get_last_collectivite(self):
         for obj in self:
-            if obj.is_collectivite:
+            if obj.type_entite == 'c':
                 obj.collectivite_id = False
             elif obj.declaration_ids:
                 obj.collectivite_id = self.env['cmim.declaration'].search([('assure_id', '=', obj.id)], order='date_range_end desc', limit=1).collectivite_id.id
             else:
                 obj.collectivite_id = False
-    is_collectivite = fields.Boolean(u'Est une collectivité', default=False)
-    id_num_famille = fields.Integer(string="Id Numero Famille")
-    numero = fields.Integer(string=u"Numero Assuré")
-
-    collectivite_id = fields.Many2one('res.partner', string='Collectivite', store= True, compute=get_last_collectivite)
-    statut_id = fields.Many2one('cmim.statut.assure', string='Statut')
-    statut_ids = fields.Many2many('cmim.statut.assure', 'res_partner_statut_rel', 'partner_id', 'statut_id',  string='Position/Statut')
-    position_statut_ids = fields.One2many('cmim.position.statut', 'assure_id',  string='Position/Statut')
-    date_naissance = fields.Date(string="Date de naissance")
-    
+    ###################
     @api.model
     def update_assure(self):
         print 'CRON CRON'
-        for ass in self.search([('is_collectivite', '=', False), ('statut_id', '!=', False), ('numero', '!=', 0)]):
+        for ass in self.search([('type_entite', '=', 'a'), ('statut_id', '!=', False), ('numero', '!=', 0)]):
             ass.write({
                        'statut_ids' : [(4,ass.statut_id.id)],
                        })
-    epoux_id =  fields.Many2one('res.partner', 'Epoux (se)', domain="[('id_num_famille', '=', id_num_famille),('is_collectivite', '=', False), ('company_type','=','person')]")
-    declaration_ids = fields.One2many('cmim.declaration', 'assure_id', 'Declarations') 
-    ###################
-#     assure_ids = fields.One2many('res.partner', 'collectivite_id', string=u"Assurés associés")
     
     @api.multi
     def get_assures(self):
@@ -91,7 +114,7 @@ class ResPartner(models.Model):
                           ('statut_id.code' , '!=', 'INACT'),
                           ('company_type' , '=', 'person'),
                           ('customer' , '=', True),
-                          ('is_collectivite' , '=', False),
+                          ('type_entite' , '=', 'a'),
                           ('collectivite_id' , '=', self.id),
                           ],
 #                ('collectivite_id', '=', None),
@@ -123,10 +146,10 @@ class ResPartner(models.Model):
 
         context = self._context
         if view_type == 'tree':
-            if context.get('default_is_collectivite', False) == False and context.get('default_company_type', 'company') == 'person':
+            if context.get('default_type_entite', 'a') == 'a' and context.get('default_company_type', 'company') == 'person':
                     view_id = get_view_id('view_assure_tree', 'ao.cmim.assure.tree').id or None
                     view_type='tree'
-            if context.get('default_is_collectivite', False) == True and context.get('default_company_type', 'company') == 'company' \
+            if context.get('default_type_entite', 'a') == 'c' and context.get('default_company_type', 'company') == 'company' \
                         and context.get('default_is_company', False) == True and context.get('default_customer', False) == True :
                 
                 view_id = get_view_id('view_collectivite_tree', 'ao.cmim.collectivite.tree').id or None

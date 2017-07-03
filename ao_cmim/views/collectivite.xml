@@ -27,8 +27,8 @@
 			<field name="model">res.partner</field>
 			<field name="arch" type="xml">
 				<search>
-					<field name="secteur_id" />
 					<field name="name" string="Raison Sociale" domain-filter="[('name', '=', self)]" />
+					<field name="secteur_id" />
 					<field name="siege_id" />
 					<field name="code" string="Code" domain-filter="[('code', '=', self)]" />
 					<group expand="0" string="Group By">
@@ -85,31 +85,31 @@
 				<button name="toggle_active" position="after">
 					<button name="get_assures" string="Assurés" type="object"
 						class="oe_inline oe_stat_button" icon="fa-users"
-						attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}">
+						attrs="{'invisible' : [('type_entite' ,'!=', 'c')]}">
 						<!-- <field string="Assurés" name="assures_count" widget="statinfo" 
 							/> -->
 					</button>
 					<button name="get_declarations" type="object" string="Déclarations"
 						class="oe_inline oe_stat_button" icon="fa-align-justify"
-						attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}" />
+						attrs="{'invisible' : [('type_entite' ,'!=', 'c')]}" />
 					<button name="get_declarations_for_assure" type="object"
 						string="Déclarations" class="oe_inline oe_stat_button" icon="fa-align-justify"
-						attrs="{'invisible' : [('is_collectivite' ,'=', True)]}" />
+						attrs="{'invisible' : [('type_entite' ,'not in', ['a', 'rsc'])]}" />
 					<button name="import_declaration" type="object"
 						string="Importer les déclarations" class="oe_inline oe_stat_button"
-						icon="fa-level-up" attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}" />
+						icon="fa-level-up" attrs="{'invisible' : [('type_entite' ,'!=', 'c')]}" />
 					<button name="get_cotisations" type="object" string="Cotisations à valider"
 						class="oe_inline oe_stat_button" icon="fa-sign-out"
-						attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}" />
+						attrs="{'invisible' : [('type_entite' ,'!=', 'c')]}" />
 					<button name="get_payments" type="object" string="Réglements"
 						class="oe_inline oe_stat_button" icon="fa-sign-in"
-						attrs="{'invisible' : [('is_collectivite' ,'!=', True)]}" />
+						attrs="{'invisible' : [('type_entite' ,'!=', 'c')]}" />
 				</button>
 				<xpath expr="//page[1]" position="inside">
 					<separator string="Filliales"
-						invisible="context.get('default_is_collectivite') == False" />
+						invisible="context.get('default_type_entite') == 'c'" />
 					<field name="filliale_ids" widget="many2many"
-						invisible="context.get('default_is_collectivite') == False"></field>
+						invisible="context.get('default_type_entite') == 'c'"></field>
 				</xpath>
 				<page name='sales_purchases' position="attributes">
 					<attribute name="invisible">True</attribute>
@@ -127,13 +127,13 @@
 					<attribute name="readonly">True</attribute>
 				</field>
 				<field name="name" position="before">
-					<field name="is_collectivite" invisible="1" />
+					<field name="type_entite" invisible="1" />
 				</field>
 				<field name="supplier" position="attributes">
 					<attribute name="readonly">True</attribute>
 				</field>
 				<xpath expr="//notebook/page[@name='accounting']" position="after">
-					<page name="historique_affiliation" attrs="{'invisible' : [('is_collectivite' ,'=', True)]}"
+					<page name="historique_affiliation" attrs="{'invisible' : [('type_entite' ,'not in', ['a', 'rsc'])]}"
 						string="Historiqes des affiliations">
 						<field name="declaration_ids">
 							<tree>
@@ -143,7 +143,7 @@
 							</tree>
 						</field>
 					</page>
-					<page string="Paramétrage" attrs="{'invisible' : [('is_collectivite', '!=', True)]}">
+					<page string="Paramétrage" attrs="{'invisible' : [('type_entite', '!=', 'c')]}">
 						<button name="create_lines" string="Générateurs tarifs"
 							type="object" attrs="{'invisible' : [('contrat_id' ,'=', None)]}" />
 						<field name="parametrage_ids">
@@ -154,8 +154,8 @@
 							</tree>
 						</field>
 					</page>
-					<page string="Positions/ Statuts" attrs="{'invisible' : [('is_collectivite', '=', True)]}">
-						<field name="position_statut_ids">
+					<page string="Positions/ Statuts" attrs="{'invisible' : [('type_entite','not in', ['a', 'rsc'])]}">
+						<field name="position_statut_ids" >
 							<tree editable="buttom">
 								<field name="date_debut_appl" />
 								<field name="date_fin_appl" />
@@ -165,42 +165,44 @@
 					</page>
 				</xpath>
 				<h1 position="after">
-					<h5 attrs="{'invisible' : [('is_collectivite', '!=', True)]}">
+					<h5 attrs="{'invisible' : [('type_entite', '!=', 'c')]}">
 						<div>
 							<label for="code" class="oe_inline" string="Code:" />
 							<field name="code" class="oe_inline" nolabel="1"
-								attrs="{'required' : [('is_collectivite', '=', True)]}" />
+								attrs="{'required' : [('type_entite', '=', 'c')]}" />
 						</div>
 					</h5>
-					<h5 attrs="{'invisible' : [('is_collectivite', '=', True)]}">
+					<h5 attrs="{'invisible' : [('type_entite' ,'not in', ['a', 'rsc'])]}">
 						<div>
 							<label for="numero" class="oe_inline" string="Matricule:" />
 							<field name="numero" class="oe_inline" nolabel="1"
-								attrs="{'required' : [('is_collectivite', '!=', True)]}" />
+								attrs="{'required' : [('type_entite', '!=', 'c')]}" />
 						</div>
 					</h5>
 				</h1>
 				<xpath expr="//label[@for='street']" position="before">
 					<field name="secteur_id"
-						attrs="{'required' : [('is_collectivite', '=', True)], 'invisible' : [('is_collectivite', '!=', True)],'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
+						attrs="{'required' : [('type_entite', '=', 'c')], 'invisible' : [('type_entite', '!=', 'c')],'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
 					<field name="siege_id"
-						attrs="{'invisible' : [('is_collectivite', '!=', True)],'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
+						attrs="{'invisible' : [('type_entite', '!=', 'c')],'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
 					<field name="date_adhesion"
-						attrs="{'required' : [('is_collectivite', '=', True)], 'invisible' : [('is_collectivite', '!=', True)],'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
+						attrs="{'required' : [('type_entite', '=', 'c')], 'invisible' : [('type_entite', '!=','c')],'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
 					<field name="contrat_id" options="{'no_create': True,'no_edit':True}"
-						attrs="{'required' : [('is_collectivite', '=', True)], 'invisible' : [('is_collectivite', '!=', True)],'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
+						attrs="{'required' : [('type_entite', '=', 'c')], 'invisible' : [('type_entite', '!=', 'c')],'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}" />
 					<field name="collectivite_id"
-						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
+						attrs="{'invisible' : [('type_entite', 'not in', ['a', 'rsc'])]}" />
 					<field name="id_num_famille"
-						attrs="{'required' : [('is_collectivite', '=', False)], 'invisible' : [('is_collectivite', '=', True)]}" />
+						attrs="{'required' : [('type_entite','in', ['a', 'rsc'])], 'invisible' : [('type_entite','not in', ['a', 'rsc'])]}" />
 					<field name="epoux_id"
-						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
+						attrs="{'invisible' : [('type_entite','not in', ['a', 'rsc'])]}" />
 <!-- 					<field name="statut_id" -->
-<!-- 						attrs="{'invisible' : [('is_collectivite', '=', True)]}" /> -->
+<!-- 						attrs="{'invisible' : [('type_entite', '!=', 'a')]}" /> -->
+<!-- 					<field name="lib_qualite" -->
+<!-- 						attrs="{'invisible' : [('type_entite', '!=', 'a')]}" /> -->
 <!-- 					<field name="statut_ids" widget="many2many_tags" -->
-<!-- 						attrs="{'invisible' : [('is_collectivite', '=', True)]}" /> -->
+<!-- 						attrs="{'invisible' : [('type_entite', '=', True)]}" /> -->
 					<field name="date_naissance"
-						attrs="{'invisible' : [('is_collectivite', '=', True)]}" />
+						attrs="{'invisible' : [('type_entite','not in', ['a', 'rsc'])]}" />
 				</xpath>
 
 			</field>
@@ -216,7 +218,6 @@
 					<field name="secteur_id" />
 					<field name="numero" />
 					<field name="collectivite_id" />
-<!-- 					<field name="statut_id" /> -->
 				</field>
 				<ul position="before">
 					<ul>
@@ -227,9 +228,6 @@
 								<field name="collectivite_id" />
 							</span>
 						</li>
-<!-- 						<li t-if="record.statut_id.raw_value"> -->
-<!-- 							<field name="statut_id" /> -->
-<!-- 						</li> -->
 						<li t-if="record.code.raw_value and record.secteur_id.raw_value">
 							<field name="code" />
 							,
@@ -248,8 +246,8 @@
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
 			<field name="domain"
-				eval="[('is_collectivite' ,'=', True),('customer','=',True),('is_company','=',True)]" />
-			<field name="context">{'default_is_collectivite' : True,
+				eval="[('type_entite' ,'=', 'c'),('customer','=',True),('is_company','=',True)]" />
+			<field name="context">{'default_type_entite' : 'c',
 				'default_company_type' : 'company', 'default_is_company' : True,
 				'default_customer' : True}
 			</field>
@@ -261,11 +259,18 @@
 			<field name="res_model">res.partner</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form,kanban</field>
-			<field name="context">{'default_company_type' : 'person',
-				'default_is_collectivite' : False, 'default_customer' : True}
-			</field>
-			<field name="domain" eval="[('is_collectivite' ,'=', False), ('statut_id.code', '!=', 'INACT')]" />
-<!-- 			, ('statut_id.code', '!=', 'INACT') -->
+			<field name="context">{'default_company_type' : 'person', 'default_type_entite' : 'a', 'default_customer' : True} </field>
+			<field name="domain" eval="[('type_entite' ,'=', 'a'), ('statut_id.code', '!=', 'INACT')]" />
+			<field name="view_id" ref="ao_cmim.res_partner_kanban_view" />
+			<field name="search_view_id" ref="assure_search_view" />
+		</record>
+		<record id="action_assure_rsc" model="ir.actions.act_window">
+			<field name="name">RSC</field>
+			<field name="res_model">res.partner</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+			<field name="context">{'default_company_type' : 'person', 'default_type_entite' : 'rsc', 'default_customer' : True} </field>
+			<field name="domain" eval="[('type_entite' ,'=', 'rsc')]" />
 			<field name="view_id" ref="ao_cmim.res_partner_kanban_view" />
 			<field name="search_view_id" ref="assure_search_view" />
 		</record>

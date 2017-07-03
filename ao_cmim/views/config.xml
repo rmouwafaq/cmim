@@ -60,6 +60,24 @@
 			<field name="arch" type="xml">
 				<tree editable="bottom">
 					<field name="name" />
+					<field name="regime" />
+					<field name="code" />
+				</tree>
+			</field>
+		</record>
+		<!-- Garanties -->
+		<record id="action_garantie" model="ir.actions.act_window">
+			<field name="name">Garanties</field>
+			<field name="res_model">cmim.garantie</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		<record id="garantie_tree_view" model="ir.ui.view">
+			<field name="name">cmim.garantie.tree</field>
+			<field name="model">cmim.garantie</field>
+			<field name="arch" type="xml">
+				<tree editable="bottom">
+					<field name="name" />
 					<field name="code" />
 				</tree>
 			</field>

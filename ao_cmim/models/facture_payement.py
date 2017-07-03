@@ -20,7 +20,7 @@ class reglement(models.Model):
         # Set partner_id domain
         if self.partner_type:
             return {'domain': {'partner_id': [(self.partner_type, '=', True),
-                                              ('is_collectivite', '=', True)]}}
+                                              ('type_entite', '=', 'c')]}}
 class AccountInvoice(models.Model):
      
     _inherit = "account.invoice"
