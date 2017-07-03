@@ -114,7 +114,7 @@ class calcul_cotisation (models.TransientModel):
         taux_abattement = self.get_taux_abattement(declaration_id)
         for contrat in contrat_line_ids:
             if contrat.regle_id.type=='trsc':
-                print '-------------------', dict_tarifs.get(contrat.regle_id.regle_tarif_id.id).montant
+                print '-------------------', taux_abattement
             if self.get_applicabilite(contrat.regle_id, declaration_id):
                 cotisation_line_dict = {'declaration_id': declaration_id.id,
                                         'name': contrat.product_id.short_name,
@@ -148,12 +148,13 @@ class calcul_cotisation (models.TransientModel):
                         cotisation_line_dict['base'] = dict_bases[contrat.regle_id.regle_base_id.id]
                     else:
                         cotisation_line_dict['base'] = 0
+                        
                 mt = self.get_montant_cotisation_line(selected_tarif_id, cotisation_line_dict['base'])
                 cotisation_line_dict.update({'montant' : mt,
-                                             'montant_abattu' : mt * taux_abattement})
+                                             'montant_abattu' : mt * cotisation_line_dict['taux_abattement']})
                 if contrat.regle_id.type=='trsc' :
                     rsc_assure_ids = declaration_id.assure_id.get_rsc(contrat.regle_id, declaration_id)
-                    cotisation_line_dict.update({'montant_abattu ' : mt * taux_abattement * len(rsc_assure_ids),
+                    cotisation_line_dict.update({'montant_abattu ' : mt * cotisation_line_dict['taux_abattement'] *  len(rsc_assure_ids),
                                                  'nb_rsc' : len(rsc_assure_ids)})
                 if cotisation_line_dict['montant_abattu'] !=0:
                     cotisation_line_list.append((0, 0, cotisation_line_dict))
