@@ -14,7 +14,7 @@ class ParametrageCollectivite(models.Model):
     ]  
     
     name = fields.Char('Nom', required=True)
-    regle_id = fields.Many2one('cmim.regle.calcul', string=u"Règle de Tarif", domain=[('reserved', '=', False),('regle_tarif_id', '=', None), ('regle_base_id', '=', None)], required=True)
+    regle_id = fields.Many2one('cmim.regle.calcul', string=u"Règle de Tarif", domain=[('reserved', '=', False),('regle_tarif_id', '!=', None), ('regle_base_id', '!=', None)], required=True)
     tarif_id = fields.Many2one('cmim.tarif', u'Tarif', required=True)
     collectivite_id = fields.Many2one('res.partner', u'Collectivité')
     regle_id_type = fields.Selection(related='regle_id.type', store=True)
@@ -24,3 +24,4 @@ class ParametrageCollectivite(models.Model):
     def onchange_regle_id(self):
         if self.regle_id:
             self.name= self.regle_id.name
+    

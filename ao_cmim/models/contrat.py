@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from openerp import models, fields, api
+from openerp import models, exceptions, fields, api, _
     
 class Contrat(models.Model):
     _name = 'cmim.contrat'
@@ -23,14 +23,20 @@ class Contrat(models.Model):
         vals['name'] = self.env['ir.sequence'].next_by_code('cmim.contrat') 
         return super(Contrat, self).create(vals)
     
-#     @api.onchange('contrat_line_ids')
-#     def onchange_contrat_line_ids(self):
-#         liste_regles = [l.regle_id.id for l in self.contrat_line_ids]
-#         for line in self.contrat_line_ids:
-#             if line.regle_id.regle_base_id and not line.regle_id.regle_base_id.reserved and line.regle_id.regle_base_id.id not in liste_regles:
-#                 raise exceptions.Warning(
-#                     _(u"Vérifiez l'arborescence des règles de calcul! Aucune ligne de contrat n'a été défini pour la règle de calcul %s."%line.regle_id.regle_base_id.name))
-
+    @api.multi
+    def write(self, vals):
+        val_ids = vals.get('contrat_line_ids', [])
+        line_ids = val_ids[0][2] if len(val_ids) >0 else []
+        lines = self.env['cmim.contrat.line'].browse(line_ids)
+        base_line_ids = [x.regle_id.id for x in lines]
+        print 'line_idsline_idsline_idsline_ids', base_line_ids 
+        for line in lines:
+            if not line.regle_id.regle_base_id.reserved and line.regle_id.regle_base_id.id not in base_line_ids:
+                line_ids.remove(line.id)
+                raise exceptions.Warning(
+                    _(u"Vérifiez l'arborescence des règles de calcul! Aucune ligne de contrat n'a été défini pour la règle de calcul %s."%line.regle_id.regle_base_id.name))
+        return super(Contrat, self).write(vals)
+    
 
 class LigneContrat(models.Model):
     _name = 'cmim.contrat.line'
