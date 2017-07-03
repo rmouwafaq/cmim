@@ -19,6 +19,7 @@
 		</record>
 		<record id="complementaire" model="cmim.secteur">
 			<field name="name">COMPLEMENTAIRE</field>
+			<field name="is_complementary">1</field>
 			<field name="plancher_mensuel">3500</field>
 			<field name="plafond_mensuel">10000</field>
 		</record>

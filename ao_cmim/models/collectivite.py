@@ -22,6 +22,7 @@ class ResPartner(models.Model):
     
     contrat_id = fields.Many2one('cmim.contrat', string="Contrat", ondelete = 'restrict')
     parametrage_ids = fields.One2many('cmim.parametrage.collectivite', 'collectivite_id', u'Paramétrage')
+    garantie_id = fields.Many2one('cmim.garantie', string="Garantie")
     ########################
 
     is_collectivite = fields.Boolean(u'Est une collectivité', default=False)
@@ -37,6 +38,7 @@ class ResPartner(models.Model):
     date_naissance = fields.Date(string="Date de naissance")
     epoux_id =  fields.Many2one('res.partner', 'Epoux (se)', domain="[('id_num_famille', '=', id_num_famille),('type_entite', '=', 'a'), ('company_type','=','person')]")
     declaration_ids = fields.One2many('cmim.declaration', 'assure_id', 'Declarations') 
+    
     @api.model
     def create(self, vals): 
         partner = super(ResPartner, self).create(vals)
@@ -46,12 +48,19 @@ class ResPartner(models.Model):
             partner.write({'epoux_id':epoux_id.id})
         return partner
     
+    @api.onchange('secteur_id', 'type_entite')
+    def onchange_secteur_id(self):
+        print 'onchange_secteur_idonchange_secteur_id'
+        if self.secteur_id and self.type_entite == 'c':
+            return {'domain':{ 'garantie_id': [('id', 'in', self.secteur_id.garantie_ids.ids)] }}
+        
     def get_statut_in_periode(self, statut_ids, date_start, date_end): 
         res = []
         for pos in self.position_statut_ids:
             if pos.statut_id.id in statut_ids and pos.date_debut_appl <= date_start and pos.date_fin_appl >= date_end:
                 res.append(pos.id)
         return res
+    
     def get_rsc(self, regle_id, declaration_id):
         res = []
         rsc_ids = self.search([('id_num_famille', '=', self.id_num_famille), ('type_entite', '=', 'rsc')])

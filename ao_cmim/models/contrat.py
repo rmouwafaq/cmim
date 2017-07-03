@@ -29,7 +29,6 @@ class Contrat(models.Model):
         line_ids = val_ids[0][2] if len(val_ids) >0 else []
         lines = self.env['cmim.contrat.line'].browse(line_ids)
         base_line_ids = [x.regle_id.id for x in lines]
-        print 'line_idsline_idsline_idsline_ids', base_line_ids 
         for line in lines:
             if not line.regle_id.regle_base_id.reserved and line.regle_id.regle_base_id.id not in base_line_ids:
                 line_ids.remove(line.id)

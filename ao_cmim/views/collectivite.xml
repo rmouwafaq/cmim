@@ -195,6 +195,8 @@
 						attrs="{'required' : [('type_entite','in', ['a', 'rsc'])], 'invisible' : [('type_entite','not in', ['a', 'rsc'])]}" />
 					<field name="epoux_id"
 						attrs="{'invisible' : [('type_entite','not in', ['a', 'rsc'])]}" />
+					<field name="garantie_id"
+						attrs="{'invisible' : [('type_entite', '!=', 'c')], 'required' : [('type_entite', '=', 'c')]}" />
 <!-- 					<field name="statut_id" -->
 <!-- 						attrs="{'invisible' : [('type_entite', '!=', 'a')]}" /> -->
 <!-- 					<field name="lib_qualite" -->

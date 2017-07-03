@@ -113,8 +113,6 @@ class calcul_cotisation (models.TransientModel):
         dict_bases = {}
         taux_abattement = self.get_taux_abattement(declaration_id)
         for contrat in contrat_line_ids:
-            if contrat.regle_id.type=='trsc':
-                print '-------------------', taux_abattement
             if self.get_applicabilite(contrat.regle_id, declaration_id):
                 cotisation_line_dict = {'declaration_id': declaration_id.id,
                                         'name': contrat.product_id.short_name,

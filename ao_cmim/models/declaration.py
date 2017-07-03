@@ -79,16 +79,21 @@ class declaration(models.Model):
         srp = self.env.ref('ao_cmim.cte_calcul_srp') 
         if cnss and srp:
             for obj in self:
-                # calcul de base_calcul
-                obj.base_calcul = min(float(obj.secteur_id.plafond), max(float(obj.secteur_id.plancher), float(obj.salaire)))
-                #calcul de base_trancheA
-                obj.base_trancheA = min(float(cnss.valeur) ,float(obj.salaire))
-                #calcul de base_trancheB 
-                res = 0.0
-                if(obj.salaire > obj.base_trancheA):
-                    res = obj.salaire - obj.base_trancheA
-                diff_srp = float(srp.valeur) - obj.p_base_trancheA
-                obj.base_trancheB = min(float(diff_srp) ,float(res))
+                if not obj.secteur_id.is_complementary:
+                    # calcul de base_calcul
+                    obj.base_calcul = min(float(obj.secteur_id.plafond), max(float(obj.secteur_id.plancher), float(obj.salaire)))
+                    #calcul de base_trancheA
+                    obj.base_trancheA = min(float(cnss.valeur) ,float(obj.salaire))
+                    #calcul de base_trancheB 
+                    res = 0.0
+                    if(obj.salaire > obj.base_trancheA):
+                        res = obj.salaire - obj.base_trancheA
+                    diff_srp = float(srp.valeur) - obj.p_base_trancheA
+                    obj.base_trancheB = min(float(diff_srp) ,float(res))
+                else:
+                    obj.base_calcul = obj.salaire
+                    obj.base_trancheA = obj.salaire
+                    obj.base_trancheB = obj.salaire
         else:
             raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
     @api.multi
@@ -99,17 +104,22 @@ class declaration(models.Model):
         srp = self.env.ref('ao_cmim.cte_calcul_srp') 
         if cnss and srp:
             for obj in self:
-                proratat = float(obj.nb_jour / 90.0) 
-                # calcul de base_calcul
-                obj.p_base_calcul = min(float(obj.secteur_id.plafond * proratat), max(float(obj.secteur_id.plancher) * proratat, float(obj.salaire)))
-                #calcul de base_trancheA
-                obj.p_base_trancheA = min(float(cnss.valeur) * proratat ,float(obj.salaire))
-                #calcul de base_trancheB 
-                res = 0.0
-                if(obj.salaire > obj.p_base_trancheA):
-                    res = obj.salaire - obj.p_base_trancheA
-                diff_srp = float(srp.valeur) - obj.p_base_trancheA
-                obj.p_base_trancheB = min( diff_srp* proratat ,float(res))
+                if not obj.secteur_id.is_complementary:
+                    proratat = float(obj.nb_jour / 90.0) 
+                    # calcul de base_calcul
+                    obj.p_base_calcul = min(float(obj.secteur_id.plafond * proratat), max(float(obj.secteur_id.plancher) * proratat, float(obj.salaire)))
+                    #calcul de base_trancheA
+                    obj.p_base_trancheA = min(float(cnss.valeur) * proratat ,float(obj.salaire))
+                    #calcul de base_trancheB 
+                    res = 0.0
+                    if(obj.salaire > obj.p_base_trancheA):
+                        res = obj.salaire - obj.p_base_trancheA
+                    diff_srp = float(srp.valeur) - obj.p_base_trancheA
+                    obj.p_base_trancheB = min( diff_srp* proratat ,float(res))
+                else : 
+                    obj.p_base_calcul = obj.salaire
+                    obj.p_base_trancheA = obj.salaire
+                    obj.p_base_trancheB = obj.salaire
         else:
             raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
     
