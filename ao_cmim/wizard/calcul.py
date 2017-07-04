@@ -63,6 +63,7 @@ class calcul_cotisation (models.TransientModel):
     
     def get_applicabilite(self, regle_id, declaration_id):
         test_applicabilite_statut = False
+        test_applicabilite_garantie = True
         test_applicabilite_secteur = True
         test_applicabilite_date = True
         if not regle_id.statut_ids:
@@ -85,7 +86,14 @@ class calcul_cotisation (models.TransientModel):
         #############################################################
         if not regle_id.secteur_ids:
             test_applicabilite_secteur = True
-        elif declaration_id.secteur_id.id in [x.id for x in regle_id.secteur_ids]:
+        elif declaration_id.secteur_id.id in regle_id.secteur_ids.ids:
+            test_applicabilite_secteur = True
+        else:
+            test_applicabilite_secteur = False
+        #############################################################
+        if not regle_id.garantie_ids:
+            test_applicabilite_garantie = True
+        elif declaration_id.collectivite_id.garantie_id.id in regle_id.garantie_ids.ids:
             test_applicabilite_secteur = True
         else:
             test_applicabilite_secteur = False

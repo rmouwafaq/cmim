@@ -69,18 +69,17 @@
 								<group>
 									<group>
 										<field name="debut_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+										<field name="fin_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
 									</group>
 									<group>
-										<field name="fin_applicabilite" attrs="{'readonly' : [('reserved' ,'=', True)]}" />
+										<field name="garantie_ids" widget="many2many_tags" attrs="{'readonly' : [('reserved' ,'=', True)]}"></field>
 									</group>
 								</group>
 								<separator string="Applicable aux secteurs suivants :" />
 								<field name="secteur_ids" attrs="{'readonly' : [('reserved' ,'=', True)]}"></field>
-
 								<separator string="Applicable aux Positions/ Statuts suivants :" />
 								<field name="statut_ids"
 									attrs="{'required' : [('type' ,'=', ['trsc'])], 'readonly' : [('reserved' ,'=', True)]}"></field>
-
 							</page>
 							<page string="Notes">
 								<field name="notes" placeholder="Note interne..." />

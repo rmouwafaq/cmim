@@ -112,7 +112,6 @@
 			<field name="arch" type="xml">
 				<tree editable="bottom">
 					<field name="name" />
-					<field name="code" />
 				</tree>
 			</field>
 		</record>

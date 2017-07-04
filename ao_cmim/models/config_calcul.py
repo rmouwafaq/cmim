@@ -4,6 +4,7 @@ from datetime import datetime
 from openerp.osv import osv, fields
 from openerp import models, fields, tools, api, _
 from openerp.exceptions import UserError
+
 class ConstanteCalcul(models.Model):
     _name = 'cmim.constante'
     @api.multi
@@ -65,6 +66,7 @@ class RegleCalcul(models.Model):
     code = fields.Char('Code')
     notes = fields.Text('Notes')   
     secteur_ids = fields.Many2many('cmim.secteur', 'cmim_regle_calcul_secteur_rel', 'regle_id', 'secteur_id', string="Secteurs")
+    garantie_ids = fields.Many2many('cmim.garantie', 'cmim_regle_calcul_garantie_rel', 'regle_id', 'garantie_id', string="Garanties")
     statut_ids = fields.Many2many('cmim.statut.assure', 'regle_calcul_statut_rel', 'regle_id', 'statut_id',  string=u"Type de positions")
     default_tarif_id = fields.Many2one('cmim.tarif', string=u'Tarif par défaut',  ondelete = 'restrict')
     debut_applicabilite = fields.Date(u"Date début de validité")
