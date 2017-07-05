@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="garantie_a" model="cmim.garantie">
+			<field name="name">Garantie A</field>
+			<field name="code">1</field>
+		</record>
+		<record id="garantie_b" model="cmim.garantie">
+			<field name="name">Garantie B</field>
+			<field name="code">B</field>
+		</record>
+		<record id="garantie_c" model="cmim.garantie">
+			<field name="name">Garantie C</field>
+			<field name="code">C</field>
+		</record>
+		<record id="garantie_d" model="cmim.garantie">
+			<field name="name">Garantie D</field>
+			<field name="code">D</field>
+		</record>
+		<record id="confort" model="cmim.garantie">
+			<field name="name">Confort</field>
+			<field name="code">Cf</field>
+		</record>
+		<record id="bien_etre" model="cmim.garantie">
+			<field name="name">Bien Etre</field>
+			<field name="code">BE</field>
+		</record>
+	</data>
+</odoo>

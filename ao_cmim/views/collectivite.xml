@@ -36,6 +36,8 @@
 							context="{'group_by':'secteur_id'}" />
 						<filter name="siege_id" string="Collectivité Mère" domain="[]"
 							context="{'group_by':'siege_id'}" />
+						<filter name="garantie_id" string="Garantie" domain="[]"
+							context="{'group_by':'garantie_id'}" />
 					</group>
 				</search>
 			</field>

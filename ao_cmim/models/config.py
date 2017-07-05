@@ -14,7 +14,7 @@ class StatutAssure(models.Model):
 class Garantie(models.Model):
     _name = "cmim.garantie"
     name = fields.Char('Nom', required=True)
-
+    code = fields.Char("code", required=True)
 class Secteur(models.Model):
     _name = 'cmim.secteur'
     

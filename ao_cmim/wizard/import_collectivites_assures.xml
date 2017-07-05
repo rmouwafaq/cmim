@@ -11,6 +11,7 @@
 					<group>
 						<group>
 							<field name="type_entite" />
+							<field name="header"/>
 						</group>
 						<group>
 							<field name="data" />

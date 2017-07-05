@@ -24,7 +24,6 @@ class ResPartner(models.Model):
     parametrage_ids = fields.One2many('cmim.parametrage.collectivite', 'collectivite_id', u'Paramétrage')
     garantie_id = fields.Many2one('cmim.garantie', string="Garantie")
     ########################
-
     is_collectivite = fields.Boolean(u'Est une collectivité', default=False)
     type_entite = fields.Selection(selection=[('c', u'Collectivité'), ('a', u'Assuré'),('rsc', u'RSC') ])
     lib_qualite = fields.Char(u'Libellé Qualité')
