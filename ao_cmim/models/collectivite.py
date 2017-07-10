@@ -84,10 +84,12 @@ class ResPartner(models.Model):
         list=[]
         self.parametrage_ids = [(5,)]
         for cl in self.contrat_id.contrat_line_ids:
-            list.append((0,0, {'name': cl.regle_id.name, 
-                               'regle_id': cl.regle_id.id,
-                               'tarif_id': cl.regle_id.regle_tarif_id.default_tarif_id.id
-                               }))
+            if not cl.regle_id.garantie_ids or (cl.regle_id.garantie_ids and self.garantie_id.id in cl.regle_id.garantie_ids.ids)\
+                    and (not cl.regle_id.secteur_ids or (cl.regle_id.secteur_ids and self.secteur_id.id in cl.regle_id.secteur_ids.ids)):
+                list.append((0,0, {'name': cl.regle_id.name,
+                                   'regle_id': cl.regle_id.id,
+                                   'tarif_id': cl.regle_id.regle_tarif_id.default_tarif_id.id
+                                   }))
         for r in self.env['cmim.regle.calcul'].search([('type', '=', 'tabat')]):
             if self.secteur_id.id in r.secteur_ids.ids or r.secteur_ids.ids == [] :
                 list.append((0,0, {'name': r.name, 

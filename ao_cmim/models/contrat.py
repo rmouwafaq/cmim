@@ -48,7 +48,7 @@ class Contrat(models.Model):
 
 class LigneContrat(models.Model):
     _name = 'cmim.contrat.line'
-    _order = 'regle_id_type asc, regle_id_sequence'
+    _order = 'regle_id_type asc'
     @api.multi
     def get_name(self): 
         for obj in self:
