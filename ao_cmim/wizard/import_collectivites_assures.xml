@@ -8,24 +8,55 @@
 			<field name="arch" type="xml">
 				<form string="Import Collectivites assures">
 					<br></br>
+					<span>
+						<pre class="oe_grey" attrs="{'invisible': [('type_entite','!=', 'c')]}">
+<!-- 							La périodicité Trimestrielle est utilisée pour les déclarations -->
+<!-- 							qui émanent de du nouveau système. -->
+<!-- 							Les assuérs sont identifiés par leurs matricules -->
+<!-- 							<strong>id num personne</strong> -->
+<!-- 							, et le salaire est déclaré par mois. -->
+<!-- 							Le format de fichier exigé est le suivant: -->
+
+							<center>
+								<img src='/ao_cmim/static/src/img/collectivite.jpg' style="max-width: 100%;" />
+							</center>
+						</pre>
+						<pre class="oe_grey" attrs="{'invisible': [('type_entite','=', 'c')]}">
+<!-- 							La périodicité Trimestrielle est utilisée pour les déclarations -->
+<!-- 							qui émanent de du nouveau système. -->
+<!-- 							Les assuérs sont identifiés par leurs matricules -->
+<!-- 							<strong>id num personne</strong> -->
+<!-- 							, et le salaire est déclaré par mois. -->
+<!-- 							Le format de fichier exigé est le suivant: -->
+
+							<center>
+								<img src='/ao_cmim/static/src/img/assure.jpg' style="max-width: 100%;" />
+							</center>
+						</pre>
+					</span>
 					<group>
 						<group>
 							<field name="type_entite" />
-							<field name="header"/>
+							<field name="date_range_id"
+								attrs="{'invisible' : [('type_entite', '=', 'c')], 'required' : [('type_entite', '!=', 'c')]}" />
 						</group>
 						<group>
 							<field name="data" />
+<!-- 							<field name="date_fin" -->
+<!-- 								attrs="{'invisible' : [('type_entite', '=', 'c')], 'required' : [('type_entite', '!=', 'c')]}" /> -->
+							<field name="header" />
 						</group>
 					</group>
 					<separator string="" colspan="4" />
 					<footer>
-						<button class="oe_highlight" name="import_col_assure" string="Importer" type="object" />
+						<button class="oe_highlight" name="import_col_assure"
+							string="Importer" type="object" />
 						<button special="cancel" string="Annuler" />
 					</footer>
 				</form>
 			</field>
 		</record>
-		
+
 		<record id="action_col_assure_import" model="ir.actions.act_window">
 			<field name="name">Assistant d'intégration des données de la CMIM
 			</field>

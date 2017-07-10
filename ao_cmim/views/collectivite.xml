@@ -201,8 +201,11 @@
 						attrs="{'invisible' : [('type_entite', '!=', 'c')], 'required' : [('type_entite', '=', 'c')]}" />
 <!-- 					<field name="statut_id" -->
 <!-- 						attrs="{'invisible' : [('type_entite', '!=', 'a')]}" /> -->
-<!-- 					<field name="lib_qualite" -->
-<!-- 						attrs="{'invisible' : [('type_entite', '!=', 'a')]}" /> -->
+					<field name="lib_qualite"
+						attrs="{'invisible' : [('type_entite', 'not in', ['a', 'rsc'])]}" />
+					<field name="sexe"
+						attrs="{'invisible' : [('type_entite', 'not in', ['a', 'rsc'])]}" />
+						
 <!-- 					<field name="statut_ids" widget="many2many_tags" -->
 <!-- 						attrs="{'invisible' : [('type_entite', '=', True)]}" /> -->
 					<field name="date_naissance"

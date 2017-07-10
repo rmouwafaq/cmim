@@ -66,7 +66,7 @@ class RegleCalcul(models.Model):
     code = fields.Char('Code')
     notes = fields.Text('Notes')   
     secteur_ids = fields.Many2many('cmim.secteur', 'cmim_regle_calcul_secteur_rel', 'regle_id', 'secteur_id', string="Secteurs")
-    garantie_ids = fields.Many2many('cmim.garantie', 'cmim_regle_calcul_garantie_rel', 'regle_id', 'garantie_id', string="Garanties")
+    garantie_ids = fields.Many2many('cmim.garantie', 'cmim_regle_calcul_garantie_rel', 'regle_id', 'garantie_id', string="Garanties Applicables")
     statut_ids = fields.Many2many('cmim.statut.assure', 'regle_calcul_statut_rel', 'regle_id', 'statut_id',  string=u"Type de positions")
     default_tarif_id = fields.Many2one('cmim.tarif', string=u'Tarif par défaut',  ondelete = 'restrict')
     debut_applicabilite = fields.Date(u"Date début de validité")

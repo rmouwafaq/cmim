@@ -24,9 +24,16 @@ class ResPartner(models.Model):
     parametrage_ids = fields.One2many('cmim.parametrage.collectivite', 'collectivite_id', u'Paramétrage')
     garantie_id = fields.Many2one('cmim.garantie', string="Garantie")
     ########################
-    is_collectivite = fields.Boolean(u'Est une collectivité', default=False)
-    type_entite = fields.Selection(selection=[('c', u'Collectivité'), ('a', u'Assuré'),('rsc', u'RSC') ])
-    lib_qualite = fields.Char(u'Libellé Qualité')
+    is_collectivite = fields.Boolean(u'Est une collectivité', default=False, store=True)
+    type_entite = fields.Selection(selection=[('c', u'Collectivité'), 
+                                              ('a', u'Assuré'),
+                                              ('rsc', u'RSC') ])
+    lib_qualite = fields.Selection(selection=[('ASS', u'Assuré'),
+                                              ('EP', u'Epoux (se)')],
+                                   string=u"Lib Qualité")
+    sexe = fields.Selection(selection=[('M', 'Homme'), ('F', 'Femme')], 
+                            default='M',
+                            string="Sexe")
     id_num_famille = fields.Integer(string="Id Numero Famille")
     numero = fields.Integer(string=u"Numero Assuré")
 
@@ -37,19 +44,20 @@ class ResPartner(models.Model):
     date_naissance = fields.Date(string="Date de naissance")
     epoux_id =  fields.Many2one('res.partner', 'Epoux (se)', domain="[('id_num_famille', '=', id_num_famille),('type_entite', '=', 'a'), ('company_type','=','person')]")
     declaration_ids = fields.One2many('cmim.declaration', 'assure_id', 'Declarations') 
-    
-    @api.model
-    def create(self, vals): 
-        partner = super(ResPartner, self).create(vals)
-        epoux_id = self.search([("id_num_famille", '=', partner.id_num_famille), ("numero", '!=', partner.numero)], limit=1)
-        if epoux_id:
-            epoux_id.write({'epoux_id':partner.id})
-            partner.write({'epoux_id':epoux_id.id})
-        return partner
-    
+
+#     @api.model
+#     def create(self, vals): 
+#         if vals.get('type_entite', False) == 'rsc':
+#             sexe = 'F'  if vals.get('sexe', 'M') == 'M' else 'M' 
+#             epoux_id = self.search([("id_num_famille", '=',  vals.get('id_num_famille')), ("type_entite", '=', 'a'), ("sexe", '=', sexe)])
+#             if epoux_id:
+#                 vals.update({'epoux_id': epoux_id.id})
+#             else : 
+#                 return False
+#         else:
+#             return super(ResPartner, self).create(vals)
     @api.onchange('secteur_id', 'type_entite')
     def onchange_secteur_id(self):
-        print 'onchange_secteur_idonchange_secteur_id'
         if self.secteur_id and self.type_entite == 'c':
             return {'domain':{ 'garantie_id': [('id', 'in', self.secteur_id.garantie_ids.ids)] }}
         
@@ -62,7 +70,7 @@ class ResPartner(models.Model):
     
     def get_rsc(self, regle_id, declaration_id):
         res = []
-        rsc_ids = self.search([('id_num_famille', '=', self.id_num_famille), ('type_entite', '=', 'rsc')])
+        rsc_ids = self.search([('epoux_id', '=', self.id), ('type_entite', '=', 'rsc')])
         for rsc in rsc_ids :
             if len(rsc.get_statut_in_periode(regle_id.statut_ids.ids, 
                                             declaration_id.date_range_id.date_start, 
