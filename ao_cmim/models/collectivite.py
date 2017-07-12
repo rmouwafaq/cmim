@@ -20,7 +20,7 @@ class ResPartner(models.Model):
     siege_id = fields.Many2one('res.partner', string=u'Collectivité mère', domain="[('customer','=',True),('is_company','=',True)]")
     filliale_ids = fields.One2many('res.partner', 'siege_id', 'Filliales', domain=[('customer','=',True),('is_company','=',True)])
     
-    contrat_id = fields.Many2one('cmim.contrat', string="Contrat", ondelete = 'restrict')
+    contrat_id = fields.Many2one('cmim.contrat', string="Contrat")
     parametrage_ids = fields.One2many('cmim.parametrage.collectivite', 'collectivite_id', u'Paramétrage')
     garantie_id = fields.Many2one('cmim.garantie', string="Garantie")
     ########################

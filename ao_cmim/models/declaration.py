@@ -52,77 +52,80 @@ class declaration(models.Model):
             
     code = fields.Char('Code', compute="get_code", store=True) 
     id_used = fields.Selection(string="id used", selection=[('old', 'id Num Famille'), ('new', 'Id Num Personne')], default='old')
-    base_calcul = fields.Float(u'Salaire Plafonné par Secteur', compute="get_base_calcul", default=0.0, 
-                   help=u"La base de calcul = Salaire si compris entre plancher et plafond du Secteur de la collectivité.\
-                        , si le Salaire < plancher du secteur la base de calcul prend pour valeur ce dernier.\
-                        idem, si le salaire dépasse le plafond du secteur de la collectivité le plafond est lui-même la base de calcul qui sera prise")
-    base_trancheA = fields.Float(u'TrancheA', compute="get_base_calcul", default=0.0,
-                                 help="La tranche A = Salaire si salaire < Plafond CNSS, sinon Plafond CNSS.") 
-    base_trancheB = fields.Float(u'trancheB', compute="get_base_calcul", default=0.0,
-                                 help=u" trancheB = salaire - Tranche A si salaire > TrancheA, sinon  0.\
-                                      La tranche B plafonnée= trancheB si trancheB < SRP, sinon  SRP.")
-    
-    p_base_calcul = fields.Float(u'Salaire Plafonné par Secteur', compute="get_base_calcul_proratat", default=0.0, 
-                   help=u"La base de calcul = Salaire si compris entre plancher et plafond du Secteur de la collectivité.\
-                        , si le Salaire < plancher du secteur la base de calcul prend pour valeur ce dernier.\
-                        idem, si le salaire dépasse le plafond du secteur de la collectivité le plafond est lui-même la base de calcul qui sera prise")
-    p_base_trancheA = fields.Float(u'TrancheA', compute="get_base_calcul_proratat", default=0.0,
-                                 help="La tranche A = Salaire si salaire < Plafond CNSS, sinon Plafond CNSS.") 
-    p_base_trancheB = fields.Float(u'trancheB', compute="get_base_calcul_proratat", default=0.0,
-                                 help=u" trancheB = salaire - Tranche A si salaire > TrancheA, sinon  0.\
-                                      La tranche B plafonnée= trancheB si trancheB < SRP, sinon  SRP.")  
-    
-    @api.multi
-    @api.depends('salaire', 'secteur_id')
-    def get_base_calcul(self ):
-        cnss = self.env.ref('ao_cmim.cte_calcul_cnss') 
-        srp = self.env.ref('ao_cmim.cte_calcul_srp') 
-        if cnss and srp:
-            for obj in self:
-                if not obj.secteur_id.is_complementary:
-                    # calcul de base_calcul
-                    obj.base_calcul = min(float(obj.secteur_id.plafond), max(float(obj.secteur_id.plancher), float(obj.salaire)))
-                    #calcul de base_trancheA
-                    obj.base_trancheA = min(float(cnss.valeur) ,float(obj.salaire))
-                    #calcul de base_trancheB 
-                    res = 0.0
-                    if(obj.salaire > obj.base_trancheA):
-                        res = obj.salaire - obj.base_trancheA
-                    diff_srp = float(srp.valeur) - obj.p_base_trancheA
-                    obj.base_trancheB = min(float(diff_srp) ,float(res))
-                else:
-                    obj.base_calcul = obj.salaire
-                    obj.base_trancheA = obj.salaire
-                    obj.base_trancheB = obj.salaire
-        else:
-            raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
-    @api.multi
-    @api.depends('salaire', 'secteur_id')
-    def get_base_calcul_proratat(self ):
-        
-        cnss = self.env.ref('ao_cmim.cte_calcul_cnss') 
-        srp = self.env.ref('ao_cmim.cte_calcul_srp') 
-        if cnss and srp:
-            for obj in self:
-                if not obj.secteur_id.is_complementary:
-                    proratat = float(obj.nb_jour / 90.0) 
-                    # calcul de base_calcul
-                    obj.p_base_calcul = min(float(obj.secteur_id.plafond * proratat), max(float(obj.secteur_id.plancher) * proratat, float(obj.salaire)))
-                    #calcul de base_trancheA
-                    obj.p_base_trancheA = min(float(cnss.valeur) * proratat ,float(obj.salaire))
-                    #calcul de base_trancheB 
-                    res = 0.0
-                    if(obj.salaire > obj.p_base_trancheA):
-                        res = obj.salaire - obj.p_base_trancheA
-                    diff_srp = float(srp.valeur) - obj.p_base_trancheA
-                    obj.p_base_trancheB = min( diff_srp* proratat ,float(res))
-                else : 
-                    obj.p_base_calcul = obj.salaire
-                    obj.p_base_trancheA = obj.salaire
-                    obj.p_base_trancheB = obj.salaire
-        else:
-            raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
-    
+    # base_calcul = fields.Float(u'Salaire Plafonné par Secteur', compute="get_base_calcul", default=0.0,
+    #                help=u"La base de calcul = Salaire si compris entre plancher et plafond du Secteur de la collectivité.\
+    #                     , si le Salaire < plancher du secteur la base de calcul prend pour valeur ce dernier.\
+    #                     idem, si le salaire dépasse le plafond du secteur de la collectivité le plafond est lui-même la base de calcul qui sera prise")
+    # base_trancheA = fields.Float(u'TrancheA', compute="get_base_calcul", default=0.0,
+    #                              help="La tranche A = Salaire si salaire < Plafond CNSS, sinon Plafond CNSS.")
+    # base_trancheB = fields.Float(u'trancheB', compute="get_base_calcul", default=0.0,
+    #                              help=u" trancheB = salaire - Tranche A si salaire > TrancheA, sinon  0.\
+    #                                   La tranche B plafonnée= trancheB si trancheB < SRP, sinon  SRP.")
+    #
+    # p_salaire = fields.Float(u'Salaire Brut', compute="get_base_calcul_proratat", default=0.0)
+    #
+    # p_base_calcul = fields.Float(u'Salaire Plafonné par Secteur', compute="get_base_calcul_proratat", default=0.0,
+    #                help=u"La base de calcul = Salaire si compris entre plancher et plafond du Secteur de la collectivité.\
+    #                     , si le Salaire < plancher du secteur la base de calcul prend pour valeur ce dernier.\
+    #                     idem, si le salaire dépasse le plafond du secteur de la collectivité le plafond est lui-même la base de calcul qui sera prise")
+    # p_base_trancheA = fields.Float(u'TrancheA', compute="get_base_calcul_proratat", default=0.0,
+    #                              help="La tranche A = Salaire si salaire < Plafond CNSS, sinon Plafond CNSS.")
+    # p_base_trancheB = fields.Float(u'trancheB', compute="get_base_calcul_proratat", default=0.0,
+    #                              help=u" trancheB = salaire - Tranche A si salaire > TrancheA, sinon  0.\
+    #                                   La tranche B plafonnée= trancheB si trancheB < SRP, sinon  SRP.")
+    #
+    # @api.multi
+    # @api.depends('salaire', 'secteur_id')
+    # def get_base_calcul(self ):
+    #     cnss = self.env.ref('ao_cmim.cte_calcul_cnss')
+    #     srp = self.env.ref('ao_cmim.cte_calcul_srp')
+    #     if cnss and srp:
+    #         for obj in self:
+    #             # if not obj.secteur_id.is_complementary:
+    #             # calcul de base_calcul
+    #             obj.base_calcul = min(float(obj.secteur_id.plafond), max(float(obj.secteur_id.plancher), float(obj.salaire)))
+    #             #calcul de base_trancheA
+    #             obj.base_trancheA = min(float(cnss.valeur) ,float(obj.salaire))
+    #             #calcul de base_trancheB
+    #             res = 0.0
+    #             if(obj.salaire > obj.base_trancheA):
+    #                 res = obj.salaire - obj.base_trancheA
+    #             diff_srp = float(srp.valeur) - obj.p_base_trancheA
+    #             obj.base_trancheB = min(float(diff_srp) ,float(res))
+    #             # else:
+    #             #     obj.base_calcul = obj.salaire
+    #             #     obj.base_trancheA = obj.salaire
+    #             #     obj.base_trancheB = obj.salaire
+    #     else:
+    #         raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
+    # @api.multi
+    # @api.depends('salaire', 'secteur_id')
+    # def get_base_calcul_proratat(self ):
+    #
+    #     cnss = self.env.ref('ao_cmim.cte_calcul_cnss')
+    #     srp = self.env.ref('ao_cmim.cte_calcul_srp')
+    #     if cnss and srp:
+    #         for obj in self:
+    #             # if not obj.secteur_id.is_complementary:
+    #             proratat = float(obj.nb_jour / 90.0)
+    #             # calcul de base_calcul
+    #             obj.p_base_calcul = min(float(obj.secteur_id.plafond * proratat), max(float(obj.secteur_id.plancher) * proratat, float(obj.salaire)))
+    #             #calcul de base_trancheA
+    #             obj.p_base_trancheA = min(float(cnss.valeur) * proratat ,float(obj.salaire))
+    #             #calcul de base_trancheB
+    #             res = 0.0
+    #             if(obj.salaire > obj.p_base_trancheA):
+    #                 res = obj.salaire - obj.p_base_trancheA
+    #             diff_srp = float(srp.valeur) - obj.p_base_trancheA
+    #             obj.p_base_trancheB = min( diff_srp* proratat ,float(res))
+    #             obj.p_salaire = obj.salaire * proratat
+    #             # else :
+    #             #     obj.p_base_calcul = obj.salaire
+    #             #     obj.p_base_trancheA = obj.salaire
+    #             #     obj.p_base_trancheB = obj.salaire
+    #     else:
+    #         raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
+    #
     @api.onchange('fiscal_date')
     def onchange_fiscal_date(self):
         if(self.fiscal_date):

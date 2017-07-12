@@ -115,50 +115,104 @@ class calcul_cotisation (models.TransientModel):
         else:
             res = (base * tarif_id.montant) / 100
         return res
+    def get_base_calcul(self, declaration_id ):
+        cnss = self.env.ref('ao_cmim.cte_calcul_cnss')
+        srp = self.env.ref('ao_cmim.cte_calcul_srp')
+        result = {}
+        if cnss and srp:
+            proratat = float(declaration_id.nb_jour / 90.0)
+            p_salaire = declaration_id.salaire * proratat
+            if not declaration_id.secteur_id.is_complementary:
+                base_calcul = min(float(declaration_id.secteur_id.plafond), \
+                                  max(float(declaration_id.secteur_id.plancher), \
+                                    float(declaration_id.salaire)))
+                p_base_calcul = min(float(declaration_id.secteur_id.plafond * proratat), \
+                                    max(float(declaration_id.secteur_id.plancher) * proratat, \
+                                        float(declaration_id.salaire)))
+                base_trancheA = min(float(cnss.valeur), float(declaration_id.salaire))
+                p_base_trancheA = min(float(cnss.valeur) * proratat, float(declaration_id.salaire))
+
+                diff = 0.0
+                if(declaration_id.salaire > base_trancheA):
+                    diff = declaration_id.salaire - base_trancheA
+                diff_srp = float(srp.valeur) - base_trancheA
+                base_trancheB = min(float(diff_srp), float(diff))
+
+                diff = 0.0
+                if(declaration_id.salaire > p_base_trancheA):
+                    diff = declaration_id.salaire - p_base_trancheA
+                diff_srp = float(srp.valeur) - p_base_trancheA
+                p_base_trancheB = min(diff_srp* proratat, float(diff))
+            else:
+                base_calcul = declaration_id.salaire
+                base_trancheA = declaration_id.salaire
+                base_trancheB = declaration_id.salaire
+                p_base_calcul = p_salaire
+                p_base_trancheA = p_salaire
+                p_base_trancheB = p_salaire
+        else:
+            raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
+        result.update({'base_calcul': base_calcul,
+                       'base_trancheA': base_trancheA,
+                       'base_trancheB': base_trancheB,
+                       'p_base_calcul': p_base_calcul,
+                       'p_base_trancheA': p_base_trancheA,
+                       'p_base_trancheB': p_base_trancheB,
+                       'proratat': proratat,
+                       'p_salaire': p_salaire,
+                       })
+        return result
     @api.multi
     def calcul_per_collectivite(self, declaration_id, contrat_line_ids, dict_tarifs):
         cotisation_line_list = []
         dict_bases = {}
+        base_calcul = self.get_base_calcul(declaration_id)
         taux_abattement = self.get_taux_abattement(declaration_id)
         for contrat in contrat_line_ids:
             if self.get_applicabilite(contrat.regle_id, declaration_id):
-                cotisation_line_dict = {'declaration_id': declaration_id.id,
-                                        'name': contrat.product_id.short_name,
-                                        'contrat_line_id' : contrat.id}
-                
                 selected_tarif_id = dict_tarifs.get(contrat.regle_id.regle_tarif_id.id)
                 if not selected_tarif_id:
                     selected_tarif_id = contrat.regle_id.regle_tarif_id.default_tarif_id
-                cotisation_line_dict['taux'] = selected_tarif_id.montant
-                cotisation_line_dict['base'] = 1
-                cotisation_line_dict['tarif_id'] = selected_tarif_id.id
-                cotisation_line_dict['taux_abattement'] = taux_abattement if contrat.regle_id.applicabilite_abattement else 1
+                cotisation_line_dict = {'declaration_id': declaration_id.id,
+                                        'name': contrat.product_id.short_name,
+                                        'contrat_line_id' : contrat.id,
+                                        'taux': selected_tarif_id.montant,
+                                        'base': 1,
+                                        'tarif_id': selected_tarif_id.id,
+                                        'taux_abattement': taux_abattement if contrat.regle_id.applicabilite_abattement else 1,
+                                        'proratat': base_calcul.get('proratat') if contrat.regle_id.regle_base_id.applicabilite_proratat else 1.0
+                                        }
+                
                 if selected_tarif_id.type == 'p':
                     if contrat.regle_id.regle_base_id.code == 'SALPL':
-                        if contrat.regle_id.regle_base_id.applicabilite_proratat == True:
-                            cotisation_line_dict['base'] = declaration_id.p_base_calcul
+                        if contrat.regle_id.regle_base_id.applicabilite_proratat:
+                            cotisation_line_dict['base'] = base_calcul.get('p_base_calcul')
                         else:
-                            cotisation_line_dict['base'] = declaration_id.base_calcul
+                            cotisation_line_dict['base'] = base_calcul.get('base_calcul')
                     elif contrat.regle_id.regle_base_id.code == 'TA':
-                        if contrat.regle_id.regle_base_id.applicabilite_proratat == True:
-                            cotisation_line_dict['base'] = declaration_id.p_base_trancheA
+                        if contrat.regle_id.regle_base_id.applicabilite_proratat:
+                            cotisation_line_dict['base'] = base_calcul.get('p_base_trancheA')
                         else:
-                            cotisation_line_dict['base'] = declaration_id.base_trancheA
+                            cotisation_line_dict['base'] = base_calcul.get('base_trancheA')
                     elif contrat.regle_id.regle_base_id.code == 'TB':
-                        if contrat.regle_id.regle_base_id.applicabilite_proratat == True:
-                            cotisation_line_dict['base'] = declaration_id.p_base_trancheB
+                        if contrat.regle_id.regle_base_id.applicabilite_proratat:
+                            cotisation_line_dict['base'] = base_calcul.get('p_base_trancheB')
                         else:
-                            cotisation_line_dict['base'] = declaration_id.base_trancheB
-                            
+                            cotisation_line_dict['base'] = base_calcul.get('base_trancheB')
+                    elif contrat.regle_id.regle_base_id.code == 'SALBRUT':
+                        if contrat.regle_id.regle_base_id.applicabilite_proratat:
+                            cotisation_line_dict['base'] = base_calcul.get('p_salaire')
+                        else:
+                            cotisation_line_dict['base'] = declaration_id.salaire
                     elif contrat.regle_id.regle_base_id and contrat.regle_id.regle_base_id.id in dict_bases.keys():
                         cotisation_line_dict['base'] = dict_bases[contrat.regle_id.regle_base_id.id]
                     else:
                         cotisation_line_dict['base'] = 0
                         
                 mt = self.get_montant_cotisation_line(selected_tarif_id, cotisation_line_dict['base'])
-                cotisation_line_dict.update({'montant' : mt,
+                cotisation_line_dict.update({'montant': mt,
                                              'montant_abattu' : mt * cotisation_line_dict['taux_abattement']})
-                if contrat.regle_id.type=='trsc' :
+                if contrat.regle_id.type == 'trsc':
                     rsc_assure_ids = declaration_id.assure_id.get_rsc(contrat.regle_id, declaration_id)
                     cotisation_line_dict.update({'montant_abattu ' : mt * cotisation_line_dict['taux_abattement'] *  len(rsc_assure_ids),
                                                  'nb_rsc' : len(rsc_assure_ids)})
@@ -178,20 +232,23 @@ class calcul_cotisation (models.TransientModel):
                 raise exceptions.Warning(
                     _(u"vous avez validé des cotisations pour une ou plusieurs collectivités. \nImpossible de lancer le calcul pour les mêmes périodes"))
             else:
-                cotisation_dict = { 'date_range_id': self.date_range_id.id,
-                                    'fiscal_date': self.fiscal_date,
-                                    'collectivite_id': col.id,
-                                    'cotisation_assure_ids' : [],
-                                    'name' : 'Cotisation Brouillon',
+                cotisation_dict = {'date_range_id': self.date_range_id.id,
+                                   'fiscal_date': self.fiscal_date,
+                                   'collectivite_id': col.id,
+                                   'cotisation_assure_ids' : [],
+                                   'name': 'Cotisation Brouillon',
                                     }
                 cotisation_dict.setdefault('cotisation_assure_ids', [])
                 declaration_ids = self.env['cmim.declaration'].search([('collectivite_id.id', '=', col.id),
                                                                        ('date_range_id.id', '=', self.date_range_id.id),
                                                                        ('state', '=', 'valide')])
                 dict_tarifs = self.get_tarifs(col)
-                for declaration_id in declaration_ids:
-                    res = self.calcul_per_collectivite(declaration_id, col.contrat_id.contrat_line_ids, dict_tarifs)
+                # for declaration_id in declaration_ids:
+                for i in range(len(declaration_ids)):
+                    res = self.calcul_per_collectivite(declaration_ids[i], col.contrat_id.contrat_line_ids, dict_tarifs)
                     cotisation_dict['cotisation_assure_ids'].extend(res)
+                    # if i == 2:
+                    #     break
                 cotiation_to_create.append(cotisation_dict)
         for c in cotiation_to_create:
             if c.get('cotisation_assure_ids')!= []:

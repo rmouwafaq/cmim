@@ -7,6 +7,12 @@
 			<field name="applicabilite_proratat">0</field>
 			<field name="reserved">1</field>
 		</record>
+		<record id="regle_calcul_sal_brut" model="cmim.regle.calcul">
+			<field name="name" >Salaire brut</field>
+			<field name='code'>SALBRUT</field>
+			<field name="applicabilite_proratat">0</field>
+			<field name="reserved">1</field>
+		</record>
 		<record id="regle_calcul_tranche_a" model="cmim.regle.calcul">
 			<field name="name" >Tranche A</field>
 			<field name='code'>TA</field>

@@ -82,24 +82,24 @@
 							<page string="Notes">
 								<field name="notes" />
 							</page>
-							<page string="Bases de calcul">
-								<group>
-									<group>
-										<separator string="Sans proratat" />
-										<br></br>
-										<field name="base_calcul" />
-										<field name="base_trancheA" />
-										<field name="base_trancheB" />
-									</group>
-									<group>
-										<separator string="Avec proratat" />
-										<br></br>
-										<field name="p_base_calcul" />
-										<field name="p_base_trancheA" />
-										<field name="p_base_trancheB" />
-									</group>
-								</group>
-							</page>
+							<!--<page string="Bases de calcul">-->
+								<!--<group>-->
+									<!--<group>-->
+										<!--<separator string="Sans proratat" />-->
+										<!--<br></br>-->
+										<!--<field name="base_calcul" />-->
+										<!--<field name="base_trancheA" />-->
+										<!--<field name="base_trancheB" />-->
+									<!--</group>-->
+									<!--<group>-->
+										<!--<separator string="Avec proratat" />-->
+										<!--<br></br>-->
+										<!--<field name="p_base_calcul" />-->
+										<!--<field name="p_base_trancheA" />-->
+										<!--<field name="p_base_trancheB" />-->
+									<!--</group>-->
+								<!--</group>-->
+							<!--</page>-->
 						</notebook>
 					</sheet>
 				</form>
