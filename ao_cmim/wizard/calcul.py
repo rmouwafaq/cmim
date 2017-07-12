@@ -43,11 +43,13 @@ class calcul_cotisation (models.TransientModel):
         res = True
         if(self.env['cmim.cotisation'].search([('collectivite_id', '=', collectivite_id),
                                                ('state', '=', 'valide'),
-                                               ('date_range_id.id', '=', self.date_range_id.id)])):
+                                               ('date_range_id.date_start', '>=', self.date_range_id.date_start),
+                                               ('date_range_id.date_end', '<=', self.date_range_id.date_end)])):
             res = False
         draft_cotisation = self.env['cmim.cotisation'].search([('collectivite_id', '=', collectivite_id),
-                                               ('state', '=', 'draft'),
-                                               ('date_range_id.id', '=', self.date_range_id.id)])
+                                                               ('state', '=', 'draft'),
+                                                               ('date_range_id.date_start', '>=', self.date_range_id.date_start),
+                                                               ('date_range_id.date_end', '<=', self.date_range_id.date_end)])
         if draft_cotisation:
             draft_cotisation.unlink()
         return res
@@ -244,7 +246,7 @@ class calcul_cotisation (models.TransientModel):
         for col in self.collectivite_ids:
             if not self.can_calculate(col.id):
                 raise exceptions.Warning(
-                    _(u"vous avez validé des cotisations pour une ou plusieurs collectivités. \nImpossible de lancer le calcul pour les mêmes périodes"))
+                    _(u"Une ou plusieurs Cotisation a été déjà validée pour la collectivité %s. \nImpossible de lancer le calcul pour la même période!!!." %col.name))
             else:
                 cotisation_dict = {'date_range_id': self.date_range_id.id,
                                    'type_id': self.type_id.id,
@@ -254,12 +256,14 @@ class calcul_cotisation (models.TransientModel):
                                     }
                 cotisation_dict.setdefault('cotisation_assure_ids', [])
                 declaration_ids = self.env['cmim.declaration'].search([('collectivite_id.id', '=', col.id),
-                                                                       ('date_range_id.id', '=', self.date_range_id.id),
+                                                                       ('date_range_id.date_start', '>=', self.date_range_id.date_start),
+                                                                       ('date_range_id.date_end', '<=', self.date_range_id.date_end),
+                                                                       ('cotisation_id', '=', None),
                                                                        ('state', '=', 'valide')])
                 dict_tarifs = self.get_tarifs(col)
-                # for declaration_id in declaration_ids:
-                for i in range(len(declaration_ids)):
-                    res = self.calcul_per_collectivite(declaration_ids[i], col.contrat_id.contrat_line_ids, dict_tarifs)
+                for declaration_id in declaration_ids:
+                    # for i in range(len(declaration_ids)):
+                    res = self.calcul_per_collectivite(declaration_id, col.contrat_id.contrat_line_ids, dict_tarifs)
                     cotisation_dict['cotisation_assure_ids'].extend(res)
                     # if i == 2:
                     #     break

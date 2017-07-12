@@ -31,6 +31,12 @@ class declaration(models.Model):
     date_range_id = fields.Many2one('date.range', u'Période',
                                     domain="[('type_id', '=', type_id), ('active', '=', True)]", required=True)
     type_id = fields.Many2one('date.range.type', u'Type de péride',domain="[('active', '=', True)]", required=True)
+    cotisation_id = fields.Many2one('cmim.cotisation', compute=lambda self: self._get_cotisation())
+    def _get_cotisation(self):
+        line = self.env['cmim.cotisation.assure.line'].search([('declaration_id', '=', self.id),
+                                                               ('cotisation_id.state', '=', 'valide')],
+                                                               limit=1)
+        self.cotisation_id = line.cotisation_id.id if line else None
     @api.onchange('date_range_id')
     def onchange_date_range_id(self):
         if self.date_range_id:
