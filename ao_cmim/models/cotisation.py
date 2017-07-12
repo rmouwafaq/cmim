@@ -14,18 +14,17 @@ class Cotisation(models.Model):
     cotisation_assure_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_id', 'Ligne de calcul par assure')    
     cotisation_product_ids = fields.One2many('cmim.cotisation.product', 'cotisation_id', 'Ligne de calcul par produit')    
     montant = fields.Float(compute="_getmontant_total", string='Montant')
-    state = fields.Selection(selection=[('draft', 'Brouillon'),
-                                        ('valide', 'Validee')],
-                                        required=True,
-                                        string='Etat', 
-                                        default = 'draft')
-    secteur_id = fields.Many2one('cmim.secteur',
-        string='Secteur',
-        related='collectivite_id.secteur_id', store=True
-    )
-    fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default= datetime.now().year )
-    date_range_id = fields.Many2one('date.range', u'Période', required=True)
-
+    state = fields.Selection(selection=[('draft', 'Brouillon'),('valide', 'Validee')],
+                             required=True, string='Etat', default = 'draft')
+    secteur_id = fields.Many2one('cmim.secteur', string='Secteur',related='collectivite_id.secteur_id', store=True)
+    # fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default= datetime.now().year )
+    date_range_id = fields.Many2one('date.range', u'Période',
+                                    domain="[('type_id', '=', type_id), ('active', '=', True)]", required=True)
+    type_id = fields.Many2one('date.range.type', u'Type de péride', domain="[('active', '=', True)]", required=True)
+    @api.onchange('date_range_id')
+    def onchange_date_range_id(self):
+        if self.date_range_id:
+            self.type_id = self.date_range_id.type_id.id
 
     @api.multi
     def unlink(self):
@@ -55,16 +54,17 @@ class Cotisation(models.Model):
             elif(obj.cotisation_product_ids):
                 obj.montant = sum(line.montant for line in obj.cotisation_product_ids)
                 
-    @api.onchange('fiscal_date')
-    def onchange_fiscal_date(self):
-        if(self.fiscal_date):
-            periodes = self.env['date.range'].search([])
-            ids = []
-            for periode in periodes :
-                duree = (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
-                if duree > 88 and duree < 92 and self.fiscal_date == datetime.strptime(periode.date_end, '%Y-%m-%d').year and self.fiscal_date == datetime.strptime(periode.date_start, '%Y-%m-%d').year:
-                    ids.append(periode.id)
-            return {'domain':{'date_range_id': [('id', 'in', ids)]}}
+    # @api.onchange('fiscal_date')
+    # def onchange_fiscal_date(self):
+    #     if(self.fiscal_date):
+    #         periodes = self.env['date.range'].search([])
+    #         ids = []
+    #         for periode in periodes :
+    #             duree = (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
+    #             if duree > 88 and duree < 92 and self.fiscal_date == datetime.strptime(periode.date_end, '%Y-%m-%d').year and self.fiscal_date == datetime.strptime(periode.date_start, '%Y-%m-%d').year:
+    #                 ids.append(periode.id)
+    #         return {'domain':{'date_range_id': [('id', 'in', ids)]}}
+    #
     @api.multi
     def action_validate(self):
         

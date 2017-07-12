@@ -19,8 +19,8 @@
 							context="{'group_by':'secteur_id'}" />
 						<filter name="date_range_id" string="Période" domain="[]"
 							context="{'group_by':'date_range_id'}" />
-						<filter name="fiscal_date" string="Année" domain="[]"
-							context="{'group_by':'fiscal_date'}" />
+						<filter name="type_id" string="Type de période" domain="[]"
+							context="{'group_by':'type_id'}" />
 						<filter name="state" string="Statut" domain="[]"
 							context="{'group_by':'state'}" />
 					</group>
@@ -33,8 +33,8 @@
 			<field name="mode">primary</field>
 			<field name="priority" eval="1" />
 			<field name="arch" type="xml">
-				<tree string="Product">
-					<field name="fiscal_date" string="Année Comptable" />
+				<tree>
+					<field name="type_id" />
 					<field name="date_range_id" />
 					<field name="collectivite_id" />
 					<field name="assure_id" />
@@ -61,7 +61,7 @@
 					<sheet>
 						<group>
 							<group>
-								<field name="fiscal_date" />
+								<field name="type_id" />
 							</group>
 							<group>
 								<field name="date_range_id" />
@@ -108,7 +108,7 @@
 		<record id="action_declaration" model="ir.actions.act_window">
 			<field name="name">Déclarations des salaires</field>
 			<field name="res_model">cmim.declaration</field>
-			<field name="context">{'group_by':['state','fiscal_date','date_range_id']}
+			<field name="context">{'group_by':['type_id','state','date_range_id']}
 			</field>
 			<field name="view_id" ref="declaration_tree_view" />
 			<field name="view_type">form</field>

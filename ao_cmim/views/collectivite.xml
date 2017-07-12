@@ -140,8 +140,8 @@
 						<field name="declaration_ids">
 							<tree>
 								<field name="collectivite_id" />
+								<field name="type_id" />
 								<field name="date_range_id" />
-								<field name="fiscal_date" />
 							</tree>
 						</field>
 					</page>

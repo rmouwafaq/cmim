@@ -11,7 +11,7 @@ class declaration(models.Model):
     _name = 'cmim.declaration'
     _order = "date_range_end desc"
     _sql_constraints = [
-        ('fiscal_date', "check(fiscal_date > 1999)", _(u"Valeur incorrecte pour l'anné comptable !")),
+        # ('fiscal_date', "check(fiscal_date > 1999)", _(u"Valeur incorrecte pour l'anné comptable !")),
         ('nb_jour', "check(nb_jour > 0)", _(u"Valeur incorrecte pour le nombre de jour déclarés !"))
     ]
 
@@ -20,39 +20,49 @@ class declaration(models.Model):
     assure_id = fields.Many2one('res.partner', u'Assuré', required=True, domain="[('type_entite','=','a')]", ondelete='cascade')  #  , 
     nb_jour = fields.Integer(u'Nombre de jours déclarés', required=True)
     salaire = fields.Float('salaire', required=True)
-    secteur_id = fields.Many2one('cmim.secteur',
-        string='Secteur',
-        related='collectivite_id.secteur_id', store=True
-    )
+    secteur_id = fields.Many2one('cmim.secteur', string='Secteur',
+        related='collectivite_id.secteur_id', store=True)
     statut_id = fields.Many2one('cmim.statut.assure', string=u'Statut Assuré',
-        related='assure_id.statut_id', store=True
-    )
+        related='assure_id.statut_id', store=True)
+
+    state = fields.Selection(selection=[('non_valide', u'Non Validée'), ('valide', u'Validée')],default='non_valide', string="Etat")
+    notes = fields.Text('Notes')
+    date_range_end = fields.Date('date.range', related='date_range_id.date_end', store=True)
+    date_range_id = fields.Many2one('date.range', u'Période',
+                                    domain="[('type_id', '=', type_id), ('active', '=', True)]", required=True)
+    type_id = fields.Many2one('date.range.type', u'Type de péride',domain="[('active', '=', True)]", required=True)
+    @api.onchange('date_range_id')
+    def onchange_date_range_id(self):
+        if self.date_range_id:
+            self.type_id = self.date_range_id.type_id.id
+    # @api.onchange('type_id')
+    # def onchange_type_id(self):
+    #     if (self.fiscal_date):
+    #         periodes = self.env['date.range'].search([])
+    #         ids = []
+    #         for periode in periodes:
+    #             duree = (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start,
+    #                                                                                          '%Y-%m-%d')).days
+    #             if duree > 88 and duree < 92 and self.fiscal_date == datetime.strptime(periode.date_end,
+    #                                                                                    '%Y-%m-%d').year and self.fiscal_date == datetime.strptime(
+    #                     periode.date_start, '%Y-%m-%d').year:
+    #                 ids.append(periode.id)
+    #         return {'domain': {'date_range_id': [('id', 'in', ids)]}}
+
     @api.multi
     def action_validate(self):
         for obj in self:
-            if not self.search([   ('assure_id.id', '=', obj.assure_id.id), 
-                                   ('collectivite_id.id', '=', obj.collectivite_id.id), 
-                                   ('date_range_id.id', '=', obj.date_range_id.id),
-                                   ('state', '=', 'valide')]):
+            if not self.search([('assure_id.id', '=', obj.assure_id.id),
+                                ('collectivite_id.id', '=', obj.collectivite_id.id),
+                                ('date_range_id.id', '=', obj.date_range_id.id),
+                                ('state', '=', 'valide')]):
                 obj.state = 'valide'
             else:
                 raise UserError(
-                _(u"Erreur de validation!! Une déclaration a été déjà validée pour le même assuré, la même collectivité durant cette période"))
-            
-    state = fields.Selection(selection=[('non_valide', u'Non Validée'), ('valide', u'Validée')],default='non_valide', string="Etat")
-    notes = fields.Text('Notes')
-    @api.multi
-    @api.depends('id_used', 'collectivite_id.code', 'assure_id.id_num_famille', 'assure_id.numero')
-    def get_code(self):
-        for obj in self:
-            if (obj.id_used == 'old'):
-                obj.code = '%s%s' %(obj.collectivite_id.code, obj.assure_id.id_num_famille)
-            else:
-                obj.code = '%s%s' %(obj.collectivite_id.code, obj.assure_id.numero)
-            
-    code = fields.Char('Code', compute="get_code", store=True) 
-    id_used = fields.Selection(string="id used", selection=[('old', 'id Num Famille'), ('new', 'Id Num Personne')], default='old')
-    # base_calcul = fields.Float(u'Salaire Plafonné par Secteur', compute="get_base_calcul", default=0.0,
+                    _(
+                        u"Erreur de validation!! Une déclaration a été déjà validée pour le même assuré, la même collectivité durant cette période"))
+
+                # base_calcul = fields.Float(u'Salaire Plafonné par Secteur', compute="get_base_calcul", default=0.0,
     #                help=u"La base de calcul = Salaire si compris entre plancher et plafond du Secteur de la collectivité.\
     #                     , si le Salaire < plancher du secteur la base de calcul prend pour valeur ce dernier.\
     #                     idem, si le salaire dépasse le plafond du secteur de la collectivité le plafond est lui-même la base de calcul qui sera prise")
@@ -126,19 +136,3 @@ class declaration(models.Model):
     #     else:
     #         raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
     #
-    @api.onchange('fiscal_date')
-    def onchange_fiscal_date(self):
-        if(self.fiscal_date):
-            periodes = self.env['date.range'].search([])
-            ids = []
-            for periode in periodes :
-                duree = (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
-                if duree > 88 and duree < 92 and self.fiscal_date == datetime.strptime(periode.date_end, '%Y-%m-%d').year and self.fiscal_date == datetime.strptime(periode.date_start, '%Y-%m-%d').year:
-                    ids.append(periode.id)
-            return {'domain':{'date_range_id': [('id', 'in', ids)]}}
-        
-    fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default= datetime.now().year )
-    date_range_id = fields.Many2one('date.range', u'Période', required=True)
-    date_range_end = fields.Date('date.range',
-        related='date_range_id.date_end', store=True
-    )

@@ -6,24 +6,38 @@ from openerp.exceptions import UserError
 import test
 class calcul_cotisation (models.TransientModel):
     _name = 'cmim.calcul.cotisation'
-    _sql_constraints = [
-        ('fiscal_date', "check(fiscal_date > 1999)", _("Valeur incorrecte pour l'an comptable !"))
-    ]
-    fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default=datetime.now().year)
-    date_range_id = fields.Many2one('date.range', u'Période', required=True)
+    # _sql_constraints = [
+    #     ('fiscal_date', "check(fiscal_date > 1999)", _("Valeur incorrecte pour l'an comptable !"))
+    # ]
+    # fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default=datetime.now().year)
+    date_range_id = fields.Many2one('date.range', u'Période',
+                                    domain="[('type_id', '=', type_id), ('active', '=', True)]", required=True)
+    type_id = fields.Many2one('date.range.type', u'Type de péride', domain="[('active', '=', True)]", required=True)
+    date_range_nb_jour = fields.Integer(u'Nb jour de la période', required=True, help="Ce champ sert pour le calcul du proratat")
     collectivite_ids = fields.Many2many('res.partner', 'calcul_cotisation_collectivite', 'calcul_id', 'partner_id', "Collectivites", domain="[('type_entite', '=', 'c'), ('contrat_id', '!=', None), ('customer','=',True),('is_company','=',True)]", required=True)
 
-    @api.onchange('fiscal_date')
-    def onchange_fiscal_date(self):
-        if(self.fiscal_date):
-            periodes = self.env['date.range'].search([])
-            ids = []
-            for periode in periodes :
-                duree = (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
-                if duree > 88 and duree < 92 and self.fiscal_date == datetime.strptime(periode.date_end, '%Y-%m-%d').year and self.fiscal_date == datetime.strptime(periode.date_start, '%Y-%m-%d').year:
-                    ids.append(periode.id)
-            return {'domain':{'date_range_id': [('id', 'in', ids)]}}
-    
+    @api.onchange('type_id')
+    def onchange_type_id(self):
+        if self.type_id.id == self.env.ref('ao_cmim.data_range_type_trimestriel').id:
+            self.date_range_nb_jour = 90.0
+        elif self.type_id.id == self.env.ref('ao_cmim.data_range_type_mensuel').id:
+            self.date_range_nb_jour = 30.0
+
+    @api.onchange('date_range_id')
+    def onchange_date_range_id(self):
+        if self.date_range_id:
+            self.type_id = self.date_range_id.type_id.id
+    # @api.onchange('fiscal_date')
+    # def onchange_fiscal_date(self):
+    #     if(self.fiscal_date):
+    #         periodes = self.env['date.range'].search([])
+    #         ids = []
+    #         for periode in periodes :
+    #             duree = (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
+    #             if duree > 88 and duree < 92 and self.fiscal_date == datetime.strptime(periode.date_end, '%Y-%m-%d').year and self.fiscal_date == datetime.strptime(periode.date_start, '%Y-%m-%d').year:
+    #                 ids.append(periode.id)
+    #         return {'domain':{'date_range_id': [('id', 'in', ids)]}}
+
     @api.multi
     def can_calculate(self, collectivite_id):
         res = True
@@ -120,7 +134,7 @@ class calcul_cotisation (models.TransientModel):
         srp = self.env.ref('ao_cmim.cte_calcul_srp')
         result = {}
         if cnss and srp:
-            proratat = float(declaration_id.nb_jour / 90.0)
+            proratat = float(declaration_id.nb_jour / float(self.date_range_nb_jour))
             p_salaire = declaration_id.salaire * proratat
             if not declaration_id.secteur_id.is_complementary:
                 base_calcul = min(float(declaration_id.secteur_id.plafond), \
@@ -233,7 +247,7 @@ class calcul_cotisation (models.TransientModel):
                     _(u"vous avez validé des cotisations pour une ou plusieurs collectivités. \nImpossible de lancer le calcul pour les mêmes périodes"))
             else:
                 cotisation_dict = {'date_range_id': self.date_range_id.id,
-                                   'fiscal_date': self.fiscal_date,
+                                   'type_id': self.type_id.id,
                                    'collectivite_id': col.id,
                                    'cotisation_assure_ids' : [],
                                    'name': 'Cotisation Brouillon',
