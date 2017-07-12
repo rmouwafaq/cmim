@@ -13,7 +13,7 @@
 					<div name="select_collectivities" states="init">
 						<group>
 							<group>
-								<field name="fiscal_date" string="Année comptable"/>
+								<field name="type_id"/>
 							</group>
 							<group>
 								<field name="date_range_id" />
