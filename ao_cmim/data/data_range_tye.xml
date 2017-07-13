@@ -4,10 +4,12 @@
         <record id="data_range_type_trimestriel" model="date.range.type">
             <field name="name">Trimestriel</field>
             <field name="allow_overlap">0</field>
+            <field name="nb_days">90</field>
         </record>
         <record id="data_range_type_mensuel" model="date.range.type">
             <field name="name">Mensuel</field>
             <field name="allow_overlap">0</field>
+            <field name="nb_days">30</field>
         </record>
 	</data>
 </odoo>

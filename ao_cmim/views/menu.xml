@@ -117,10 +117,9 @@
 			<field name="context">{}</field>
 		</record>
 		<menuitem action="date_range_action" id="date_range.menu_date_range_action"
-			parent="date_range.menu_date_range" />
+			parent="date_range.menu_date_range" sequence="1"/>
 		<menuitem action="date_range_generator_action"
-			id="date_range.menu_date_range_generator_action" parent="date_range.menu_date_range" />
-		<delete model="ir.ui.menu" id="date_range.menu_date_range_type_action" />
+			id="date_range.menu_date_range_generator_action" sequence="100" parent="date_range.menu_date_range" />
 
 	</data>
 </openerp>

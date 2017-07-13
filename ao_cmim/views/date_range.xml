@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 	<data>
+		<record id="view_date_range_type_tree" model="ir.ui.view">
+			<field name="name">date.range.type.tree.inh</field>
+			<field name="model">date.range.type</field>
+			<field name="inherit_id" ref="date_range.view_date_range_type_tree" />
+			<field name="arch" type="xml">
+				<field name="name" position="after" >
+					<field name="nb_days"/>
+				</field>
+			</field>
+    	</record>
+		<record id="view_date_range_type_form" model="ir.ui.view">
+			<field name="name">date.range.type.form</field>
+			<field name="model">date.range.type</field>
+			<field name="arch" type="xml">
+				<form>
+					<group>
+						<group>
+							<field name="name"/>
+							<field name="allow_overlap"/>
+						</group>
+						<group>
+							<field name="nb_days" />
+							<field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+							<field name="active"/>
+						</group>
+					</group>
+				</form>
+			</field>
+		</record>
 		<record id="view_date_range_tree" model="ir.ui.view">
 			<field name="name">date.range.tree.inherited</field>
 			<field name="model">date.range</field>

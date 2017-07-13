@@ -10,12 +10,8 @@ from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 class declaration(models.Model):
     _name = 'cmim.declaration'
     _order = "date_range_end desc"
-    _sql_constraints = [
-        # ('fiscal_date', "check(fiscal_date > 1999)", _(u"Valeur incorrecte pour l'anné comptable !")),
-        ('nb_jour', "check(nb_jour > 0)", _(u"Valeur incorrecte pour le nombre de jour déclarés !"))
-    ]
 
-    import_flag = fields.Boolean('Par import', default=False)   
+    import_flag = fields.Boolean('Par import', default=False)
     collectivite_id = fields.Many2one('res.partner', u'Collectivité', ondelete='cascade', domain="[('type_entite','=','c')]", required=True)   
     assure_id = fields.Many2one('res.partner', u'Assuré', required=True, domain="[('type_entite','=','a')]", ondelete='cascade')  #  , 
     nb_jour = fields.Integer(u'Nombre de jours déclarés', required=True)
@@ -31,11 +27,19 @@ class declaration(models.Model):
     date_range_id = fields.Many2one('date.range', u'Période',
                                     domain="[('type_id', '=', type_id), ('active', '=', True)]", required=True)
     type_id = fields.Many2one('date.range.type', u'Type de péride',domain="[('active', '=', True)]", required=True)
+    # type_id_nb_days = fields.Integer('date.range.type', related='type_id.nb_days', store=True)
     cotisation_id = fields.Many2one('cmim.cotisation', compute=lambda self: self._get_cotisation())
+
+    @api.onchange('nb_jour', 'type_id')
+    def onchange_nb_jour(self):
+        print 'enteeeeeeeeeeeeeeeeeeeer'
+        if self.type_id and self.nb_jour > self.type_id.nb_days:
+            raise exceptions.Warning(
+                _(u"Valeur incorrecte pour le nombre de jour.\n Le nombre de jour moyen de la période vaut %s. \
+                   Vérifiez la configuration des types de périodes !!!." % self.type_id.nb_days))
+
     def _get_cotisation(self):
-        line = self.env['cmim.cotisation.assure.line'].search([('declaration_id', '=', self.id),
-                                                               ('cotisation_id.state', '=', 'valide')],
-                                                               limit=1)
+        line = self.env['cmim.cotisation.assure.line'].search([('declaration_id', '=', self.id)], limit=1)
         self.cotisation_id = line.cotisation_id.id if line else None
     @api.onchange('date_range_id')
     def onchange_date_range_id(self):
@@ -68,7 +72,7 @@ class declaration(models.Model):
                     _(
                         u"Erreur de validation!! Une déclaration a été déjà validée pour le même assuré, la même collectivité durant cette période"))
 
-                # base_calcul = fields.Float(u'Salaire Plafonné par Secteur', compute="get_base_calcul", default=0.0,
+    # base_calcul = fields.Float(u'Salaire Plafonné par Secteur', compute="get_base_calcul", default=0.0,
     #                help=u"La base de calcul = Salaire si compris entre plancher et plafond du Secteur de la collectivité.\
     #                     , si le Salaire < plancher du secteur la base de calcul prend pour valeur ce dernier.\
     #                     idem, si le salaire dépasse le plafond du secteur de la collectivité le plafond est lui-même la base de calcul qui sera prise")
