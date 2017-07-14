@@ -6,150 +6,182 @@ import base64
 import csv
 import cStringIO
 from openerp.exceptions import UserError
+
+
 #############################################################################
 
 class cmimImportDecPay(models.TransientModel):
-    
     _name = 'cmim.import.dec.pay'
 
     data = fields.Binary("Fichier", required=True)
     delimeter = fields.Char('Delimeter', default=';',
                             help='Default delimeter is ";"')
-    type_operation = fields.Selection(selection=[('declaration', u'Déclarations'),
-                                         ('reglement', 'Encaissements')],
-                                           required=True,
-                                           string=u"Type d'opération",
-                                           default='declaration')
-    model = fields.Selection(selection=[('trim', 'Trimestrielle'), ('sep', 'Mois séparés')], string=u"Périodicité", default='sep')
+    type_operation = fields.Selection(selection=[('declaration', u'Déclarations'), ('reglement', 'Encaissements')],
+                                      required=True, string=u"Type d'opération", default='declaration')
+    model = fields.Selection(selection=[('old', 'Ancien Format'), ('sep', 'Mois séparés')], string=u"Format de fichier",
+                             default='sep')
+    statut_id = fields.Many2one('cmim.statut.assure', string='Statut', domain="[('code', '=', ['ACT', 'EPD'])]")
     payment_date = fields.Date(string=u"Date de réglement")
-    
+    collectivite_id = fields.Many2one('res.partner', domain="[('type_entite', '=', 'c')]")
+    company_id = fields.Many2one('res.company', 'Company',
+                                 default=lambda self: self.env['res.company']._company_default_get())
+    journal_id = fields.Many2one('account.journal', string='Journal',
+                                 default=lambda self: self._default_journal(),
+                                 domain="[('company_id', '=', company_id),('type', '=', 'bank')]", required=True)
+    header = fields.Boolean(u'Entête', default=True)
+    date_range_id = fields.Many2one('date.range', u'Période',
+                                    domain="[('active', '=', True)]", required=True)
+    type_id = fields.Many2one('date.range.type', u'Type de péride', domain=lambda self: self._get_domain(),
+                              required=True)
+
+    def _get_domain(self):
+        return [('active', '=', True),
+                ('id', 'in', [self.env.ref('ao_cmim.data_range_type_trimestriel').id,
+                              self.env.ref('ao_cmim.data_range_type_mensuel').id])]
+
+    @api.onchange('type_id', 'type_operation', 'model')
+    def onchange_type_id(self):
+        if self.type_operation == 'declaration':
+            if self.model == 'old' and self.type_id:
+                return {'domain': {'date_range_id': [('active', '=', True),
+                                                     ('type_id', '=', self.type_id.id)]}}
+            elif self.model == 'sep':
+                return {'domain': {'date_range_id': [('active', '=', True),
+                                                     ('type_id', '=',
+                                                      self.env.ref('ao_cmim.data_range_type_trimestriel').id)]}}
+
     def _default_journal(self):
         domain = [
             ('type', '=', 'bank'),
             ('company_id', '=', self.env.user.company_id.id),
         ]
         return self.env['account.journal'].search(domain, limit=1)
-    company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env['res.company']._company_default_get())
-    journal_id = fields.Many2one('account.journal', string='Journal',
-        default=_default_journal, domain="[('company_id', '=', company_id),('type', '=', 'bank')]", required=True)
-    @api.onchange('fiscal_date')
-    def onchange_fiscal_date(self):
-        if(self.fiscal_date):
-            periodes = self.env['date.range'].search([])
-            ids = []
-            for periode in periodes :
-                duree = (datetime.strptime(periode.date_end, '%Y-%m-%d') - datetime.strptime(periode.date_start, '%Y-%m-%d')).days
-                if duree > 88 and duree < 92 and self.fiscal_date == datetime.strptime(periode.date_end, '%Y-%m-%d').year and self.fiscal_date == datetime.strptime(periode.date_start, '%Y-%m-%d').year:
-                    ids.append(periode.id)
-            return {'domain':{'date_range_id': [('id', 'in', ids)]}}
-    
-    fiscal_date = fields.Integer(string=u"Année Comptable", default= datetime.now().year )
-    date_range_id = fields.Many2one('date.range', u'Période')
-    
+
     @api.multi
     def import_declarations(self, reader_info):
         declaration_obj = self.env['cmim.declaration']
         partner_obj = self.env['res.partner']
         collectivite_id = self.env['res.partner']
-        collectivite_obj = self.env['res.partner']
         list_to_import = []
+        list_to_anomalie = []
         ids = []
-        statut = self.env['cmim.statut.assure'].search([('code', '=','INACT' )]).id
-        assure_obj = self.env['res.partner']
-        if(self.model == "trim"):
+        if self.model == "old":
             for i in range(len(reader_info)):
                 values = reader_info[i]
                 salaire = float('.'.join(str(x) for x in tuple(values[6].split(','))))
-                if(not salaire == 0):
+                if not salaire == 0:
                     collectivite_id = collectivite_id.search([('code', '=', values[0])])
-                    state= 'valide'
+                    state = 'valide'
                     if collectivite_id:
-                        partner_obj = partner_obj.search([('id_num_famille', '=', values[2]), ('name', 'like', values[3] )])
+                        partner_obj = partner_obj.search([('numero', '=', values[3]), ('type_entite', '=', 'a')])
                         if partner_obj and len(partner_obj) > 1:
                             state = 'non_valide'
                             partner_obj = partner_obj[0]
-                        
                         elif not partner_obj:
-                            partner_obj = partner_obj.create({  'type_entite': 'a',
-                                                                'company_type' : 'person',
-                                                                'customer' : True,
-                                                                'name' : '%s' % values[3],
-                                                                'id_num_famille' : values[2],
-                                                                'import_flag' : True,
-                                                                'statut_id' : statut, 
-                                                            })
-                        if declaration_obj.search([ ('assure_id', '=', partner_obj.id),
-                                                    ('collectivite_id' ,'=', collectivite_id.id), 
-                                                    ('date_range_id', '=', self.date_range_id.id)]):
-                            state = 'non_valide'
-                        list_to_import.append({ 
+                            partner_obj = partner_obj.create({'type_entite': 'a',
+                                                              'company_type': 'person',
+                                                              'customer': True,
+                                                              'name': '%s %s' % (values[4], values[5]),
+                                                              'id_num_famille': values[2],
+                                                              'numero': values[3],
+                                                              'import_flag': True,
+                                                              })
+                        if not declaration_obj.search([('assure_id', '=', partner_obj.id),
+                                                       ('collectivite_id', '=', collectivite_id.id),
+                                                       ('date_range_id', '=', self.date_range_id.id)]):
+                            list_to_import.append({
                                 'collectivite_id': collectivite_id.id,
                                 'assure_id': partner_obj.id,
-                                'nb_jour' : values[5],
+                                'nb_jour': values[7],
                                 'salaire': salaire,
                                 'import_flag': True,
-                                'id_used' : 'old',
-                                'fiscal_date': self.fiscal_date,
+                                'type_id': self.type_id.id,
                                 'date_range_id': self.date_range_id.id,
-                                'state' : state
-                                                 })
-            print 'list_to_import', len(list_to_import)
-            for line in list_to_import:
-                declaration_obj = declaration_obj.create(line)
-                ids.append(declaration_obj.id)
-        elif(self.model == "sep"):
-            collectivite_obj = collectivite_obj.search([('code', '=', reader_info[0][1])])
-            del reader_info[1]
-            del reader_info[0]
-            if collectivite_obj :
-                for i in range(len(reader_info)):
-                    values = reader_info[i]
-                    salaire = float('.'.join(str(x) for x in tuple(values[3].split(',')))) + float('.'.join(str(x) for x in tuple(values[5].split(',')))) + float('.'.join(str(x) for x in tuple(values[7].split(','))))
-                    if(not salaire == 0):
-                        assure = self.env['res.partner'].search([('numero', '=', values[0])])
-                        state = 'valide'
-                        if not assure:
-                            assure = assure.create({   'type_entite': 'a',
-                                                        'company_type' : 'person',
-                                                        'customer' : True,
-                                                        'numero' : values[0],
-                                                        'name' : '%s %s' % (values[1],values[2]),
-                                                        'import_flag' : True,
-                                                        'statut_id' : statut, 
-                                                            })
-                        if declaration_obj.search([('assure_id.id', '=', assure.id), 
-                                                   ('collectivite_id.id', '=', collectivite_obj.id), 
-                                                   ('date_range_id.id', '=', self.date_range_id.id)]):
-                            state="non_valide"
-                        list_to_import.append({ 'collectivite_id': collectivite_obj.id,
-                                                 'assure_id': assure.id,
-                                                 'nb_jour' : values[4] + values[6] + values[8],
-                                                 'salaire': salaire,
-                                                 'import_flag': True,
-                                                 'fiscal_date': self.fiscal_date,
-                                                 'date_range_id': self.date_range_id.id,
-                                                 'state' : state
-                                                })
-                print 'list_to_import', len(list_to_import)
-            for line in list_to_import:
-                declaration_obj = declaration_obj.create(line)
-                ids.append(declaration_obj.id)
-        if len(ids)>0: 
-                view_id = self.env.ref('ao_cmim.declaration_tree_view').id
-                return{ 
-                    'name': u'Déclarations importées',
-                    'res_model':'cmim.declaration',
-                    'type': 'ir.actions.act_window',
-                    'res_id': self.id,
-                    'view_mode':'tree,form',
-                    'views' : [(view_id, 'tree'),(False, 'form')],
-                    'view_id': 'ao_cmim.declaration_tree_view',
-                    'target':'self',
-                    'domain':[('id', 'in', ids)],
-                    }    
+                                'state': state})
+
+        elif self.model == "sep":
+            for i in range(len(reader_info)):
+                values = reader_info[i]
+                partner_obj = partner_obj.search([('numero', '=', values[0])])
+                vals = {'collectivite_id': self.collectivite_id.id,
+                        'assure_id': partner_obj.id,
+                        'import_flag': True,
+                        'state': 'valide'
+                        }
+                if self.type_id.id == self.env.ref('ao_cmim.data_range_type_trimestriel').id:
+                    salaire = float('.'.join(str(x) for x in tuple(values[3].split(',')))) + float(
+                        '.'.join(str(x) for x in tuple(values[5].split(',')))) + float(
+                        '.'.join(str(x) for x in tuple(values[7].split(','))))
+                    if not salaire == 0:
+                        vals.update({'nb_jour': values[4] + values[6] + values[8],
+                                     'salaire': salaire,
+                                     'type_id': self.type_id.id,
+                                     'date_range_id': self.date_range_id.id,
+                                     })
+                        list_to_import.append(vals)
+                elif self.type_id.id == self.env.ref('ao_cmim.data_range_type_mensuel').id:
+                    sal1 = float('.'.join(str(x) for x in tuple(values[3].split(','))))
+                    sal2 = float('.'.join(str(x) for x in tuple(values[5].split(','))))
+                    sal3 = float('.'.join(str(x) for x in tuple(values[7].split(','))))
+                    date_range_ids = self.env['date.range'].search([('active', '=', True),
+                                                                    ('type_id', '=', self.type_id.id),
+                                                                    ('date_start', '>=', self.date_range_id.date_start),
+                                                                    ('date_end', '<=', self.date_range_id.date_end)
+                                                                    ],
+                                                                   limit=3)
+                    print "date_range_ids", date_range_ids
+                    if date_range_ids and len(date_range_ids) == 3:
+                        if not sal1 == 0:
+                            vals.update({'nb_jour': values[4],
+                                         'salaire': sal1,
+                                         'type_id': self.type_id.id,
+                                         'date_range_id': date_range_ids[0].id,
+                                         })
+                            list_to_import.append(vals)
+                        if not sal2 == 0:
+                            vals.update({'nb_jour': values[6],
+                                         'salaire': sal2,
+                                         'type_id': self.type_id.id,
+                                         'date_range_id': date_range_ids[1].id,
+                                         })
+                            list_to_import.append(vals)
+                        if not sal3 == 0:
+                            vals.update({'nb_jour': values[8],
+                                         'salaire': sal3,
+                                         'type_id': self.type_id.id,
+                                         'date_range_id': date_range_ids[2].id,
+                                         })
+                            list_to_import.append(vals)
+
+        for line in list_to_import:
+            declaration_obj = declaration_obj.create(line)
+            has_statut = self.env['cmim.position.statut'].search([('assure_id', '=', declaration_obj.assure_id.id),
+                                                                  ('statut_id', '=', self.statut_id.id)],
+                                                                 limit=1)
+            if has_statut:
+                has_statut.write({'date_fin_appl': self.date_range_id.date_end})
+            else:
+                declaration_obj.assure_id.write({'position_statut_ids': [(0, 0, {'date_debut_appl': self.date_range_id.date_start,
+                                                 'date_fin_appl': self.date_range_id.date_end,
+                                                 'statut_id': self.statut_id.id,
+                                                 })]})
+            ids.append(declaration_obj.id)
+        if len(ids) > 0:
+            view_id = self.env.ref('ao_cmim.declaration_tree_view').id
+            return {
+                'name': u'Déclarations importées',
+                'res_model': 'cmim.declaration',
+                'type': 'ir.actions.act_window',
+                'res_id': self.id,
+                'view_mode': 'tree,form',
+                'views': [(view_id, 'tree'), (False, 'form')],
+                'view_id': 'ao_cmim.declaration_tree_view',
+                'target': 'self',
+                'domain': [('id', 'in', ids)],
+            }
         else:
-            return True   
-############################################################################
+            return True
+            ############################################################################
 
     @api.multi
     def import_reglements(self, reader_info):
@@ -162,43 +194,45 @@ class cmimImportDecPay(models.TransientModel):
             val = {}
             values = reader_info[i]
             collectivite_obj = collectivite_obj.search([('code', '=', values[0])])
-            if(collectivite_obj):
-                vals = {        'partner_id' : collectivite_obj.id,
-                                'journal_id': self.journal_id.id,
-                                'payment_method_id' : 1,
-                                'payment_type' : 'inbound',
-                                'partner_type' : 'customer',
-                                'import_flag': True,
-                                'payment_date': self.payment_date,
-                                'amount' : float('.'.join(str(x) for x in tuple(values[2].split(',')))),
-                                
-                                }
+            if (collectivite_obj):
+                vals = {'partner_id': collectivite_obj.id,
+                        'journal_id': self.journal_id.id,
+                        'payment_method_id': 1,
+                        'payment_type': 'inbound',
+                        'partner_type': 'customer',
+                        'import_flag': True,
+                        'payment_date': self.payment_date,
+                        'amount': float('.'.join(str(x) for x in tuple(values[2].split(',')))),
+
+                        }
                 list_to_import.append(vals)
         for line in list_to_import:
-            account_obj =  account_obj.search([('partner_id', '=', line['partner_id']), ('journal_id', '=', line['journal_id']), ('payment_date', '=', line['payment_date'])])
+            account_obj = account_obj.search(
+                [('partner_id', '=', line['partner_id']), ('journal_id', '=', line['journal_id']),
+                 ('payment_date', '=', line['payment_date'])])
             if not account_obj:
                 account_obj = account_obj.create(line)
                 ids.append(account_obj.id)
             else:
                 account_obj.write(line)
-            
-        if len(ids)>0: 
+
+        if len(ids) > 0:
             view_id = self.env.ref('account.view_account_payment_tree').id
-            return{ 
+            return {
                 'name': 'Encaissements importes',
-                'res_model':'account.payment',
+                'res_model': 'account.payment',
                 'type': 'ir.actions.act_window',
                 'res_id': self.id,
-                'view_mode':'tree,form',
-                'views' : [(view_id, 'tree'),(False, 'form')],
+                'view_mode': 'tree,form',
+                'views': [(view_id, 'tree'), (False, 'form')],
                 'view_id': 'account.view_account_payment_tree',
-                'target':'self',
-                'domain':[('id', 'in', ids)],
-                }
-#                 account_obj = self.env['account.payment'].create(vals)
-#                 account_obj.post()
+                'target': 'self',
+                'domain': [('id', 'in', ids)],
+            }
+            #                 account_obj = self.env['account.payment'].create(vals)
+            #                 account_obj.post()
 
-############################################################################
+            ############################################################################
 
     @api.multi
     def import_dec_pay(self):
@@ -216,12 +250,13 @@ class cmimImportDecPay(models.TransientModel):
             reader_info.extend(reader)
         except Exception:
             raise exceptions.Warning(_(u"Le fichier sélectionné n'est pas valide!"))
-        del reader_info[0]
-        if(not self.env['res.partner'].search([('type_entite', '=', 'c')])):
-                raise exceptions.Warning(_(u"L'import des encaissements exige l'existances des collectivités dans le système, veuillez créer les collectivités en premier"))
+        if self.header:
+            del reader_info[0]
+        if (not self.env['res.partner'].search([('type_entite', '=', 'c')])):
+            raise exceptions.Warning(_(
+                u"L'import des encaissements exige l'existances des collectivités dans le système, veuillez créer les collectivités en premier"))
         else:
             if self.type_operation == 'declaration':
-                    return self.import_declarations(reader_info)
+                return self.import_declarations(reader_info)
             elif self.type_operation == 'reglement':
-                    return self.import_reglements(reader_info)
-            
+                return self.import_reglements(reader_info)

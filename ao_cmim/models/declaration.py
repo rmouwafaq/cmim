@@ -39,7 +39,7 @@ class declaration(models.Model):
                    Vérifiez la configuration des types de périodes !!!." % self.type_id.nb_days))
 
     def _get_cotisation(self):
-        line = self.env['cmim.cotisation.assure.line'].search([('declaration_id', '=', self.id)], limit=1)
+        line = self.env['cmim.cotisation.assure.line'].search([('declaration_id', '=', self.id)],limit=1)
         self.cotisation_id = line.cotisation_id.id if line else None
     @api.onchange('date_range_id')
     def onchange_date_range_id(self):

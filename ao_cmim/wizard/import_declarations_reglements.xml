@@ -10,17 +10,17 @@
 					<br></br>
 					<span attrs="{'invisible': [('type_operation','!=', 'declaration')]}">
 					<pre class="oe_grey" attrs="{'invisible': [('model','!=', 'sep')]}" >
-						La périodicité Trimestrielle est utilisée pour les déclarations qui émanent de du nouveau système.
-						Les assuérs sont identifiés par leurs matricules <strong>id num personne</strong>, et le salaire est déclaré par mois.
-						Le format de fichier exigé est le suivant:
+						<!--La périodicité Trimestrielle est utilisée pour les déclarations qui émanent de du nouveau système.-->
+						<!--Les assuérs sont identifiés par leurs matricules <strong>id num personne</strong>, et le salaire est déclaré par mois.-->
+						<!--Le format de fichier exigé est le suivant:-->
 						
 						<center><img src='/ao_cmim/static/src/img/new_dec.jpg'   style="max-width: 100%;"/></center>
 					</pre>
-					<pre class="oe_grey" attrs="{'invisible': [('model','!=', 'trim')]}" >
-						La périodicité Trimestrielle est utilisée pour les déclarations qui émanent de l'ancien système.
-						Les assuérs sont identifiés par leurs <strong>id num famille</strong>, et le salaire déclaré concerne bien tout le trimestre en totalité.
-						Le format de fichier exigé est le suivant:
-						
+					<pre class="oe_grey" attrs="{'invisible': [('model','!=', 'old')]}" >
+						<!--La périodicité Trimestrielle est utilisée pour les déclarations qui émanent de l'ancien système.-->
+						<!--Les assuérs sont identifiés par leurs <strong>id num famille</strong>, et le salaire déclaré concerne bien tout le trimestre en totalité.-->
+						<!--Le format de fichier exigé est le suivant:-->
+						<!---->
 						<center><img src='/ao_cmim/static/src/img/old_dec.jpg' style="max-width: 100%; " /></center>
 					</pre>
 					</span>
@@ -29,20 +29,25 @@
 							<field name="type_operation"/>
 							<field name="company_id" invisible="1" />
 							<field name="journal_id"
-								attrs="{'invisible': [('type_operation','!=', 'reglement')]}" />
+								   attrs="{'invisible': [('type_operation','!=', 'reglement')], 'required': [('type_operation','=', 'reglement')]}" />
 							<field name="model" string="Périodicité"
 								attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')]}" />
-
-						</group>
-						<group>
-							<field name="data" />
-							<field name="fiscal_date" string="Année Comptable"
+							<field name="type_id" widget="selection"
 								attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')]}" />
 							<field name="date_range_id"
 								attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')]}" />
+                            </group>
+						<group>
+							<field name="data" />
+							<field name="header"/>
 							<field name="payment_date"
 								attrs="{'invisible': [('type_operation','!=', 'reglement')]}" />
-						</group>
+                            <field name="collectivite_id"
+								   attrs="{'invisible': [ '|',('model','!=', 'sep'),('type_operation','=', 'reglement')], 'required': [('type_operation','=', 'declaration'), ('model','=', 'sep')]}" />
+						    <field name="statut_id"
+								   attrs="{'invisible': [('type_operation','=', 'reglement')], 'required': [('type_operation','=', 'declaration')]}" />
+
+                        </group>
 					</group>
 					<separator string="" colspan="4" />
 					<footer>

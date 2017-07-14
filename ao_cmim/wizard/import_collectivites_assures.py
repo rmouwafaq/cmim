@@ -205,7 +205,7 @@ class cmimImportCOlAss(models.TransientModel):
         except Exception:
             raise exceptions.Warning(_(u"Le fichier selectionné n'est pas valide!"))
         if self.header:
-            del reader_info [0]
+            del reader_info[0]
         if self.type_entite == 'c':
             view_id = self.env.ref('ao_cmim.view_collectivite_tree').id
             ids = self.import_collectivites(reader_info)
