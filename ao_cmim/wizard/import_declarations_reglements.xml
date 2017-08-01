@@ -44,8 +44,8 @@
 								attrs="{'invisible': [('type_operation','!=', 'reglement')]}" />
                             <field name="collectivite_id"
 								   attrs="{'invisible': [ '|',('model','!=', 'sep'),('type_operation','=', 'reglement')], 'required': [('type_operation','=', 'declaration'), ('model','=', 'sep')]}" />
-						    <field name="statut_id"
-								   attrs="{'invisible': [('type_operation','=', 'reglement')], 'required': [('type_operation','=', 'declaration')]}" />
+						    <field name="is_epd"
+								   attrs="{'invisible': [('type_operation','=', 'reglement')]}" />
 
                         </group>
 					</group>

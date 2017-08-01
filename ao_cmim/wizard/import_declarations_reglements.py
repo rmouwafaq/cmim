@@ -20,6 +20,7 @@ class cmimImportDecPay(models.TransientModel):
                                       required=True, string=u"Type d'opération", default='declaration')
     model = fields.Selection(selection=[('old', 'Ancien Format'), ('sep', 'Mois séparés')], string=u"Format de fichier",
                              default='sep')
+    is_epd = fields.Boolean('EPAD')
     statut_id = fields.Many2one('cmim.statut.assure', string='Statut', domain="[('code', '=', ['ACT', 'EPD'])]")
     payment_date = fields.Date(string=u"Date de réglement")
     collectivite_id = fields.Many2one('res.partner', domain="[('type_entite', '=', 'c')]")
@@ -129,7 +130,6 @@ class cmimImportDecPay(models.TransientModel):
                                                                     ('date_end', '<=', self.date_range_id.date_end)
                                                                     ],
                                                                    limit=3)
-                    print "date_range_ids", date_range_ids
                     if date_range_ids and len(date_range_ids) == 3:
                         if not sal1 == 0:
                             vals.update({'nb_jour': values[4],
@@ -152,20 +152,22 @@ class cmimImportDecPay(models.TransientModel):
                                          'date_range_id': date_range_ids[2].id,
                                          })
                             list_to_import.append(vals)
-
-        for line in list_to_import:
-            declaration_obj = declaration_obj.create(line)
-            has_statut = self.env['cmim.position.statut'].search([('assure_id', '=', declaration_obj.assure_id.id),
-                                                                  ('statut_id', '=', self.statut_id.id)],
-                                                                 limit=1)
-            if has_statut:
-                has_statut.write({'date_fin_appl': self.date_range_id.date_end})
-            else:
-                declaration_obj.assure_id.write({'position_statut_ids': [(0, 0, {'date_debut_appl': self.date_range_id.date_start,
-                                                 'date_fin_appl': self.date_range_id.date_end,
-                                                 'statut_id': self.statut_id.id,
-                                                 })]})
-            ids.append(declaration_obj.id)
+        self.statut_id = self.env.ref('ao_cmim.epd').id if self.is_epd else self.env.ref('ao_cmim.act').id
+        print '-------------------',self.statut_id.name
+        print 'list_to_import', list_to_import
+        # for line in list_to_import:
+        #     declaration_obj = declaration_obj.create(line)
+        #     has_statut = self.env['cmim.position.statut'].search([('assure_id', '=', declaration_obj.assure_id.id),
+        #                                                           ('statut_id', '=', self.statut_id.id)],
+        #                                                          limit=1)
+        #     if has_statut:
+        #         has_statut.write({'date_fin_appl': self.date_range_id.date_end})
+        #     else:
+        #         declaration_obj.assure_id.write({'position_statut_ids': [(0, 0, {'date_debut_appl': self.date_range_id.date_start,
+        #                                          'date_fin_appl': self.date_range_id.date_end,
+        #                                          'statut_id': self.statut_id.id,
+        #                                          })]})
+        #     ids.append(declaration_obj.id)
         if len(ids) > 0:
             view_id = self.env.ref('ao_cmim.declaration_tree_view').id
             return {

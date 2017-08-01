@@ -13,3 +13,17 @@ class ProductCMIM(models.Model):
     
     def _get_statut_domain(self):
         return [('regime', '=', 'rsc')] if self._context.get('default_type_entite', False) == 'rsc' else [('regime', '=', 'n')]
+    @api.model
+    def create(self, vals):
+        if vals.get('statut_id') == self.env.ref('ao_cmim.epd').id:
+            act_statut = self.search([('assure_id', '=', vals.get('assure_id')),
+                             ('statut_id', '=', self.env.ref('ao_cmim.act').id)
+                            ])
+            if act_statut and act_statut.date_fin_appl < vals.get('date_fin_appl'):
+                act_statut.write({'date_fin_appl' : vals.get('date_fin_appl')})
+            elif not act_statut:
+                value = vals.copy()
+                value.update({'statut_id' : self.env.ref('ao_cmim.act').id})
+                super(ProductCMIM, self).create(value)
+        return super(ProductCMIM, self).create(vals)
+

@@ -102,7 +102,7 @@ class ResPartner(models.Model):
     @api.depends('declaration_ids')
     def get_last_collectivite(self):
         for obj in self:
-            if obj.type_entite == 'c':
+            if obj.type_entite != 'c':
                 obj.collectivite_id = False
             elif obj.declaration_ids:
                 obj.collectivite_id = self.env['cmim.declaration'].search([('assure_id', '=', obj.id)], order='date_range_end desc', limit=1).collectivite_id.id
