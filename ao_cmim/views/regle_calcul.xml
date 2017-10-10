@@ -75,7 +75,17 @@
 										<field name="garantie_ids" widget="many2many_tags" attrs="{'readonly' : [('reserved' ,'=', True)]}"></field>
 									</group>
 								</group>
-								<separator string="Applicable aux secteurs suivants :" />
+								<separator string="Applicabilité par secteur" />
+								<group>
+									<group>
+										<field name="secteur_inverse"/>
+									</group>
+									<group>
+										<span attrs="{'invisible' : [('secteur_inverse' ,'=', False)]}">La règle de calcul va être applicable sur les collectivités appartenant aux secteurs ci-dessous.</span>
+								        <span attrs="{'invisible' : [('secteur_inverse' ,'=', True)]}">Seules les collectivités qui n'appartiennent pas aux secteurs ci-dessous sont concernée par cette règle de calcul.</span>
+                                    </group>
+								</group>
+
 								<field name="secteur_ids" attrs="{'readonly' : [('reserved' ,'=', True)]}"></field>
 								<separator string="Applicable aux Positions/ Statuts suivants :" />
 								<field name="statut_ids"

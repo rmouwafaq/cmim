@@ -37,7 +37,8 @@ class ResPartner(models.Model):
     id_num_famille = fields.Integer(string="Id Numero Famille")
     numero = fields.Integer(string=u"Numero Assuré")
 
-    collectivite_id = fields.Many2one('res.partner', string='Collectivite', store= True, compute='get_last_collectivite')
+    collectivite_id = fields.Many2one('res.partner', string='Collectivite', store=True, compute='get_last_collectivite')
+    collectivite_name = fields.Char(string=u'Collectivité', related="collectivite_id.name")
     statut_id = fields.Many2one('cmim.statut.assure', string='Statut')
     statut_ids = fields.Many2many('cmim.statut.assure', 'res_partner_statut_rel', 'partner_id', 'statut_id',  string='Position/Statut')
     position_statut_ids = fields.One2many('cmim.position.statut', 'assure_id',  string='Position/Statut')
@@ -97,17 +98,25 @@ class ResPartner(models.Model):
                                    'tarif_id': r.default_tarif_id.id
                                    }))
         self.update({"parametrage_ids" : list})
-    
+
     @api.multi
     @api.depends('declaration_ids')
     def get_last_collectivite(self):
+        print 'get_last_collectivite'
         for obj in self:
-            if obj.type_entite != 'c':
+            if obj.type_entite == 'c':
                 obj.collectivite_id = False
+            elif obj.type_entite == 'rsc':
+                dec = self.env['cmim.declaration'].search([('assure_id', '=', obj.epoux_id.id)],
+                                                          order='date_range_end desc', limit=1)
+                if dec:
+                    obj.collectivite_id = dec.collectivite_id.id
             elif obj.declaration_ids:
-                obj.collectivite_id = self.env['cmim.declaration'].search([('assure_id', '=', obj.id)], order='date_range_end desc', limit=1).collectivite_id.id
+                obj.collectivite_id = self.env['cmim.declaration'].search([('assure_id', '=', obj.id)],
+                                                                          order='date_range_end desc', limit=1).collectivite_id.id
             else:
                 obj.collectivite_id = False
+
     ###################
     @api.model
     def update_assure(self):

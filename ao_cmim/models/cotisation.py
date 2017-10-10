@@ -123,6 +123,7 @@ class cotisation_assure_line(models.Model):
     product_id  = fields.Many2one('product.template', related='contrat_line_id.product_id', store=True)
     product_name  = fields.Char(related='product_id.short_name', string='Produit', store=True)
     regle_id = fields.Many2one('cmim.regle.calcul',  string=u"Règle Calcul", related='contrat_line_id.regle_id')
+    date_range_id = fields.Many2one('date.range', related='declaration_id.date_range_id', store=True)
     regle_id_type = fields.Selection(related='regle_id.type', store=True)
     tarif_id = fields.Many2one('cmim.tarif',  string=u"Tarif obj")
     name = fields.Char('Description')

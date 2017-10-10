@@ -79,9 +79,11 @@ class cmimImportCOlAss(models.TransientModel):
                                                                             }).id
                     })
             else:
-                partner_obj.write({'garantie_id' : garantie_obj.id or None,
-                                   'secteur_id' : secteur_obj.search([('name', '=', values[7])]).id or None,
-                                   'siege_id' : self.env['res.partner'].search([('code', '=', values[8])]).id or None,
+                partner_obj.write({
+                                    'type_entite': 'c',
+                                    'garantie_id' : garantie_obj.id or None,
+                                    'secteur_id' : secteur_obj.search([('name', '=', values[7])]).id or None,
+                                    'siege_id' : self.env['res.partner'].search([('code', '=', values[8])]).id or None,
                                 })
         for col in list_col_dict:
             partner_obj = partner_obj.create(col)

@@ -39,7 +39,8 @@
             'views/menu.xml',
 
     ],
-    'installable':True,
-    'auto_install':False,
-    'application':True,
+    'sequence': 1,
+    'installable': True,
+    'application': True,
+    'auto_install': False,
 }

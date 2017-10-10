@@ -73,6 +73,7 @@ class calcul_cotisation (models.TransientModel):
         test_applicabilite_statut = False
         test_applicabilite_garantie = True
         test_applicabilite_secteur = True
+        test_applicabilite_secteur_inverse = True
         test_applicabilite_date = True
         if not regle_id.statut_ids:
             test_applicabilite_statut = True
@@ -114,7 +115,8 @@ class calcul_cotisation (models.TransientModel):
             test_applicabilite_date = True
         else:
             test_applicabilite_date = False
-        return test_applicabilite_statut and test_applicabilite_secteur and test_applicabilite_date
+        test_applicabilite_secteur_inverse = not test_applicabilite_secteur if regle_id.secteur_inverse else test_applicabilite_secteur
+        return test_applicabilite_statut and test_applicabilite_secteur_inverse and test_applicabilite_date
     
     def get_montant_cotisation_line(self, tarif_id, base):
         res = 0.0
@@ -130,27 +132,32 @@ class calcul_cotisation (models.TransientModel):
         if cnss and srp:
             proratat = float(declaration_id.nb_jour / float(declaration_id.date_range_id.type_id.nb_days))
             p_salaire = declaration_id.salaire * proratat
+            plancher, plafond= 0.0, 0.0
+            val_cnss, val_srp = 0.0, 0.0
+            if declaration_id.date_range_id.type_id.id == self.env.ref('ao_cmim.data_range_type_trimestriel').id:
+                plancher, plafond = declaration_id.secteur_id.plancher, declaration_id.secteur_id.plafond
+                val_cnss, val_srp = cnss.valeur, srp.valeur
+            elif declaration_id.date_range_id.type_id.id == self.env.ref('ao_cmim.data_range_type_mensuel').id:
+                plancher, plafond = declaration_id.secteur_id.plancher_mensuel, declaration_id.secteur_id.plafond_mensuel
+                val_cnss, val_srp = cnss.val_mensuelle, srp.val_mensuelle
+            print plafond, plancher
             if not declaration_id.secteur_id.is_complementary:
-                base_calcul = min(float(declaration_id.secteur_id.plafond), \
-                                  max(float(declaration_id.secteur_id.plancher), \
-                                    float(declaration_id.salaire)))
-                p_base_calcul = min(float(declaration_id.secteur_id.plafond * proratat), \
-                                    max(float(declaration_id.secteur_id.plancher) * proratat, \
-                                        float(declaration_id.salaire)))
-                base_trancheA = min(float(cnss.valeur), float(declaration_id.salaire))
-                p_base_trancheA = min(float(cnss.valeur) * proratat, float(declaration_id.salaire))
+                base_calcul = min(float(plafond), max(float(plancher), float(declaration_id.salaire)))
+                p_base_calcul = min(float(plafond * proratat), max(float(plancher) * proratat, float(declaration_id.salaire)))
+                base_trancheA = min(float(val_cnss), float(declaration_id.salaire))
+                p_base_trancheA = min(float(val_cnss) * proratat, float(declaration_id.salaire))
 
                 diff = 0.0
-                if(declaration_id.salaire > base_trancheA):
+                if declaration_id.salaire > base_trancheA:
                     diff = declaration_id.salaire - base_trancheA
-                diff_srp = float(srp.valeur) - base_trancheA
+                diff_srp = float(val_srp) - base_trancheA
                 base_trancheB = min(float(diff_srp), float(diff))
 
                 diff = 0.0
                 if(declaration_id.salaire > p_base_trancheA):
                     diff = declaration_id.salaire - p_base_trancheA
-                diff_srp = float(srp.valeur) - p_base_trancheA
-                p_base_trancheB = min(diff_srp* proratat, float(diff))
+                diff_srp = float(val_srp) - p_base_trancheA
+                p_base_trancheB = min(diff_srp * proratat, float(diff))
             else:
                 base_calcul = declaration_id.salaire
                 base_trancheA = declaration_id.salaire
