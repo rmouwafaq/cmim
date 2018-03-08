@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-import openerp
-from datetime import datetime
-from openerp.osv import osv, fields
 from openerp import models, fields, tools, api, _
 from openerp.exceptions import UserError
 

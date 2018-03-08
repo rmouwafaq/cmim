@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
 from openerp import api, fields, models
+
 class DateRangeType(models.Model):
     _inherit = "date.range.type"
 
