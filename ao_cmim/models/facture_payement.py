@@ -1,8 +1,4 @@
-
-from datetime import datetime
-from openerp.osv import osv, fields
 from openerp import models, fields,exceptions, api, _
-from openerp.exceptions import UserError
 
 class reglement(models.Model):
     _inherit = 'account.payment'

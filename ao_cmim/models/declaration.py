@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-from datetime import date, datetime
-from dateutil.relativedelta import relativedelta
-from openerp.osv import osv, fields
 from openerp import models, fields, exceptions, api, _
 from openerp.exceptions import UserError
-from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
-  
+
     
 class declaration(models.Model):
     _name = 'cmim.declaration'

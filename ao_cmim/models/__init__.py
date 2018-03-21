@@ -9,4 +9,3 @@ import declaration
 import parametrage_collectivite
 import position_statut
 import date_range_type
-# import res_company
