@@ -97,7 +97,6 @@ class cmimImportCOlAss(models.TransientModel):
         list_anomalie = []
         ids = []
         partner_obj = self.env['res.partner']
-        collectivite_obj = self.env['res.partner']
         for i in range(len(reader_info)):
             values = reader_info[i]
             partner_obj = partner_obj.search([('numero', '=', values[1])], limit=1)

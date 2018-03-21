@@ -6,6 +6,8 @@ import base64
 import csv
 import cStringIO
 from openerp.exceptions import UserError
+import logging
+
 
 
 #############################################################################
@@ -65,6 +67,8 @@ class cmimImportDecPay(models.TransientModel):
         collectivite_id = self.env['res.partner']
         list_to_import = []
         list_to_anomalie = []
+        record_col = self.collectivite_id
+
         ids = []
         if self.model == "old":
             for i in range(len(reader_info)):
@@ -104,26 +108,51 @@ class cmimImportDecPay(models.TransientModel):
             for i in range(len(reader_info)):
                 values = reader_info[i]
                 partner_obj = partner_obj.search([('numero', '=', values[0])])
+
+                if not partner_obj:
+                    partner_obj = partner_obj.create({'type_entite': 'a',
+                                                      'company_type': 'person',
+                                                      'customer': True,
+                                                      'name': '%s %s' % (values[1], values[2]),
+                                                      'id_num_famille': '',
+                                                      'numero': values[0],
+                                                      'import_flag': True,
+                                                      })
+               #else:
+                #    assure_id = partner_obj[0].id
+
                 vals = {'collectivite_id': self.collectivite_id.id,
-                        'assure_id': partner_obj.id,
+                        'assure_id': partner_obj[0].id,
                         'import_flag': True,
                         'state': 'valide'
                         }
                 if self.type_id.id == self.env.ref('ao_cmim.data_range_type_trimestriel').id:
-                    salaire = float('.'.join(str(x) for x in tuple(values[3].split(',')))) + float(
-                        '.'.join(str(x) for x in tuple(values[5].split(',')))) + float(
-                        '.'.join(str(x) for x in tuple(values[7].split(','))))
+                    # logging.info('###values### : %s %s %s',values[5],values[7],values[9])
+                    salaire = 0
+                    for i in [5,7,9]:
+                        if values[i]=='':
+                            values[i]='0'
+                        salaire = salaire + float('.'.join(str(x) for x in tuple(values[i].split(','))))
+
+                    nb_jour = 0
+                    for i in [6, 8, 10]:
+                        if values[i] == '':
+                            values[i] = '0'
+                        nb_jour = nb_jour + int(values[i])
+
                     if not salaire == 0:
-                        vals.update({'nb_jour': values[4] + values[6] + values[8],
+
+                        vals.update({'nb_jour': nb_jour,
                                      'salaire': salaire,
                                      'type_id': self.type_id.id,
                                      'date_range_id': self.date_range_id.id,
                                      })
+
                         list_to_import.append(vals)
                 elif self.type_id.id == self.env.ref('ao_cmim.data_range_type_mensuel').id:
-                    sal1 = float('.'.join(str(x) for x in tuple(values[3].split(','))))
-                    sal2 = float('.'.join(str(x) for x in tuple(values[5].split(','))))
-                    sal3 = float('.'.join(str(x) for x in tuple(values[7].split(','))))
+                    sal1 = float('.'.join(str(x) for x in tuple(values[5].split(','))))
+                    sal2 = float('.'.join(str(x) for x in tuple(values[7].split(','))))
+                    sal3 = float('.'.join(str(x) for x in tuple(values[9].split(','))))
                     date_range_ids = self.env['date.range'].search([('active', '=', True),
                                                                     ('type_id', '=', self.type_id.id),
                                                                     ('date_start', '>=', self.date_range_id.date_start),
@@ -132,42 +161,48 @@ class cmimImportDecPay(models.TransientModel):
                                                                    limit=3)
                     if date_range_ids and len(date_range_ids) == 3:
                         if not sal1 == 0:
-                            vals.update({'nb_jour': values[4],
+                            vals.update({'nb_jour': values[6],
                                          'salaire': sal1,
                                          'type_id': self.type_id.id,
                                          'date_range_id': date_range_ids[0].id,
                                          })
                             list_to_import.append(vals)
                         if not sal2 == 0:
-                            vals.update({'nb_jour': values[6],
+                            vals.update({'nb_jour': values[8],
                                          'salaire': sal2,
                                          'type_id': self.type_id.id,
                                          'date_range_id': date_range_ids[1].id,
                                          })
                             list_to_import.append(vals)
                         if not sal3 == 0:
-                            vals.update({'nb_jour': values[8],
+                            vals.update({'nb_jour': values[10],
                                          'salaire': sal3,
                                          'type_id': self.type_id.id,
                                          'date_range_id': date_range_ids[2].id,
                                          })
                             list_to_import.append(vals)
+
+
+
         self.statut_id = self.env.ref('ao_cmim.epd').id if self.is_epd else self.env.ref('ao_cmim.act').id
         print '-------------------',self.statut_id.name
         print 'list_to_import', list_to_import
-        # for line in list_to_import:
-        #     declaration_obj = declaration_obj.create(line)
-        #     has_statut = self.env['cmim.position.statut'].search([('assure_id', '=', declaration_obj.assure_id.id),
-        #                                                           ('statut_id', '=', self.statut_id.id)],
-        #                                                          limit=1)
-        #     if has_statut:
-        #         has_statut.write({'date_fin_appl': self.date_range_id.date_end})
-        #     else:
-        #         declaration_obj.assure_id.write({'position_statut_ids': [(0, 0, {'date_debut_appl': self.date_range_id.date_start,
-        #                                          'date_fin_appl': self.date_range_id.date_end,
-        #                                          'statut_id': self.statut_id.id,
-        #                                          })]})
-        #     ids.append(declaration_obj.id)
+        for line in list_to_import:
+             declaration_obj = declaration_obj.create(line)
+             has_statut = self.env['cmim.position.statut'].search([('assure_id', '=', declaration_obj.assure_id.id),
+                                                                   ('statut_id', '=', self.statut_id.id)],
+                                                                  limit=1)
+             if has_statut:
+                 has_statut.write({'date_fin_appl': self.date_range_id.date_end})
+             else:
+                 declaration_obj.assure_id.write({'position_statut_ids': [(0, 0, {'date_debut_appl': self.date_range_id.date_start,
+                                                  'date_fin_appl': self.date_range_id.date_end,
+                                                  'statut_id': self.statut_id.id,
+                                                 })]})
+             ids.append(declaration_obj.id)
+
+        if list_to_anomalie:
+            logging.info('Assures abscents : %s ', list_to_anomalie)
         if len(ids) > 0:
             view_id = self.env.ref('ao_cmim.declaration_tree_view').id
             return {
@@ -262,3 +297,4 @@ class cmimImportDecPay(models.TransientModel):
                 return self.import_declarations(reader_info)
             elif self.type_operation == 'reglement':
                 return self.import_reglements(reader_info)
+
