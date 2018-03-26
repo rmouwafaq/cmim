@@ -1,0 +1,185 @@
+# -*- coding: utf-8 -*-
+from datetime import datetime
+from datetime import date
+from openerp import fields, models, exceptions, api, _
+import base64
+import csv
+import cStringIO
+from openerp.exceptions import UserError
+import logging
+
+
+
+#############################################################################
+
+class cmimImportStatus(models.TransientModel):
+    _name = 'cmim.import.state'
+
+    data = fields.Binary("Fichier", required=True)
+    delimeter = fields.Char('Delimeter', default=';',
+                            help='Default delimeter is ";"')
+
+    statut_id = fields.Many2one('cmim.statut.assure', string='Statut', domain="[('code', '=', ['ACT', 'EPD'])]")
+    collectivite_id = fields.Many2one('res.partner', domain="[('type_entite', '=', 'c')]")
+    company_id = fields.Many2one('res.company', 'Company',
+                                 default=lambda self: self.env['res.company']._company_default_get())
+
+    header = fields.Boolean(u'Entête', default=True)
+    date_range_id = fields.Many2one('date.range', u'Période',
+                                    domain="[('active', '=', True)]", required=True)
+    type_id = fields.Many2one('date.range.type', u'Type de péride', domain=lambda self: self._get_domain(),
+                              required=True)
+
+    def _get_domain(self):
+        return [('active', '=', True),
+                ('id', 'in', [self.env.ref('ao_cmim.data_range_type_trimestriel').id,
+                              self.env.ref('ao_cmim.data_range_type_mensuel').id])]
+
+    @api.multi
+    def import_assure_state(self, reader_info):
+        declaration_obj = self.env['cmim.declaration']
+        partner_obj = self.env['res.partner']
+        collectivite_id = self.env['res.partner']
+        list_to_import = []
+        list_to_anomalie = []
+        record_col = self.collectivite_id
+
+        ids = []
+        for i in range(len(reader_info)):
+            values = reader_info[i]
+            partner_obj = partner_obj.search([('numero', '=', values[0])])
+
+            if not partner_obj:
+                partner_obj = partner_obj.create({'type_entite': 'a',
+                                                  'company_type': 'person',
+                                                  'customer': True,
+                                                  'name': '%s %s' % (values[1], values[2]),
+                                                  'id_num_famille': '',
+                                                  'numero': values[0],
+                                                  'import_flag': True,
+                                                  })
+           #else:
+            #    assure_id = partner_obj[0].id
+
+            vals = {'collectivite_id': self.collectivite_id.id,
+                    'assure_id': partner_obj[0].id,
+                    'import_flag': True,
+                    'state': 'valide'
+                    }
+            if self.type_id.id == self.env.ref('ao_cmim.data_range_type_trimestriel').id:
+                # logging.info('###values### : %s %s %s',values[5],values[7],values[9])
+                salaire = 0
+                for i in [5,7,9]:
+                    if values[i]=='':
+                        values[i]='0'
+                    salaire = salaire + float('.'.join(str(x) for x in tuple(values[i].split(','))))
+
+                nb_jour = 0
+                for i in [6, 8, 10]:
+                    if values[i] == '':
+                        values[i] = '0'
+                    nb_jour = nb_jour + int(values[i])
+
+                if not salaire == 0:
+
+                    vals.update({'nb_jour': nb_jour,
+                                 'salaire': salaire,
+                                 'type_id': self.type_id.id,
+                                 'date_range_id': self.date_range_id.id,
+                                 })
+
+                    list_to_import.append(vals)
+            elif self.type_id.id == self.env.ref('ao_cmim.data_range_type_mensuel').id:
+                sal1 = float('.'.join(str(x) for x in tuple(values[5].split(','))))
+                sal2 = float('.'.join(str(x) for x in tuple(values[7].split(','))))
+                sal3 = float('.'.join(str(x) for x in tuple(values[9].split(','))))
+                date_range_ids = self.env['date.range'].search([('active', '=', True),
+                                                                ('type_id', '=', self.type_id.id),
+                                                                ('date_start', '>=', self.date_range_id.date_start),
+                                                                ('date_end', '<=', self.date_range_id.date_end)
+                                                                ],
+                                                               limit=3)
+                if date_range_ids and len(date_range_ids) == 3:
+                    if not sal1 == 0:
+                        vals.update({'nb_jour': values[6],
+                                     'salaire': sal1,
+                                     'type_id': self.type_id.id,
+                                     'date_range_id': date_range_ids[0].id,
+                                     })
+                        list_to_import.append(vals)
+                    if not sal2 == 0:
+                        vals.update({'nb_jour': values[8],
+                                     'salaire': sal2,
+                                     'type_id': self.type_id.id,
+                                     'date_range_id': date_range_ids[1].id,
+                                     })
+                        list_to_import.append(vals)
+                    if not sal3 == 0:
+                        vals.update({'nb_jour': values[10],
+                                     'salaire': sal3,
+                                     'type_id': self.type_id.id,
+                                     'date_range_id': date_range_ids[2].id,
+                                     })
+                        list_to_import.append(vals)
+
+
+        self.statut_id = self.env.ref('ao_cmim.epd').id if self.is_epd else self.env.ref('ao_cmim.act').id
+        print '-------------------',self.statut_id.name
+        print 'list_to_import', list_to_import
+        for line in list_to_import:
+             declaration_obj = declaration_obj.create(line)
+             has_statut = self.env['cmim.position.statut'].search([('assure_id', '=', declaration_obj.assure_id.id),
+                                                                   ('statut_id', '=', self.statut_id.id)],
+                                                                  limit=1)
+             if has_statut:
+                 has_statut.write({'date_fin_appl': self.date_range_id.date_end})
+             else:
+                 declaration_obj.assure_id.write({'position_statut_ids': [(0, 0, {'date_debut_appl': self.date_range_id.date_start,
+                                                  'date_fin_appl': self.date_range_id.date_end,
+                                                  'statut_id': self.statut_id.id,
+                                                 })]})
+             ids.append(declaration_obj.id)
+
+        if list_to_anomalie:
+            logging.info('Assures abscents : %s ', list_to_anomalie)
+        if len(ids) > 0:
+            view_id = self.env.ref('ao_cmim.declaration_tree_view').id
+            return {
+                'name': u'Déclarations importées',
+                'res_model': 'cmim.declaration',
+                'type': 'ir.actions.act_window',
+                'res_id': self.id,
+                'view_mode': 'tree,form',
+                'views': [(view_id, 'tree'), (False, 'form')],
+                'view_id': 'ao_cmim.declaration_tree_view',
+                'target': 'self',
+                'domain': [('id', 'in', ids)],
+            }
+        else:
+            return True
+            ############################################################################
+
+    @api.multi
+    def import_dec_pay(self):
+        data = base64.b64decode(self.data)
+        file_input = cStringIO.StringIO(data)
+        file_input.seek(0)
+        reader_info = []
+        if self.delimeter:
+            delimeter = str(self.delimeter)
+        else:
+            delimeter = ';'
+        reader = csv.reader(file_input, delimiter=delimeter,
+                            lineterminator='\r\n')
+        try:
+            reader_info.extend(reader)
+        except Exception:
+            raise exceptions.Warning(_(u"Le fichier sélectionné n'est pas valide!"))
+        if self.header:
+            del reader_info[0]
+        if (not self.env['res.partner'].search([('type_entite', '=', 'c')])):
+            raise exceptions.Warning(_(
+                u"L'import des encaissements exige l'existances des collectivités dans le système, veuillez créer les collectivités en premier"))
+        else:
+            return self.import_assure_state(reader_info)
+
