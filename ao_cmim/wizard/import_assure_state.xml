@@ -7,28 +7,9 @@
 			<field name="type">form</field>
 			<field name="arch" type="xml">
 				<form string="Import des Statuts Assurés">
-					<br></br>
-					<span attrs="{'invisible': [('type_operation','!=', 'declaration')]}">
-					<pre class="oe_grey" attrs="{'invisible': [('model','!=', 'sep')]}" >
-						<!-- L'importation des statuts Assurés permet de mettre ajour leur applicabilité-->
-						<!--Les assuérs sont identifiés par leurs matricules <strong>id num personne</strong>, et le statut est déclaré par rapport à une période.-->
-						<!--Le format de fichier exigé est le suivant:-->
-						
-						<center><img src='/ao_cmim/static/src/img/new_dec.jpg'   style="max-width: 100%;"/></center>
-					</pre>
-					<pre class="oe_grey" attrs="{'invisible': [('model','!=', 'old')]}" >
-						<!--La périodicité Trimestrielle est utilisée pour identifier l'applicabilité.-->
-						<!--Les assuérs sont identifiés par leurs <strong>id num famille</strong>.-->
-						<!--Le format de fichier exigé est le suivant:-->
-						<!---->
-						<center><img src='/ao_cmim/static/src/img/old_dec.jpg' style="max-width: 100%; " /></center>
-					</pre>
-					</span>
 					<group>
 						<group>
-							<field name="statut_id" string="Statut Applicable" />
 							<field name="company_id" invisible="1" />
-						    <field name="model" string="Périodicité" />
 							<field name="type_id" widget="selection" />
 							<field name="date_range_id" />
                             </group>
@@ -36,7 +17,7 @@
 							<field name="data" />
 							<field name="header"/>
 							<field name="collectivite_id"/>
-
+							<field name="statut_id" string="Statut Applicable" />
                         </group>
 					</group>
 					<separator string="" colspan="4" />

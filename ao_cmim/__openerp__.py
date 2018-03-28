@@ -26,7 +26,8 @@
             'wizard/calcul.xml',
             'wizard/validation.xml',
             'wizard/date_range_generator.xml',
-            
+            'wizard/import_assure_state.xml',
+
             'views/date_range.xml',
             'views/product.xml',
             'views/cotisation.xml',

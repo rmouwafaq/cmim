@@ -19,7 +19,7 @@ class cmimImportStatus(models.TransientModel):
     delimeter = fields.Char('Delimeter', default=';',
                             help='Default delimeter is ";"')
 
-    statut_id = fields.Many2one('cmim.statut.assure', string='Statut', domain="[('code', '=', ['ACT', 'EPD'])]")
+    statut_id = fields.Many2one('cmim.statut.assure', string='Statut')
     collectivite_id = fields.Many2one('res.partner', domain="[('type_entite', '=', 'c')]")
     company_id = fields.Many2one('res.company', 'Company',
                                  default=lambda self: self.env['res.company']._company_default_get())
@@ -37,130 +37,49 @@ class cmimImportStatus(models.TransientModel):
 
     @api.multi
     def import_assure_state(self, reader_info):
-        declaration_obj = self.env['cmim.declaration']
         partner_obj = self.env['res.partner']
-        collectivite_id = self.env['res.partner']
-        list_to_import = []
-        list_to_anomalie = []
-        record_col = self.collectivite_id
+        statut_obj = self.env['cmim.position.statut']
 
-        ids = []
-        for i in range(len(reader_info)):
-            values = reader_info[i]
-            partner_obj = partner_obj.search([('numero', '=', values[0])])
+        assure_ids = []
+        for i, line in enumerate(reader_info):
 
-            if not partner_obj:
-                partner_obj = partner_obj.create({'type_entite': 'a',
-                                                  'company_type': 'person',
-                                                  'customer': True,
-                                                  'name': '%s %s' % (values[1], values[2]),
-                                                  'id_num_famille': '',
-                                                  'numero': values[0],
-                                                  'import_flag': True,
-                                                  })
-           #else:
-            #    assure_id = partner_obj[0].id
+            partner_id = partner_obj.search([('numero', '=', line[0])])
+            statut_item = {
+                        'statut_id': self.statut_id.id,
+                        'date_debut_appl': self.date_range_id.date_start,
+                        'date_fin_appl': self.date_range_id.date_end
+                           }
 
-            vals = {'collectivite_id': self.collectivite_id.id,
-                    'assure_id': partner_obj[0].id,
-                    'import_flag': True,
-                    'state': 'valide'
-                    }
-            if self.type_id.id == self.env.ref('ao_cmim.data_range_type_trimestriel').id:
-                # logging.info('###values### : %s %s %s',values[5],values[7],values[9])
-                salaire = 0
-                for i in [5,7,9]:
-                    if values[i]=='':
-                        values[i]='0'
-                    salaire = salaire + float('.'.join(str(x) for x in tuple(values[i].split(','))))
+            if not partner_id:
+                assure_item = {'numero': line[0],
+                               'name': line[1]+" "+line[2],
+                               'type_entite': 'a'}
+                partner_id = partner_obj.create(assure_item)
 
-                nb_jour = 0
-                for i in [6, 8, 10]:
-                    if values[i] == '':
-                        values[i] = '0'
-                    nb_jour = nb_jour + int(values[i])
+            assure_ids.append(partner_id.id)
+            statut_item['assure_id'] = partner_id.id
 
-                if not salaire == 0:
+            statut_ids = statut_obj.search([("date_debut_appl","=",statut_item['date_debut_appl']),("date_fin_appl","=",statut_item['date_fin_appl']),('assure_id','=',statut_item['assure_id'])])
+            logging.warning("statut %s => %s", line[0], statut_ids)
+            if statut_ids:
+                statut_ids[0].write({'statut_id': self.statut_id.id})
+            else:
+                statut_obj.create(statut_item)
 
-                    vals.update({'nb_jour': nb_jour,
-                                 'salaire': salaire,
-                                 'type_id': self.type_id.id,
-                                 'date_range_id': self.date_range_id.id,
-                                 })
-
-                    list_to_import.append(vals)
-            elif self.type_id.id == self.env.ref('ao_cmim.data_range_type_mensuel').id:
-                sal1 = float('.'.join(str(x) for x in tuple(values[5].split(','))))
-                sal2 = float('.'.join(str(x) for x in tuple(values[7].split(','))))
-                sal3 = float('.'.join(str(x) for x in tuple(values[9].split(','))))
-                date_range_ids = self.env['date.range'].search([('active', '=', True),
-                                                                ('type_id', '=', self.type_id.id),
-                                                                ('date_start', '>=', self.date_range_id.date_start),
-                                                                ('date_end', '<=', self.date_range_id.date_end)
-                                                                ],
-                                                               limit=3)
-                if date_range_ids and len(date_range_ids) == 3:
-                    if not sal1 == 0:
-                        vals.update({'nb_jour': values[6],
-                                     'salaire': sal1,
-                                     'type_id': self.type_id.id,
-                                     'date_range_id': date_range_ids[0].id,
-                                     })
-                        list_to_import.append(vals)
-                    if not sal2 == 0:
-                        vals.update({'nb_jour': values[8],
-                                     'salaire': sal2,
-                                     'type_id': self.type_id.id,
-                                     'date_range_id': date_range_ids[1].id,
-                                     })
-                        list_to_import.append(vals)
-                    if not sal3 == 0:
-                        vals.update({'nb_jour': values[10],
-                                     'salaire': sal3,
-                                     'type_id': self.type_id.id,
-                                     'date_range_id': date_range_ids[2].id,
-                                     })
-                        list_to_import.append(vals)
-
-
-        self.statut_id = self.env.ref('ao_cmim.epd').id if self.is_epd else self.env.ref('ao_cmim.act').id
-        print '-------------------',self.statut_id.name
-        print 'list_to_import', list_to_import
-        for line in list_to_import:
-             declaration_obj = declaration_obj.create(line)
-             has_statut = self.env['cmim.position.statut'].search([('assure_id', '=', declaration_obj.assure_id.id),
-                                                                   ('statut_id', '=', self.statut_id.id)],
-                                                                  limit=1)
-             if has_statut:
-                 has_statut.write({'date_fin_appl': self.date_range_id.date_end})
-             else:
-                 declaration_obj.assure_id.write({'position_statut_ids': [(0, 0, {'date_debut_appl': self.date_range_id.date_start,
-                                                  'date_fin_appl': self.date_range_id.date_end,
-                                                  'statut_id': self.statut_id.id,
-                                                 })]})
-             ids.append(declaration_obj.id)
-
-        if list_to_anomalie:
-            logging.info('Assures abscents : %s ', list_to_anomalie)
-        if len(ids) > 0:
-            view_id = self.env.ref('ao_cmim.declaration_tree_view').id
-            return {
-                'name': u'Déclarations importées',
-                'res_model': 'cmim.declaration',
-                'type': 'ir.actions.act_window',
-                'res_id': self.id,
-                'view_mode': 'tree,form',
-                'views': [(view_id, 'tree'), (False, 'form')],
-                'view_id': 'ao_cmim.declaration_tree_view',
-                'target': 'self',
-                'domain': [('id', 'in', ids)],
-            }
-        else:
-            return True
-            ############################################################################
+        return {
+            'name': "assurés imported",
+            'view_type': 'form',
+            'view_mode': 'tree',
+            'view_id': self.env.ref('ao_cmim.view_assure_tree').id,
+            'res_model': 'res.partner',
+            'views': [(False, 'tree'), (False, 'form')],
+            'domain': [('id','in', assure_ids)],
+            'type': 'ir.actions.act_window',
+            'target': 'self',
+        }
 
     @api.multi
-    def import_dec_pay(self):
+    def import_state(self):
         data = base64.b64decode(self.data)
         file_input = cStringIO.StringIO(data)
         file_input.seek(0)
@@ -173,8 +92,8 @@ class cmimImportStatus(models.TransientModel):
                             lineterminator='\r\n')
         try:
             reader_info.extend(reader)
-        except Exception:
-            raise exceptions.Warning(_(u"Le fichier sélectionné n'est pas valide!"))
+        except Exception as e:
+            raise exceptions.Warning(_(u"Le fichier sélectionné n'est pas valide!"+str(e)))
         if self.header:
             del reader_info[0]
         if (not self.env['res.partner'].search([('type_entite', '=', 'c')])):

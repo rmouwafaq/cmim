@@ -30,6 +30,9 @@
 		<menuitem id="import_dec_menu" name="Importation déclarations"
 			action="action_dec_pay_import" parent="declaration_cotisation_menu"
 			sequence="5" />
+		<menuitem id="import_assure_menu" name="Importation assurés"
+			action="action_state_import" parent="declaration_cotisation_menu"
+			sequence="6" />
 
 		<menuitem id="facture_payement_menu" name="Factures et Réglements"
 			parent="main_menu" sequence="3" />
