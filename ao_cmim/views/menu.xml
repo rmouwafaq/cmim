@@ -30,7 +30,7 @@
 		<menuitem id="import_dec_menu" name="Importation déclarations"
 			action="action_dec_pay_import" parent="declaration_cotisation_menu"
 			sequence="5" />
-		<menuitem id="import_assure_menu" name="Importation assurés"
+		<menuitem id="import_assure_menu" name="Import Statut Assurés"
 			action="action_state_import" parent="declaration_cotisation_menu"
 			sequence="6" />
 

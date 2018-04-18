@@ -12,7 +12,7 @@ import logging
 
 #############################################################################
 
-class cmimImportStatus(models.TransientModel):
+class ImportStatus(models.TransientModel):
     _name = 'cmim.import.state'
 
     data = fields.Binary("Fichier", required=True)
@@ -59,10 +59,17 @@ class cmimImportStatus(models.TransientModel):
             assure_ids.append(partner_id.id)
             statut_item['assure_id'] = partner_id.id
 
-            statut_ids = statut_obj.search([("date_debut_appl","=",statut_item['date_debut_appl']),("date_fin_appl","=",statut_item['date_fin_appl']),('assure_id','=',statut_item['assure_id'])])
+            # statut_ids = statut_obj.search([("date_debut_appl","=",statut_item['date_debut_appl']),("date_fin_appl","=",statut_item['date_fin_appl']),('assure_id','=',statut_item['assure_id'])])
+            statut_ids = statut_obj.search([('assure_id','=',statut_item['assure_id']), ('statut_id', '=', statut_item['statut_id'])])
             logging.warning("statut %s => %s", line[0], statut_ids)
             if statut_ids:
-                statut_ids[0].write({'statut_id': self.statut_id.id})
+                if statut_ids[0].date_debut_appl < statut_item['date_debut_appl']:
+                    del statut_item['date_debut_appl']
+
+                if statut_ids[0].date_fin_appl > statut_item['date_fin_appl']:
+                    del statut_item['date_fin_appl']
+
+                statut_ids[0].write(statut_item)
             else:
                 statut_obj.create(statut_item)
 
