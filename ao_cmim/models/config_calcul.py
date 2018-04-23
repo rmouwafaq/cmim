@@ -71,10 +71,10 @@ class RegleCalcul(models.Model):
     fin_applicabilite = fields.Date(u"Date fin de validité")
     regle_base_id = fields.Many2one('cmim.regle.calcul', 'Base Calcul', domain=[('type', 'not in', ['taux', 'abat'])], ondelete = 'restrict')
     regle_tarif_id = fields.Many2one('cmim.regle.calcul', 'Taux Calcul', domain=[('type', '=', 'taux')], ondelete = 'restrict')
-    type = fields.Selection(selection=[('taux', 'Règle Tarif'),
-                                        ('tbase', 'Règle Base'),
-                                        ('tabat', 'Règle Abattement'),
-                                        ('trsc', 'Règle Spéciale')], 
+    type = fields.Selection(selection=[('taux', 'Tarif'),
+                                        ('tbase', 'Base'),
+                                        ('tabat', 'Abattement'),
+                                        ('trsc', 'Spéciale')],
                                         default="tbase", string='Type de règle',
                                         help=u"Les règles de calcul intermédaires servent à définir les bons tarifs tandis que les règles de calcul contractuelles définissent les bases de calul , le tarif pris en compte lors du calcul est soit le tarif associé à la règle intermédiaire dans le paramétrage de la collectivité, soit le tarif par défaut définit dans la règle de calcul contractuelle.")
     applicabilite_proratat = fields.Boolean(u'Applicabilité prorata', default=True)

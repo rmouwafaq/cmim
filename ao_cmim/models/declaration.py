@@ -11,6 +11,8 @@ class declaration(models.Model):
     collectivite_id = fields.Many2one('res.partner', u'Collectivité', ondelete='cascade', domain="[('type_entite','=','c')]", required=True)   
     assure_id = fields.Many2one('res.partner', u'Assuré', required=True, domain="[('type_entite','=','a')]", ondelete='cascade')  #  , 
     nb_jour = fields.Integer(u'Nombre de jours déclarés', required=True)
+
+
     salaire = fields.Float('salaire', required=True)
     secteur_id = fields.Many2one('cmim.secteur', string='Secteur',
         related='collectivite_id.secteur_id', store=True)
@@ -25,6 +27,8 @@ class declaration(models.Model):
     type_id = fields.Many2one('date.range.type', u'Type de péride',domain="[('active', '=', True)]", required=True)
     # type_id_nb_days = fields.Integer('date.range.type', related='type_id.nb_days', store=True)
     cotisation_id = fields.Many2one('cmim.cotisation', compute=lambda self: self._get_cotisation())
+    # nb_jour_prorata = totalise le nombre de mois travaille en jours ( 1 mois commence est un mois de 30 jours)
+    nb_jour_prorata = fields.Integer(u'Prorata Jours déclarés', required=True)
 
     @api.onchange('nb_jour', 'type_id')
     def onchange_nb_jour(self):

@@ -22,7 +22,6 @@ class cmimImportDecPay(models.TransientModel):
                                       required=True, string=u"Type d'opération", default='declaration')
     model = fields.Selection(selection=[('old', 'Ancien Format'), ('sep', 'Mois séparés')], string=u"Format de fichier",
                              default='sep')
-    is_epd = fields.Boolean('EPAD')
     statut_id = fields.Many2one('cmim.statut.assure', string='Statut', domain="[('code', '=', ['ACT', 'EPD'])]")
     payment_date = fields.Date(string=u"Date de réglement")
     collectivite_id = fields.Many2one('res.partner', domain="[('type_entite', '=', 'c')]")
@@ -135,17 +134,20 @@ class cmimImportDecPay(models.TransientModel):
                         salaire = salaire + float('.'.join(str(x) for x in tuple(values[i].split(','))))
 
                     nb_jour = 0
+                    nb_jour_prorata = 0
                     for i in [6, 8, 10]:
                         if values[i] == '':
                             values[i] = '0'
                         nb_jour = nb_jour + int(values[i])
+                        if int(values[i])>0:
+                            nb_jour_prorata = nb_jour_prorata + 30
 
                     if not salaire == 0:
-
                         vals.update({'nb_jour': nb_jour,
                                      'salaire': salaire,
                                      'type_id': self.type_id.id,
                                      'date_range_id': self.date_range_id.id,
+                                     'nb_jour_prorata':nb_jour_prorata,
                                      })
 
                         list_to_import.append(vals)
@@ -184,7 +186,9 @@ class cmimImportDecPay(models.TransientModel):
 
 
 
-        self.statut_id = self.env.ref('ao_cmim.epd').id if self.is_epd else self.env.ref('ao_cmim.act').id
+        #self.statut_id = self.env.ref('ao_cmim.epd').id if self.is_epd else self.env.ref('ao_cmim.act').id
+        self.statut_id = self.env.ref('ao_cmim.act').id
+
         print '-------------------',self.statut_id.name
         print 'list_to_import', list_to_import
         for line in list_to_import:

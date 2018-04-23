@@ -40,6 +40,7 @@
 					<field name="assure_id" />
 					<field name="salaire" />
 					<field name="nb_jour" />
+					<field name="nb_jour_prorata" />
 					<field name="state" />
 				</tree>
 			</field>

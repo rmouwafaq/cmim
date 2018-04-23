@@ -11,6 +11,7 @@ class Garantie(models.Model):
     _name = "cmim.garantie"
     name = fields.Char('Nom', required=True)
     code = fields.Char("code", required=True)
+
 class Secteur(models.Model):
     _name = 'cmim.secteur'
     
@@ -21,6 +22,7 @@ class Secteur(models.Model):
         for obj in self:
             obj.plancher = obj.plancher_mensuel * 3
             obj.plafond = obj.plafond_mensuel * 3
+
     is_complementary = fields.Boolean('Est Complémentaire', default=False)
     plancher = fields.Float('Plancher Trimestriel',  compute=lambda self:self._get_val_trimestrielle())
     plafond = fields.Float('Plafond Trimestriel',  compute=lambda self:self._get_val_trimestrielle())

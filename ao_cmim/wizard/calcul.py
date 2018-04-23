@@ -4,6 +4,7 @@ from openerp.osv import osv, fields
 from openerp import models, fields, exceptions, api, _
 from openerp.exceptions import UserError
 import test
+import logging
 class calcul_cotisation (models.TransientModel):
     _name = 'cmim.calcul.cotisation'
     # _sql_constraints = [
@@ -68,8 +69,42 @@ class calcul_cotisation (models.TransientModel):
                 elif self.get_applicabilite(param.regle_id, declaration_id):
                         mt -= param.tarif_id.montant
         return mt/100
-    
+
+
+    def get_statut_obsolete_xxxx(self, regle_id, declaration_id):
+        # FIXME : function code to remove
+        test_applicabilite_statut = False
+        statuts = []
+        if regle_id.type == 'trsc':
+
+            rsc_ids = declaration_id.assure_id.search([('id_num_famille', '=', declaration_id.assure_id.id_num_famille),
+                                                       ('type_entite', '=', 'rsc')])
+            for rsc in rsc_ids:
+                statuts.extend(rsc.get_statut_in_periode(regle_id.statut_ids.ids,
+                                                         declaration_id.date_range_id.date_start,
+                                                         declaration_id.date_range_id.date_end))
+        else:
+            statuts = declaration_id.assure_id.get_statut_in_periode(regle_id.statut_ids.ids,
+                                                                     declaration_id.date_range_id.date_start,
+                                                                     declaration_id.date_range_id.date_end)
+        if len(statuts) > 0:
+            test_applicabilite_statut = True
+        return test_applicabilite_statut
+
+
+    def get_statut_applicabilite(self, regle_id, declaration_id):
+
+        statut_applicable = False
+        statuts = declaration_id.assure_id.get_statut_in_periode(regle_id.statut_ids.ids,
+                                                                 declaration_id.date_range_id.date_start,
+                                                                 declaration_id.date_range_id.date_end)
+        if len(statuts) > 0:
+            statut_applicable = True
+
+        return statut_applicable
+
     def get_applicabilite(self, regle_id, declaration_id):
+
         test_applicabilite_statut = False
         test_applicabilite_garantie = True
         test_applicabilite_secteur = True
@@ -78,21 +113,8 @@ class calcul_cotisation (models.TransientModel):
         if not regle_id.statut_ids:
             test_applicabilite_statut = True
         else:
-            statuts = []
-            if regle_id.type == 'trsc':
-                rsc_ids = declaration_id.assure_id.search([('id_num_famille', '=', declaration_id.assure_id.id_num_famille),
-                                                            ('type_entite', '=', 'rsc')])
-                for rsc in rsc_ids:
-                    statuts.extend(rsc.get_statut_in_periode(regle_id.statut_ids.ids, 
-                                                            declaration_id.date_range_id.date_start, 
-                                                            declaration_id.date_range_id.date_end))
-            else: 
-                statuts = declaration_id.assure_id.get_statut_in_periode(regle_id.statut_ids.ids, 
-                                                            declaration_id.date_range_id.date_start, 
-                                                            declaration_id.date_range_id.date_end)
-            if len(statuts)>0:
-                test_applicabilite_statut = True
-        #############################################################
+            test_applicabilite_statut = self.get_statut_applicabilite(regle_id, declaration_id)
+
         if not regle_id.secteur_ids:
             test_applicabilite_secteur = True
         elif declaration_id.secteur_id.id in regle_id.secteur_ids.ids:
@@ -125,18 +147,23 @@ class calcul_cotisation (models.TransientModel):
         else:
             res = (base * tarif_id.montant) / 100
         return res
+
     def get_base_calcul(self, declaration_id ):
         cnss = self.env.ref('ao_cmim.cte_calcul_cnss')
         srp = self.env.ref('ao_cmim.cte_calcul_srp')
         result = {}
         if cnss and srp:
-            proratat = float(declaration_id.nb_jour / float(declaration_id.date_range_id.type_id.nb_days))
+            prorata_plafond = float(declaration_id.nb_jour_prorata/ float(declaration_id.date_range_id.type_id.nb_days))
+            #proratat = float(declaration_id.nb_jour / float(declaration_id.date_range_id.type_id.nb_days))
+            proratat = 1
+            if declaration_id.nb_jour_prorata>0:
+                proratat = float(declaration_id.nb_jour / float(declaration_id.nb_jour_prorata))
             p_salaire = declaration_id.salaire * proratat
             plancher, plafond= 0.0, 0.0
             val_cnss, val_srp = 0.0, 0.0
             if declaration_id.date_range_id.type_id.id == self.env.ref('ao_cmim.data_range_type_trimestriel').id:
-                plancher, plafond = declaration_id.secteur_id.plancher, declaration_id.secteur_id.plafond
-                val_cnss, val_srp = cnss.valeur, srp.valeur
+                plancher, plafond = declaration_id.secteur_id.plancher*prorata_plafond, declaration_id.secteur_id.plafond*prorata_plafond
+                val_cnss, val_srp = cnss.valeur*prorata_plafond, srp.valeur*prorata_plafond
             elif declaration_id.date_range_id.type_id.id == self.env.ref('ao_cmim.data_range_type_mensuel').id:
                 plancher, plafond = declaration_id.secteur_id.plancher_mensuel, declaration_id.secteur_id.plafond_mensuel
                 val_cnss, val_srp = cnss.val_mensuelle, srp.val_mensuelle
@@ -177,6 +204,7 @@ class calcul_cotisation (models.TransientModel):
                        'p_salaire': p_salaire,
                        })
         return result
+
     @api.multi
     def calcul_per_collectivite(self, declaration_id, contrat_line_ids, dict_tarifs):
         cotisation_line_list = []
@@ -184,10 +212,12 @@ class calcul_cotisation (models.TransientModel):
         base_calcul = self.get_base_calcul(declaration_id)
         taux_abattement = self.get_taux_abattement(declaration_id)
         for contrat in contrat_line_ids:
+
             if self.get_applicabilite(contrat.regle_id, declaration_id):
                 selected_tarif_id = dict_tarifs.get(contrat.regle_id.regle_tarif_id.id)
                 if not selected_tarif_id:
                     selected_tarif_id = contrat.regle_id.regle_tarif_id.default_tarif_id
+
                 cotisation_line_dict = {'declaration_id': declaration_id.id,
                                         'name': contrat.product_id.short_name,
                                         'contrat_line_id' : contrat.id,
@@ -227,10 +257,13 @@ class calcul_cotisation (models.TransientModel):
                 mt = self.get_montant_cotisation_line(selected_tarif_id, cotisation_line_dict['base'])
                 cotisation_line_dict.update({'montant': mt,
                                              'montant_abattu' : mt * cotisation_line_dict['taux_abattement']})
+
                 if contrat.regle_id.type == 'trsc':
+                    logging.info('Contrat regle >>>>>: %s %s ', contrat.regle_id.type, contrat.regle_id.name)
                     rsc_assure_ids = declaration_id.assure_id.get_rsc(contrat.regle_id, declaration_id)
                     cotisation_line_dict.update({'montant_abattu ' : mt * cotisation_line_dict['taux_abattement'] *  len(rsc_assure_ids),
                                                  'nb_rsc' : len(rsc_assure_ids)})
+                    logging.info('regle de type trsc : %s %s %s ', contrat.regle_id.name,mt,len(rsc_assure_ids))
                 if cotisation_line_dict['montant_abattu'] !=0:
                     cotisation_line_list.append((0, 0, cotisation_line_dict))
                     dict_bases.update({
@@ -240,12 +273,15 @@ class calcul_cotisation (models.TransientModel):
     
     @api.multi 
     def calcul_engine(self):
+
+        # Moteur de calcul des cotisations CMIM
         cotisation_ids = []
         cotiation_to_create = []
         for col in self.collectivite_ids:
+            # Verifier si le calcul peut etre lance pour cette collectivite
             if not self.can_calculate(col.id):
                 raise exceptions.Warning(
-                    _(u"Une ou plusieurs Cotisation a été déjà validée pour la collectivité %s. \nImpossible de lancer le calcul pour la même période!!!." %col.name))
+                    _(u"Une ou plusieurs Cotisations sont validées pour cette collectivité %s. \nImpossible de relancer le calcul pour la même période !!!." %col.name))
             else:
                 cotisation_dict = {'date_range_id': self.date_range_id.id,
                                    'type_id': self.type_id.id,
@@ -259,7 +295,10 @@ class calcul_cotisation (models.TransientModel):
                                                                        ('date_range_id.date_end', '<=', self.date_range_id.date_end),
                                                                        ('cotisation_id', '=', None),
                                                                        ('state', '=', 'valide')])
+
+                # Rechercher les tarifs spécifiques a chaque collectivite
                 dict_tarifs = self.get_tarifs(col)
+
                 for declaration_id in declaration_ids:
                     # for i in range(len(declaration_ids)):
                     res = self.calcul_per_collectivite(declaration_id, col.contrat_id.contrat_line_ids, dict_tarifs)
