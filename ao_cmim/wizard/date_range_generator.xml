@@ -18,6 +18,7 @@
                     <field name="count" string="NB de périodes à générer"/>
                     <field groups="base.group_multi_company"
                         name="company_id" options="{'no_create': True}"/>
+                    <field name="generate_childs"/>
                 </group>
                 <footer>
                     <button class="btn btn-sm btn-primary"

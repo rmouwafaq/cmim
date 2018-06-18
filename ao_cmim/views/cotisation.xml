@@ -1,204 +1,231 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-	<data>
+    <data>
 
-		<record id="cotisation_tree_view" model="ir.ui.view">
-			<field name="name">cmim.cotisation.tree</field>
-			<field name="model">cmim.cotisation</field>
-			<field name="mode">primary</field>
-			<field name="priority" eval="1" />
-			<field name="arch" type="xml">
-				<tree>
-					<field name="name" />
-					<field name="collectivite_id" />
-					<field name="secteur_id" />
-					<field name="type_id" />
-					<field name="date_range_id" />
-					<field name="montant" />
-					<field name="state" />
-				</tree>
-			</field>
-		</record>
-		<record id="cotisation_form" model="ir.ui.view">
-			<field name="name">cmim.cotisation.form</field>
-			<field name="model">cmim.cotisation</field>
-			<field name="arch" type="xml">
-				<form string="Cotisation">
-					<header>
-						<button name="action_validate" type="object" string="Valider"
-							attrs="{'invisible':[('state', '!=', 'draft')]}" class="oe_highlight"
-							groups="base.group_user" />
-						<field name="state" widget="statusbar" nolabel="1"
-							statusbar_visible="draft,valide" />
-					</header>
-					<sheet string="Cotisation">
-						<div class="oe_button_box" name="button_box">
-							<button name="open_invoice" type="object" string="Facture"
-								class="oe_inline oe_stat_button" icon="fa-edit"
-								attrs="{'invisible':[('state', '=', 'draft')]}" />
-						</div>
-						<h1 class="mt0">
-							<field name="name" readonly="1" class="oe_inline" />
-						</h1>
-						<group>
-							<group>
-								<field string="Colectivité" name="collectivite_id"
-									options='{"always_reload": True}' />
-							</group>
-							<group>
-								<field name="type_id" />
-								<field name="date_range_id" />
-							</group>
-						</group>
-						<notebook colspan="4">
-							<page string="Récapitulatif" readonly='1'>
-								<field name="cotisation_product_ids" nolabel="1"
-									widget="one2many_list" mode="tree,kanban">
-									<tree string="Cotisation Lines" editable="bottom">
-										<field name="product_id" />
-										<field name="regle_id" />
-										<field name="tarif" />
-										<field name="montant" />
-									</tree>
-									<kanban class="o_kanban_mobile">
-										<field name="product_id" />
-										<field name="regle_id" />
-										<field name="tarif" />
-										<field name="montant" />
-										<templates>
-											<t t-name="kanban-box">
-												<div t-attf-class="oe_kanban_card oe_kanban_global_click">
-													<div class="row">
-														<div class="col-xs-12">
-															<strong>
-																<span>
-																	<t t-esc="record.product_id.value or 'None'" />
-																</span>
-															</strong>
-														</div>
-													</div>
-													<div class="row">
-														<div class="col-xs-8 text-muted">
-															<span>
-																<t t-esc="record.regle_id.value" />
-																<t t-esc="record.tarif.value" />
-															</span>
-														</div>
+        <record id="cotisation_assure_line_tree_view" model="ir.ui.view">
+            <field name="name">cmim.cotisation.assure.linee</field>
+            <field name="model">cmim.cotisation.assure.line</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="contrat_line_id" string="PDT : Règle Calcul"/>
+                    <field name="date_range_id"/>
+                    <field name="product_name" invisible="1"/>
+                    <field name="assure_id"/>
+                    <field name="nb_rsc" attrs="{'invisible':[('regle_id_type', '!=', 'trsc')]}"/>
+                    <field name="regle_id_type" invisible='1'/>
+                    <field name="salaire"/>
+                    <field name="nb_jour"/>
+                    <field name="proratat"/>
+                    <field name="regle_id" invisible="1"/>
+                    <field name="base"/>
+                    <field name="taux"/>
+                    <field name="montant" sum="montant"/>
+                    <field name="taux_abattement"/>
+                    <field name="montant_abattu"/>
+                </tree>
+            </field>
+        </record>
 
-														<div class="col-xs-4 text-muted">
-															<span class="text-right">
-																<t t-esc="record.montant.value" />
-															</span>
-														</div>
-													</div>
-												</div>
-											</t>
-										</templates>
-									</kanban>
-								</field>
-							</page>
-							<page string="Détails" readonly='1'>
-								<field name="cotisation_assure_ids" nolabel="1" readonly='1'
-									widget="one2many_list" mode="tree,kanban">
-									<tree string="Cotisation assure Lines">
-										<field name="contrat_line_id" string="PDT : Règle Calcul"/>
-										<field name="date_range_id" />
-										<field name="product_name"  invisible="1"/>
-										<field name="assure_id" />
-										<field name="nb_rsc" attrs="{'invisible':[('regle_id_type', '!=', 'trsc')]}" />
-										<field name="regle_id_type" invisible='1'/>
-										<field name="salaire" />
-										<field name="nb_jour" />
-										<field name="proratat" />
-										<field name="regle_id" invisible="1"/>
-										<field name="base" />
-										<field name="taux" />
-										<field name="montant" />
-										<field name="taux_abattement" />
-										<field name="montant_abattu" />
-									</tree>
-									<kanban class="o_kanban_mobile">
-										<field name="contrat_line_id" string="PDT : Règle Calcul"/>
-										<field name="product_name"  invisible="1" />
-										<field name="assure_id" />
-										<field name="nb_rsc" attrs="{'invisible':[('regle_id_type', '!=', 'trsc')]}" />
-										<field name="regle_id_type" invisible='1'/>
-										<field name="salaire" />
-										<field name="nb_jour" />
-										<field name="proratat" />
-										<field name="regle_id"  invisible="1"/>
-										<field name="base" />
-										<field name="taux" />
-										<field name="montant" />
-										<field name="taux_abattement" />
-										<field name="montant_abattu" />
-										<templates>
-											<t t-name="kanban-box">
-												<div t-attf-class="oe_kanban_card oe_kanban_global_click">
-													<div class="row">
-														<div class="col-xs-12">
-															<strong>
-																<span>
-																	<t t-esc="record.contrat_line_id.value or 'None'" />
-																	<t t-esc="record.assure_id.value or 'None'" />
-																	<t t-esc="record.product_id.value or 'None'" />
-																</span>
-															</strong>
-														</div>
-													</div>
-													<div class="row">
-														<div class="col-xs-8 text-muted">
-															<span>
-																<t t-esc="record.regle_id.value or 'None'" />
-															</span>
-														</div>
-														<div class="col-xs-8 text-muted">
-															<span>
-																<t t-esc="record.base.value" />
-																<t t-esc="record.taux.value" />
-															</span>
-														</div>
-														<div class="col-xs-4 text-muted">
-															<span class="text-right">
-																<t t-esc="record.montant.value" />
-																<t t-esc="record.taux_abattement.value" />
-																<t t-esc="record.montant_abattu.value" />
-															</span>
-														</div>
-													</div>
-												</div>
-											</t>
-										</templates>
-									</kanban>
-								</field>
+        <record id="cotisation_tree_view" model="ir.ui.view">
+            <field name="name">cmim.cotisation.tree</field>
+            <field name="model">cmim.cotisation</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="1"/>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="collectivite_id"/>
+                    <field name="secteur_id"/>
+                    <field name="type_id"/>
+                    <field name="date_range_id"/>
+                    <field name="montant"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="cotisation_form" model="ir.ui.view">
+            <field name="name">cmim.cotisation.form</field>
+            <field name="model">cmim.cotisation</field>
+            <field name="arch" type="xml">
+                <form string="Cotisation">
+                    <header>
+                        <button name="action_validate" type="object" string="Valider"
+                                attrs="{'invisible':[('state', '!=', 'draft')]}" class="oe_highlight"
+                                groups="base.group_user"/>
+                        <field name="state" widget="statusbar" nolabel="1"
+                               statusbar_visible="draft,valide"/>
+                    </header>
+                    <sheet string="Cotisation">
+                        <div class="oe_button_box" name="button_box">
+                            <button name="open_invoice" type="object" string="Facture"
+                                    class="oe_inline oe_stat_button" icon="fa-edit"
+                                    attrs="{'invisible':[('state', '=', 'draft')]}"/>
+                            <button name="open_details" type="object" string="Détails"
+                                    class="oe_inline oe_stat_button" icon="fa-edit"
+                            />
+                        </div>
+                        <h1 class="mt0">
+                            <field name="name" readonly="1" class="oe_inline"/>
+                        </h1>
+                        <group>
+                            <group>
+                                <field string="Colectivité" name="collectivite_id"
+                                       options='{"always_reload": True}'/>
+                            </group>
+                            <group>
+                                <field name="type_id"/>
+                                <field name="date_range_id"/>
+                            </group>
+                        </group>
+                        <notebook colspan="4">
+                            <page string="Récapitulatif" readonly='1'>
+                                <field name="cotisation_product_ids" nolabel="1"
+                                       widget="one2many_list" mode="tree,kanban">
+                                    <tree string="Cotisation Lines" editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="regle_id"/>
+                                        <field name="tarif"/>
+                                        <field name="montant"/>
+                                    </tree>
+                                    <kanban class="o_kanban_mobile">
+                                        <field name="product_id"/>
+                                        <field name="regle_id"/>
+                                        <field name="tarif"/>
+                                        <field name="montant"/>
+                                        <templates>
+                                            <t t-name="kanban-box">
+                                                <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <strong>
+                                                                <span>
+                                                                    <t t-esc="record.product_id.value or 'None'"/>
+                                                                </span>
+                                                            </strong>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-8 text-muted">
+                                                            <span>
+                                                                <t t-esc="record.regle_id.value"/>
+                                                                <t t-esc="record.tarif.value"/>
+                                                            </span>
+                                                        </div>
 
-							</page>
-						</notebook>
-						<group>
-							<group class="oe_subtotal_footer oe_right">
-								<field name="montant" class="oe_subtotal_footer_separator" />
-							</group>
-						</group>
-					</sheet>
-				</form>
-			</field>
-		</record>
+                                                        <div class="col-xs-4 text-muted">
+                                                            <span class="text-right">
+                                                                <t t-esc="record.montant.value"/>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
+                                </field>
+                            </page>
+                            <!--<page string="Détails" readonly='1'>-->
+                                <!--<field name="cotisation_assure_ids" nolabel="1" readonly='1'-->
+                                       <!--widget="one2many_list" mode="tree,kanban">-->
+                                    <!--<tree string="Cotisation assure Lines">-->
+                                        <!--<field name="contrat_line_id" string="PDT : Règle Calcul"/>-->
+                                        <!--<field name="date_range_id"/>-->
+                                        <!--<field name="product_name" invisible="1"/>-->
+                                        <!--<field name="assure_id"/>-->
+                                        <!--<field name="nb_rsc" attrs="{'invisible':[('regle_id_type', '!=', 'trsc')]}"/>-->
+                                        <!--<field name="regle_id_type" invisible='1'/>-->
+                                        <!--<field name="salaire"/>-->
+                                        <!--<field name="nb_jour"/>-->
+                                        <!--<field name="proratat"/>-->
+                                        <!--<field name="regle_id" invisible="1"/>-->
+                                        <!--<field name="base"/>-->
+                                        <!--<field name="taux"/>-->
+                                        <!--<field name="montant"/>-->
+                                        <!--<field name="taux_abattement"/>-->
+                                        <!--<field name="montant_abattu"/>-->
+                                    <!--</tree>-->
+                                    <!--<kanban class="o_kanban_mobile">-->
+                                        <!--<field name="contrat_line_id" string="PDT : Règle Calcul"/>-->
+                                        <!--<field name="product_name" invisible="1"/>-->
+                                        <!--<field name="assure_id"/>-->
+                                        <!--<field name="nb_rsc" attrs="{'invisible':[('regle_id_type', '!=', 'trsc')]}"/>-->
+                                        <!--<field name="regle_id_type" invisible='1'/>-->
+                                        <!--<field name="salaire"/>-->
+                                        <!--<field name="nb_jour"/>-->
+                                        <!--<field name="proratat"/>-->
+                                        <!--<field name="regle_id" invisible="1"/>-->
+                                        <!--<field name="base"/>-->
+                                        <!--<field name="taux"/>-->
+                                        <!--<field name="montant"/>-->
+                                        <!--<field name="taux_abattement"/>-->
+                                        <!--<field name="montant_abattu"/>-->
+                                        <!--<templates>-->
+                                            <!--<t t-name="kanban-box">-->
+                                                <!--<div t-attf-class="oe_kanban_card oe_kanban_global_click">-->
+                                                    <!--<div class="row">-->
+                                                        <!--<div class="col-xs-12">-->
+                                                            <!--<strong>-->
+                                                                <!--<span>-->
+                                                                    <!--<t t-esc="record.contrat_line_id.value or 'None'"/>-->
+                                                                    <!--<t t-esc="record.assure_id.value or 'None'"/>-->
+                                                                    <!--<t t-esc="record.product_id.value or 'None'"/>-->
+                                                                <!--</span>-->
+                                                            <!--</strong>-->
+                                                        <!--</div>-->
+                                                    <!--</div>-->
+                                                    <!--<div class="row">-->
+                                                        <!--<div class="col-xs-8 text-muted">-->
+                                                            <!--<span>-->
+                                                                <!--<t t-esc="record.regle_id.value or 'None'"/>-->
+                                                            <!--</span>-->
+                                                        <!--</div>-->
+                                                        <!--<div class="col-xs-8 text-muted">-->
+                                                            <!--<span>-->
+                                                                <!--<t t-esc="record.base.value"/>-->
+                                                                <!--<t t-esc="record.taux.value"/>-->
+                                                            <!--</span>-->
+                                                        <!--</div>-->
+                                                        <!--<div class="col-xs-4 text-muted">-->
+                                                            <!--<span class="text-right">-->
+                                                                <!--<t t-esc="record.montant.value"/>-->
+                                                                <!--<t t-esc="record.taux_abattement.value"/>-->
+                                                                <!--<t t-esc="record.montant_abattu.value"/>-->
+                                                            <!--</span>-->
+                                                        <!--</div>-->
+                                                    <!--</div>-->
+                                                <!--</div>-->
+                                            <!--</t>-->
+                                        <!--</templates>-->
+                                    <!--</kanban>-->
+                                <!--</field>-->
 
-		<!-- ************************** Actions ******************************* -->
-		<record id="action_cotisation" model="ir.actions.act_window">
-			<field name="name">Cotisations</field>
-			<field name="res_model">cmim.cotisation</field>
-			<field name="view_id" ref="cotisation_tree_view" />
-			<!-- <field name="search_id" ref="cotisation_search_view" /> -->
-			<field name="view_type">form</field>
-			<field name="view_mode">tree,form</field>
-			<field name="help" type="html">
-				<p class="oe_view_nocontent_create">
-					Cliquez ici pour créer un nouvel enregistrement.
-				</p>
-			</field>
-		</record>
+                            <!--</page>-->
+                        </notebook>
+                        <group>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="montant" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- ************************** Actions ******************************* -->
+        <record id="action_cotisation" model="ir.actions.act_window">
+            <field name="name">Cotisations</field>
+            <field name="res_model">cmim.cotisation</field>
+            <field name="view_id" ref="cotisation_tree_view"/>
+            <!-- <field name="search_id" ref="cotisation_search_view" /> -->
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Cliquez ici pour créer un nouvel enregistrement.
+                </p>
+            </field>
+        </record>
 
 
-	</data>
+    </data>
 </openerp>

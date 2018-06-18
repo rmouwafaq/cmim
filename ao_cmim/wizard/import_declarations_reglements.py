@@ -106,6 +106,10 @@ class cmimImportDecPay(models.TransientModel):
         elif self.model == "sep":
             for i in range(len(reader_info)):
                 values = reader_info[i]
+                data = [{'salaire': values[5], 'nb_jour': values[6]},
+                        {'salaire': values[7], 'nb_jour': values[8]},
+                        {'salaire': values[9], 'nb_jour': values[10]}
+                        ]
                 partner_obj = partner_obj.search([('numero', '=', values[0])])
 
                 if not partner_obj:
@@ -127,30 +131,39 @@ class cmimImportDecPay(models.TransientModel):
                         }
                 if self.type_id.id == self.env.ref('ao_cmim.data_range_type_trimestriel').id:
                     # logging.info('###values### : %s %s %s',values[5],values[7],values[9])
-                    salaire = 0
-                    for i in [5,7,9]:
-                        if values[i]=='':
-                            values[i]='0'
-                        salaire = salaire + float('.'.join(str(x) for x in tuple(values[i].split(','))))
+                    logging.info('###data ### : %s ', data)
 
-                    nb_jour = 0
-                    nb_jour_prorata = 0
-                    for i in [6, 8, 10]:
-                        if values[i] == '':
-                            values[i] = '0'
-                        nb_jour = nb_jour + int(values[i])
-                        if int(values[i])>0:
+
+                    # for i in [5,7,9]:
+                    #     if values[i]=='':
+                    #         values[i]='0'
+                    #     salaire = salaire + float('.'.join(str(x) for x in tuple(values[i].split(','))))
+
+                    # nb_jour = 0
+                    # nb_jour_prorata = 0
+                    # for i in [6, 8, 10]:
+                    #     if values[i] == '':
+                    #         values[i] = '0'
+                    #     nb_jour = nb_jour + int(values[i])
+                    #     if int(values[i])>0:
+                    #         nb_jour_prorata = nb_jour_prorata + 30
+
+                    # if not salaire == 0:
+                    for item in data:
+                        salaire = float(item['salaire'].strip() or 0)
+                        nb_jour = int(item['nb_jour'].strip() or 0)
+                        nb_jour_prorata = 0
+                        if nb_jour > 0:
                             nb_jour_prorata = nb_jour_prorata + 30
 
-                    if not salaire == 0:
                         vals.update({'nb_jour': nb_jour,
-                                     'salaire': salaire,
-                                     'type_id': self.type_id.id,
+                                     'salaire': salaire ,
+                                     'type_id': self.env.ref('ao_cmim.data_range_type_mensuel').id,
                                      'date_range_id': self.date_range_id.id,
                                      'nb_jour_prorata':nb_jour_prorata,
                                      })
 
-                        list_to_import.append(vals)
+                    list_to_import.append(vals)
                 elif self.type_id.id == self.env.ref('ao_cmim.data_range_type_mensuel').id:
                     sal1 = float('.'.join(str(x) for x in tuple(values[5].split(','))))
                     sal2 = float('.'.join(str(x) for x in tuple(values[7].split(','))))
@@ -192,18 +205,21 @@ class cmimImportDecPay(models.TransientModel):
         print '-------------------',self.statut_id.name
         print 'list_to_import', list_to_import
         for line in list_to_import:
-             declaration_obj = declaration_obj.create(line)
-             has_statut = self.env['cmim.position.statut'].search([('assure_id', '=', declaration_obj.assure_id.id),
-                                                                   ('statut_id', '=', self.statut_id.id)],
-                                                                  limit=1)
-             if has_statut:
-                 has_statut.write({'date_fin_appl': self.date_range_id.date_end})
-             else:
-                 declaration_obj.assure_id.write({'position_statut_ids': [(0, 0, {'date_debut_appl': self.date_range_id.date_start,
-                                                  'date_fin_appl': self.date_range_id.date_end,
-                                                  'statut_id': self.statut_id.id,
-                                                 })]})
-             ids.append(declaration_obj.id)
+            logging.info('###line ### : %s type: %s ', line['nb_jour'], type(line['nb_jour']))
+            logging.info('###line ### : %s ', line)
+            declaration = declaration_obj.create(line)
+            has_statut = self.env['cmim.position.statut'].search([('assure_id', '=', declaration.assure_id.id),
+                                                                  ('statut_id', '=', self.statut_id.id)],
+                                                                 limit=1)
+            if has_statut:
+                has_statut.write({'date_fin_appl': self.date_range_id.date_end})
+            else:
+                declaration.assure_id.write(
+                    {'position_statut_ids': [(0, 0, {'date_debut_appl': self.date_range_id.date_start,
+                                                     'date_fin_appl': self.date_range_id.date_end,
+                                                     'statut_id': self.statut_id.id,
+                                                     })]})
+            ids.append(declaration.id)
 
         if list_to_anomalie:
             logging.info('Assures abscents : %s ', list_to_anomalie)

@@ -44,6 +44,18 @@ class Cotisation(models.Model):
                 'view_id': 'account.invoice_form',
                 'target':'self',
                 }
+
+    @api.multi
+    def open_details(self):
+        return{
+                'res_model':'cmim.cotisation.assure.line',
+                'type': 'ir.actions.act_window',
+                'view_mode':'tree',
+                # 'views' : [(view_id, 'form'),(False, 'tree')],
+                'domain': [('id', 'in', self.cotisation_assure_ids.ids)],
+                'target':'self',
+                }
+
     @api.multi
     def _getmontant_total(self):
         for obj in self:
