@@ -13,7 +13,7 @@ class calcul_cotisation (models.TransientModel):
     # fiscal_date = fields.Integer(string=u"Année Comptable", required=True, default=datetime.now().year)
     date_range_id = fields.Many2one('date.range', u'Période',
                                     domain="[('type_id', '=', type_id), ('active', '=', True)]", required=True)
-    type_id = fields.Many2one('date.range.type', u'Type de péride', domain="[('active', '=', True)]", required=True)
+    type_id = fields.Many2one('date.range.type', u'Type de période', domain="[('active', '=', True)]", required=True, default=lambda self: self.env.ref('ao_cmim.data_range_type_trimestriel').id)
     collectivite_ids = fields.Many2many('res.partner', 'calcul_cotisation_collectivite', 'calcul_id', 'partner_id', "Collectivites", domain="[('type_entite', '=', 'c'), ('contrat_id', '!=', None), ('customer','=',True),('is_company','=',True)]", required=True)
 
     @api.onchange('date_range_id')

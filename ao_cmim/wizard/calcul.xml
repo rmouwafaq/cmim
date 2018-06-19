@@ -11,9 +11,7 @@
 					<br></br>
 					<group>
 						<group>
-							<field name="type_id"/>
-						</group>
-						<group>
+							<field name="type_id"  invisible="1"/>
 							<field name="date_range_id" />
 						</group>
 						<notebook colspan="4">

@@ -30,12 +30,11 @@
 							<field name="company_id" invisible="1" />
 							<field name="journal_id"
 								   attrs="{'invisible': [('type_operation','!=', 'reglement')], 'required': [('type_operation','=', 'reglement')]}" />
-							<field name="model" string="Périodicité"
-								attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')]}" />
-							<field name="type_id" widget="selection"
-								attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')]}" />
-							<field name="date_range_id"
-								attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')]}" />
+							<field name="model" string="Périodicité" invisible="1" />
+							<!--<field name="type_id" widget="selection"-->
+								<!--attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')]}" />-->
+							<field name="date_range_id" domain="[('type_id.name','=', 'Trimestriel')]"
+								attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')],}" />
                             </group>
 						<group>
 							<field name="data" />
