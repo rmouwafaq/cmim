@@ -1,54 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-	<data>
-		<record id="view_date_range_type_tree" model="ir.ui.view">
-			<field name="name">date.range.type.tree.inh</field>
-			<field name="model">date.range.type</field>
-			<field name="inherit_id" ref="date_range.view_date_range_type_tree" />
-			<field name="arch" type="xml">
-				<field name="name" position="after" >
-					<field name="nb_days"/>
-				</field>
-			</field>
-    	</record>
-		<record id="view_date_range_type_form" model="ir.ui.view">
-			<field name="name">date.range.type.form</field>
-			<field name="model">date.range.type</field>
-			<field name="arch" type="xml">
-				<form>
-					<group>
-						<group>
-							<field name="name"/>
-							<field name="allow_overlap"/>
-						</group>
-						<group>
-							<field name="nb_days" />
-							<field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
-							<field name="active"/>
-						</group>
-					</group>
-				</form>
-			</field>
-		</record>
-		<record id="view_date_range_tree" model="ir.ui.view">
-			<field name="name">date.range.tree.inherited</field>
-			<field name="model">date.range</field>
-			<field name="inherit_id" ref="date_range.view_date_range_tree" />
-			<field name="arch" type="xml">
-				<field name="type_id" position="replace">
-					<field name="type_id" options="{'no_create': False, 'no_open':True}" />
-				</field>
-			</field>
-		</record>
-		<record id="date_range_generator_view_form" model="ir.ui.view">
-			<field name="name">date.range.generator.form.inherited</field>
-			<field name="model">date.range.generator</field>
-			<field name="inherit_id" ref="date_range.date_range_generator_view_form" />
-			<field name="arch" type="xml">
-				<field name="type_id" position="replace">
-					<field name="type_id" options="{'no_create': False, 'no_open':True}" />
-				</field>
-			</field>
-		</record>
-	</data>
+    <data>
+        <record id="view_date_range_form_view" model="ir.ui.view">
+            <field name="name">date.range.form</field>
+            <field name="model">date.range</field>
+            <field name="inherit_id" ref="date_range.view_date_range_form_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="parent_id"/>
+                </field>
+                <group  position="after">
+                    <button name="generate_childs" type="object" string="generate" class="oe_highlight"/>
+                    <field name="child_id"/>
+                </group>
+            </field>
+        </record>
+
+        <record id="view_date_range_type_tree" model="ir.ui.view">
+            <field name="name">date.range.type.tree.inh</field>
+            <field name="model">date.range.type</field>
+            <field name="inherit_id" ref="date_range.view_date_range_type_tree"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="nb_days"/>
+                </field>
+            </field>
+        </record>
+        <record id="view_date_range_type_form" model="ir.ui.view">
+            <field name="name">date.range.type.form</field>
+            <field name="model">date.range.type</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="allow_overlap"/>
+                        </group>
+                        <group>
+                            <field name="nb_days"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="view_date_range_tree" model="ir.ui.view">
+            <field name="name">date.range.tree.inherited</field>
+            <field name="model">date.range</field>
+            <field name="inherit_id" ref="date_range.view_date_range_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="editable"/>
+                </xpath>
+                <field name="type_id" position="replace">
+                    <field name="type_id" options="{'no_create': False, 'no_open':True}"/>
+                </field>
+            </field>
+        </record>
+        <record id="date_range_generator_view_form" model="ir.ui.view">
+            <field name="name">date.range.generator.form.inherited</field>
+            <field name="model">date.range.generator</field>
+            <field name="inherit_id" ref="date_range.date_range_generator_view_form"/>
+            <field name="arch" type="xml">
+                <field name="type_id" position="replace">
+                    <field name="type_id" options="{'no_create': False, 'no_open':True}"/>
+                </field>
+            </field>
+        </record>
+    </data>
 </odoo>

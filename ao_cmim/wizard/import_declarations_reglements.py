@@ -33,7 +33,7 @@ class cmimImportDecPay(models.TransientModel):
     header = fields.Boolean(u'Entête', default=True)
     date_range_id = fields.Many2one('date.range', u'Période',
                                     domain="[('active', '=', True)]", required=True)
-    type_id = fields.Many2one('date.range.type', u'Type de péride', domain=lambda self: self._get_domain(),
+    type_id = fields.Many2one('date.range.type', u'Type de péride', default=lambda self: self.env.ref('ao_cmim.data_range_type_trimestriel').id,
                               required=True)
 
     def _get_domain(self):
@@ -63,147 +63,76 @@ class cmimImportDecPay(models.TransientModel):
     def import_declarations(self, reader_info):
         declaration_obj = self.env['cmim.declaration']
         partner_obj = self.env['res.partner']
-        collectivite_id = self.env['res.partner']
         list_to_import = []
         list_to_anomalie = []
-        record_col = self.collectivite_id
 
         ids = []
-        if self.model == "old":
-            for i in range(len(reader_info)):
-                values = reader_info[i]
-                salaire = float('.'.join(str(x) for x in tuple(values[6].split(','))))
-                if not salaire == 0:
-                    collectivite_id = collectivite_id.search([('code', '=', values[0])])
-                    state = 'valide'
-                    if collectivite_id:
-                        partner_obj = partner_obj.search([('numero', '=', values[3]), ('type_entite', '=', 'a')])
-                        if partner_obj and len(partner_obj) > 1:
-                            state = 'non_valide'
-                            partner_obj = partner_obj[0]
-                        elif not partner_obj:
-                            partner_obj = partner_obj.create({'type_entite': 'a',
-                                                              'company_type': 'person',
-                                                              'customer': True,
-                                                              'name': '%s %s' % (values[4], values[5]),
-                                                              'id_num_famille': values[2],
-                                                              'numero': values[3],
-                                                              'import_flag': True,
-                                                              })
-                        if not declaration_obj.search([('assure_id', '=', partner_obj.id),
-                                                       ('collectivite_id', '=', collectivite_id.id),
-                                                       ('date_range_id', '=', self.date_range_id.id)]):
-                            list_to_import.append({
-                                'collectivite_id': collectivite_id.id,
-                                'assure_id': partner_obj.id,
-                                'nb_jour': values[7],
-                                'salaire': salaire,
-                                'import_flag': True,
-                                'type_id': self.type_id.id,
-                                'date_range_id': self.date_range_id.id,
-                                'state': state})
 
-        elif self.model == "sep":
-            for i in range(len(reader_info)):
-                values = reader_info[i]
-                partner_obj = partner_obj.search([('numero', '=', values[0])])
-
-                if not partner_obj:
-                    partner_obj = partner_obj.create({'type_entite': 'a',
-                                                      'company_type': 'person',
-                                                      'customer': True,
-                                                      'name': '%s %s' % (values[1], values[2]),
-                                                      'id_num_famille': '',
-                                                      'numero': values[0],
-                                                      'import_flag': True,
-                                                      })
-               #else:
-                #    assure_id = partner_obj[0].id
-
-                vals = {'collectivite_id': self.collectivite_id.id,
-                        'assure_id': partner_obj[0].id,
-                        'import_flag': True,
-                        'state': 'valide'
-                        }
-                if self.type_id.id == self.env.ref('ao_cmim.data_range_type_trimestriel').id:
-                    # logging.info('###values### : %s %s %s',values[5],values[7],values[9])
-                    salaire = 0
-                    for i in [5,7,9]:
-                        if values[i]=='':
-                            values[i]='0'
-                        salaire = salaire + float('.'.join(str(x) for x in tuple(values[i].split(','))))
-
-                    nb_jour = 0
-                    nb_jour_prorata = 0
-                    for i in [6, 8, 10]:
-                        if values[i] == '':
-                            values[i] = '0'
-                        nb_jour = nb_jour + int(values[i])
-                        if int(values[i])>0:
-                            nb_jour_prorata = nb_jour_prorata + 30
-
-                    if not salaire == 0:
-                        vals.update({'nb_jour': nb_jour,
-                                     'salaire': salaire,
-                                     'type_id': self.type_id.id,
-                                     'date_range_id': self.date_range_id.id,
-                                     'nb_jour_prorata':nb_jour_prorata,
-                                     })
-
-                        list_to_import.append(vals)
-                elif self.type_id.id == self.env.ref('ao_cmim.data_range_type_mensuel').id:
-                    sal1 = float('.'.join(str(x) for x in tuple(values[5].split(','))))
-                    sal2 = float('.'.join(str(x) for x in tuple(values[7].split(','))))
-                    sal3 = float('.'.join(str(x) for x in tuple(values[9].split(','))))
-                    date_range_ids = self.env['date.range'].search([('active', '=', True),
-                                                                    ('type_id', '=', self.type_id.id),
-                                                                    ('date_start', '>=', self.date_range_id.date_start),
-                                                                    ('date_end', '<=', self.date_range_id.date_end)
-                                                                    ],
-                                                                   limit=3)
-                    if date_range_ids and len(date_range_ids) == 3:
-                        if not sal1 == 0:
-                            vals.update({'nb_jour': values[6],
-                                         'salaire': sal1,
-                                         'type_id': self.type_id.id,
-                                         'date_range_id': date_range_ids[0].id,
-                                         })
-                            list_to_import.append(vals)
-                        if not sal2 == 0:
-                            vals.update({'nb_jour': values[8],
-                                         'salaire': sal2,
-                                         'type_id': self.type_id.id,
-                                         'date_range_id': date_range_ids[1].id,
-                                         })
-                            list_to_import.append(vals)
-                        if not sal3 == 0:
-                            vals.update({'nb_jour': values[10],
-                                         'salaire': sal3,
-                                         'type_id': self.type_id.id,
-                                         'date_range_id': date_range_ids[2].id,
-                                         })
-                            list_to_import.append(vals)
+        dates = []
+        if self.date_range_id.child_id and len(self.date_range_id.child_id) == 3:
+            for i in range(3):
+                dates.append(self.date_range_id.child_id[i])
+                logging.info('###pd ### : %s ', self.date_range_id.child_id[i].name)
 
 
+        for i in range(len(reader_info)):
+            values = reader_info[i]
+            data = [{'date':dates[0] ,'salaire': values[5], 'nb_jour': values[6]},
+                    {'date':dates[1] ,'salaire': values[7], 'nb_jour': values[8]},
+                    {'date':dates[2] ,'salaire': values[9], 'nb_jour': values[10]}
+                    ]
+            partner_obj = partner_obj.search([('numero', '=', values[0])])
+
+            if not partner_obj:
+                partner_obj = partner_obj.create({'type_entite': 'a',
+                                                  'company_type': 'person',
+                                                  'customer': True,
+                                                  'name': '%s %s' % (values[1], values[2]),
+                                                  'id_num_famille': '',
+                                                  'numero': values[0],
+                                                  'import_flag': True,
+                                                  })
+
+            vals = {'collectivite_id': self.collectivite_id.id,
+                    'assure_id': partner_obj[0].id,
+                    'import_flag': True,
+                    'state': 'valide'
+                    }
+
+            for item in data:
+                values ={}
+                salaire = float(item['salaire'].strip() or 0)
+                nb_jour = int(item['nb_jour'].strip() or 0)
+                nb_jour_prorata = 0
+                if nb_jour > 0:
+                    nb_jour_prorata = nb_jour_prorata + 30
+
+                values.update({'nb_jour': nb_jour,
+                             'salaire': salaire ,
+                             'type_id': item['date'].type_id.id,
+                             'date_range_id': item['date'].id,
+                             'nb_jour_prorata':nb_jour_prorata,
+                             })
+
+                list_to_import.append(dict(vals.items() + values.items()))
 
         #self.statut_id = self.env.ref('ao_cmim.epd').id if self.is_epd else self.env.ref('ao_cmim.act').id
         self.statut_id = self.env.ref('ao_cmim.act').id
 
-        print '-------------------',self.statut_id.name
-        print 'list_to_import', list_to_import
         for line in list_to_import:
-             declaration_obj = declaration_obj.create(line)
-             has_statut = self.env['cmim.position.statut'].search([('assure_id', '=', declaration_obj.assure_id.id),
-                                                                   ('statut_id', '=', self.statut_id.id)],
-                                                                  limit=1)
-             if has_statut:
-                 has_statut.write({'date_fin_appl': self.date_range_id.date_end})
-             else:
-                 declaration_obj.assure_id.write({'position_statut_ids': [(0, 0, {'date_debut_appl': self.date_range_id.date_start,
-                                                  'date_fin_appl': self.date_range_id.date_end,
-                                                  'statut_id': self.statut_id.id,
-                                                 })]})
-             ids.append(declaration_obj.id)
+            declaration = declaration_obj.create(line)
+            has_statut = self.env['cmim.position.statut'].search([('assure_id', '=', declaration.assure_id.id),
+                                                                  ('statut_id', '=', self.statut_id.id)],
+                                                                 limit=1)
+            if has_statut:
+                has_statut.write({'date_fin_appl': self.date_range_id.date_end})
+            else:
+                declaration.assure_id.write(
+                    {'position_statut_ids': [(0, 0, {'date_debut_appl': self.date_range_id.date_start,
+                                                     'date_fin_appl': self.date_range_id.date_end,
+                                                     'statut_id': self.statut_id.id,
+                                                     })]})
+            ids.append(declaration.id)
 
         if list_to_anomalie:
             logging.info('Assures abscents : %s ', list_to_anomalie)
