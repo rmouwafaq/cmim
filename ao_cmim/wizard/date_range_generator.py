@@ -35,7 +35,7 @@ class DateRangeGenerator(models.TransientModel):
             dt_end = vals[idx + 1].date() - relativedelta(days=1)
             date_end = fields.Date.to_string(dt_end)
             date_ranges.append({
-                'name': u'%s - %s' % (dt_start.strftime("%B"), dt_start.strftime("%Y")),
+                'name': u'%s - %s' % (dt_start.strftime("%B").decode('utf-8'), dt_start.strftime("%Y").decode('utf-8')),
                 'date_start': date_start,
                 'date_end': date_end,
                 'type_id': self.env.ref('ao_cmim.data_range_type_mensuel').id,
