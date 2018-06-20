@@ -301,6 +301,8 @@ class calcul_cotisation (models.TransientModel):
 
                 for declaration_id in declaration_ids:
                     # for i in range(len(declaration_ids)):
+                    if declaration_id.salaire ==0 :
+                        continue
                     res = self.calcul_per_collectivite(declaration_id, col.contrat_id.contrat_line_ids, dict_tarifs)
                     cotisation_dict['cotisation_assure_ids'].extend(res)
                     # if i == 2:

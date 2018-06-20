@@ -10,7 +10,7 @@
                     <field name="parent_id"/>
                 </field>
                 <group  position="after">
-                    <button name="generate_childs" type="object" string="generate" class="oe_highlight"/>
+                    <!--<button name="generate_childs" type="object" string="generate" class="oe_highlight"/>-->
                     <field name="child_id"/>
                 </group>
             </field>
