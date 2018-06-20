@@ -109,8 +109,8 @@
 		<record id="action_declaration" model="ir.actions.act_window">
 			<field name="name">Déclarations des salaires</field>
 			<field name="res_model">cmim.declaration</field>
-			<field name="context">{'group_by':['type_id','state','date_range_id']}
-			</field>
+			<!--<field name="context">{'group_by':['type_id','state','date_range_id']}</field>-->
+			<field name="context">{'search_default_date_range_id': 1,'search_default_type_id': 1}</field>
 			<field name="view_id" ref="declaration_tree_view" />
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form</field>

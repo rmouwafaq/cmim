@@ -72,8 +72,6 @@ class cmimImportDecPay(models.TransientModel):
         if self.date_range_id.child_id and len(self.date_range_id.child_id) == 3:
             for i in range(3):
                 dates.append(self.date_range_id.child_id[i])
-                logging.info('###pd ### : %s ', self.date_range_id.child_id[i].name)
-
 
         for i in range(len(reader_info)):
             values = reader_info[i]

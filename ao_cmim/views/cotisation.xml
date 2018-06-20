@@ -2,8 +2,28 @@
 <openerp>
     <data>
 
+        <record id="cotisation_assure_line_search_view" model="ir.ui.view">
+			<field name="name">cmim.cotisation.assure.line.search</field>
+			<field name="model">cmim.cotisation.assure.line</field>
+			<field name="arch" type="xml">
+				<search>
+					<field name="assure_id" />
+					<group expand="0" string="Group By">
+						<filter name="assure_id" string="Assuré" domain="[]"
+							context="{'group_by':'assure_id'}" />
+                        <filter name="product_id" string="Produit" domain="[]"
+							context="{'group_by':'product_id'}" />
+						<filter name="date_range_id" string="Période" domain="[]"
+							context="{'group_by':'date_range_id'}" />
+						<filter name="type_id" string="Type de période" domain="[]"
+							context="{'group_by':'type_id'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+
         <record id="cotisation_assure_line_tree_view" model="ir.ui.view">
-            <field name="name">cmim.cotisation.assure.linee</field>
+            <field name="name">cmim.cotisation.assure.line</field>
             <field name="model">cmim.cotisation.assure.line</field>
             <field name="arch" type="xml">
                 <tree>
