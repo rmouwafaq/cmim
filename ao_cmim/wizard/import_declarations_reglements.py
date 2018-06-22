@@ -73,6 +73,8 @@ class cmimImportDecPay(models.TransientModel):
             for i in range(3):
                 dates.append(self.date_range_id.child_id[i])
 
+        self.check_declaration(self.collectivite_id,self.date_range_id)
+
         for i in range(len(reader_info)):
             values = reader_info[i]
             data = [{'date':dates[0] ,'salaire': values[5], 'nb_jour': values[6]},
@@ -229,3 +231,13 @@ class cmimImportDecPay(models.TransientModel):
             elif self.type_operation == 'reglement':
                 return self.import_reglements(reader_info)
 
+    @api.multi
+    def check_declaration(self,collectivite,periode):
+        """ Fonction pour supprimer les anciennes declarations sur la meme période"""
+        declarations = self.env['cmim.declaration'].search([('collectivite_id.id', '=', collectivite.id),
+                                                               ('date_range_id.date_start', '>=',periode.date_start),
+                                                               ('date_range_id.date_end', '<=',periode.date_end),
+                                                               ('cotisation_id', '=', None),
+                                                               ('state', '=', 'valide')])
+        if declarations:
+            declarations.unlink()
