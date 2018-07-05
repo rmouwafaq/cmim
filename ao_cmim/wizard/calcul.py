@@ -227,7 +227,9 @@ class calcul_cotisation (models.TransientModel):
         srp = self.env.ref('ao_cmim.cte_calcul_srp')
         result = {}
         if cnss and srp:
-            proratat = float(declaration_id.nb_jour / float(declaration_id.nb_jour_prorata))
+            proratat = 1
+            if declaration_id.nb_jour_prorata > 0:
+                proratat = float(declaration_id.nb_jour / float(declaration_id.nb_jour_prorata))
             salaire = declaration_id.salaire
 
             plancher, plafond = declaration_id.secteur_id.plancher_mensuel, declaration_id.secteur_id.plafond_mensuel
