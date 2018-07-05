@@ -156,10 +156,10 @@ class calcul_cotisation (models.TransientModel):
             prorata_plafond = float(declaration_id.nb_jour_prorata/ float(declaration_id.date_range_id.type_id.nb_days))
             #proratat = float(declaration_id.nb_jour / float(declaration_id.date_range_id.type_id.nb_days))
             proratat = 1
-            if declaration_id.nb_jour_prorata>0:
+            if declaration_id.nb_jour_prorata > 0:
                 proratat = float(declaration_id.nb_jour / float(declaration_id.nb_jour_prorata))
             p_salaire = declaration_id.salaire * proratat
-            plancher, plafond= 0.0, 0.0
+            plancher, plafond = 0.0, 0.0
             val_cnss, val_srp = 0.0, 0.0
             if declaration_id.date_range_id.type_id.id == self.env.ref('ao_cmim.data_range_type_trimestriel').id:
                 plancher, plafond = declaration_id.secteur_id.plancher*prorata_plafond, declaration_id.secteur_id.plafond*prorata_plafond
@@ -192,6 +192,23 @@ class calcul_cotisation (models.TransientModel):
                 p_base_calcul = p_salaire
                 p_base_trancheA = p_salaire
                 p_base_trancheB = p_salaire
+
+            logging.info('################# Assur : %s ', declaration_id.assure_id.name)
+            logging.info({
+                        'salaire': declaration_id.salaire,
+                        'nb_jour': declaration_id.nb_jour,
+                        'nb_jour_proratat': declaration_id.nb_jour_prorata,
+                        'proratat': proratat,
+                        'plancher': plancher,
+                        'plafond' : plafond,
+                        'base_calcul': base_calcul,
+                        'base_trancheA': base_trancheA,
+                        'base_trancheB': base_trancheB,
+                        'p_base_calcul': p_base_calcul,
+                        'p_base_trancheA': p_base_trancheA,
+                        'p_base_trancheB': p_base_trancheB,
+                        'p_salaire': p_salaire,
+                       })
         else:
             raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
         result.update({'base_calcul': base_calcul,
@@ -205,11 +222,69 @@ class calcul_cotisation (models.TransientModel):
                        })
         return result
 
+    def get_base_calcul2(self, declaration_id ):
+        cnss = self.env.ref('ao_cmim.cte_calcul_cnss')
+        srp = self.env.ref('ao_cmim.cte_calcul_srp')
+        result = {}
+        if cnss and srp:
+            proratat = float(declaration_id.nb_jour / float(declaration_id.nb_jour_prorata))
+            salaire = declaration_id.salaire
+
+            plancher, plafond = declaration_id.secteur_id.plancher_mensuel, declaration_id.secteur_id.plafond_mensuel
+            CNSS = cnss.val_mensuelle
+
+            PLF_TRA = CNSS * proratat
+            PLF_TRB = (CNSS * 2) * proratat
+            PLF_TRC = (CNSS * 4) * proratat
+
+            base_trancheA = 0
+            base_trancheB = 0
+            base_trancheC = 0
+
+            if not declaration_id.secteur_id.is_complementary:
+                if salaire < PLF_TRA:
+                    base_trancheA = float(max(salaire, plancher))
+
+                elif salaire < PLF_TRB:
+                    base_trancheA = PLF_TRA
+                    base_trancheB = salaire - PLF_TRA
+
+                elif salaire < PLF_TRC:
+                    base_trancheA = PLF_TRA
+                    base_trancheB = PLF_TRB
+                    base_trancheC = salaire - PLF_TRB
+
+                else:
+                    base_trancheA = PLF_TRA
+                    base_trancheB = PLF_TRB
+                    base_trancheC = PLF_TRC
+            else:
+                base_calcul = declaration_id.salaire
+                base_trancheA = declaration_id.salaire
+                base_trancheB = declaration_id.salaire
+                p_base_calcul = p_salaire
+                p_base_trancheA = p_salaire
+                p_base_trancheB = p_salaire
+
+        else:
+            raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
+
+        result.update({'base_calcul': base_trancheB,
+                       'base_trancheA': base_trancheA,
+                       'base_trancheB': base_trancheC,
+                       'p_base_calcul': base_trancheB,
+                       'p_base_trancheA': base_trancheA,
+                       'p_base_trancheB': base_trancheC,
+                       'proratat': proratat,
+                       'p_salaire': salaire,
+                       })
+        return result
+
     @api.multi
     def calcul_per_collectivite(self, declaration_id, contrat_line_ids, dict_tarifs):
         cotisation_line_list = []
         dict_bases = {}
-        base_calcul = self.get_base_calcul(declaration_id)
+        base_calcul = self.get_base_calcul2(declaration_id)
         taux_abattement = self.get_taux_abattement(declaration_id)
         for contrat in contrat_line_ids:
 
@@ -246,7 +321,7 @@ class calcul_cotisation (models.TransientModel):
                             cotisation_line_dict['base'] = base_calcul.get('base_trancheB')
                     elif contrat.regle_id.regle_base_id.code == 'SALBRUT':
                         if contrat.regle_id.regle_base_id.applicabilite_proratat:
-                            cotisation_line_dict['base'] = base_calcul.get('p_salaire')
+                            cotisation_line_dict['base'] = base_calcul.get('salaire') * base_calcul.get('proratat')
                         else:
                             cotisation_line_dict['base'] = declaration_id.salaire
                     elif contrat.regle_id.regle_base_id and contrat.regle_id.regle_base_id.id in dict_bases.keys():
@@ -259,11 +334,9 @@ class calcul_cotisation (models.TransientModel):
                                              'montant_abattu' : mt * cotisation_line_dict['taux_abattement']})
 
                 if contrat.regle_id.type == 'trsc':
-                    logging.info('Contrat regle >>>>>: %s %s ', contrat.regle_id.type, contrat.regle_id.name)
                     rsc_assure_ids = declaration_id.assure_id.get_rsc(contrat.regle_id, declaration_id)
                     cotisation_line_dict.update({'montant_abattu ' : mt * cotisation_line_dict['taux_abattement'] *  len(rsc_assure_ids),
                                                  'nb_rsc' : len(rsc_assure_ids)})
-                    logging.info('regle de type trsc : %s %s %s ', contrat.regle_id.name,mt,len(rsc_assure_ids))
                 if cotisation_line_dict['montant_abattu'] !=0:
                     cotisation_line_list.append((0, 0, cotisation_line_dict))
                     dict_bases.update({
@@ -326,25 +399,3 @@ class calcul_cotisation (models.TransientModel):
         else:
             return True
 
-
-
-    #################### Code Obsolete ################################
-    # @api.multi
-    # def create_cotisation_product_lines(self, cotisation_obj):
-    #     cotisation_assure_lines = self.env['cmim.cotisation.assure.line'].search([('cotisation_id.id', '=', cotisation_obj.id)])
-    #     cotisation_product_obj = self.env['cmim.cotisation.product']
-    #     for line in cotisation_assure_lines:
-    #         cotisation_product_obj = cotisation_product_obj.search([('cotisation_id.id', '=', cotisation_obj.id),
-    #                                                                 ('product_id.id', '=', line.product_id.id),
-    #                                                                 ('code', '=', line.code)])
-    #
-    #         if(cotisation_product_obj):
-    #             cotisation_product_obj.write({'montant': cotisation_product_obj.montant + line.montant})
-    #         else:
-    #             cotisation_product_obj = cotisation_product_obj.create({'cotisation_id': cotisation_obj.id,
-    #                                                                     'product_id': line.product_id.id,
-    #                                                                     'code': line.code,
-    #                                                                     'montant' : line.montant
-    #                                                                     })
-    #             cotisation_obj.write({'cotisation_product_ids': [(4, cotisation_product_obj.id)]})
-    #     return True

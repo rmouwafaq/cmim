@@ -81,6 +81,8 @@ class cmimImportDecPay(models.TransientModel):
                     {'date':dates[1] ,'salaire': values[7], 'nb_jour': values[8]},
                     {'date':dates[2] ,'salaire': values[9], 'nb_jour': values[10]}
                     ]
+
+            # values[0] = int(values[0].replace(" ", ""))
             partner_obj = partner_obj.search([('numero', '=', values[0])])
 
             if not partner_obj:

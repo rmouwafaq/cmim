@@ -48,7 +48,7 @@ class Contrat(models.Model):
 
 class LigneContrat(models.Model):
     _name = 'cmim.contrat.line'
-    _order = 'regle_id_type asc'
+    _order = False
     @api.multi
     def get_name(self): 
         for obj in self:
@@ -56,5 +56,7 @@ class LigneContrat(models.Model):
     name = fields.Char('Nom', compute="get_name")
     product_id = fields.Many2one('product.template', "Produit", required=True)
     regle_id = fields.Many2one('cmim.regle.calcul', u'Règle de calcul', required=True, domain="[('type', 'in', ['tbase', 'trsc']),('reserved', '=', False), ('regle_tarif_id', '!=', None), ('regle_base_id', '!=', None)]")
-    regle_id_type = fields.Selection(related='regle_id.type', store=True)
-    regle_id_sequence = fields.Integer(related='regle_id.sequence', store=True)
+    regle_id_type = fields.Selection(related='regle_id.type', store=False)
+    regle_id_sequence = fields.Integer(related='regle_id.sequence', store=False)
+    tarif_id = fields.Many2one(related='regle_id.regle_tarif_id')
+    taux_tarif = fields.Float(related='tarif_id.default_tarif_id.montant')

@@ -10,6 +10,8 @@
 					<field name="name" />
 					<field name="product_id" />
 					<field name="regle_id" />
+					<field name="tarif_id" />
+					<!--<field name="taux_tarif" />-->
 				</tree>
 			</field>
 		</record>
@@ -56,6 +58,9 @@
 									<tree editable="buttom">
 										<field name="product_id" />
 										<field name="regle_id" />
+										<field name="regle_id_type" />
+										<field name="tarif_id" />
+										<field name="taux_tarif" />
 									</tree>
 								</field>
 							</page>
