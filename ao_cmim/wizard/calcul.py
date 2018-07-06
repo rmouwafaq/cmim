@@ -235,50 +235,51 @@ class calcul_cotisation (models.TransientModel):
             plancher, plafond = declaration_id.secteur_id.plancher_mensuel, declaration_id.secteur_id.plafond_mensuel
             CNSS = cnss.val_mensuelle
 
-            PLF_TRA = CNSS * proratat
-            PLF_TRB = (CNSS * 2) * proratat
-            PLF_TRC = (CNSS * 4) * proratat
+            PLF_BASE = CNSS * proratat
+            PLF_TRA = (CNSS * 2) * proratat
+            PLF_TRB = (CNSS * 4) * proratat
 
+            base_calcul = 0
             base_trancheA = 0
             base_trancheB = 0
-            base_trancheC = 0
+
+            base_calcul = min(float(plafond), max(float(plancher), float(salaire)))
 
             if not declaration_id.secteur_id.is_complementary:
-                if salaire < PLF_TRA:
-                    base_trancheA = float(max(salaire, plancher))
+                if salaire < PLF_BASE:
+                    base_calcul = float(max(salaire, plancher))
+
+                elif salaire < PLF_TRA:
+                    base_calcul = PLF_BASE
 
                 elif salaire < PLF_TRB:
+                    base_calcul = PLF_BASE
                     base_trancheA = PLF_TRA
-                    base_trancheB = salaire - PLF_TRA
-
-                elif salaire < PLF_TRC:
-                    base_trancheA = PLF_TRA
-                    base_trancheB = PLF_TRB
-                    base_trancheC = salaire - PLF_TRB
+                    base_trancheB = salaire - PLF_BASE
 
                 else:
+                    base_calcul = PLF_BASE
                     base_trancheA = PLF_TRA
                     base_trancheB = PLF_TRB
-                    base_trancheC = PLF_TRC
             else:
                 base_calcul = declaration_id.salaire
                 base_trancheA = declaration_id.salaire
                 base_trancheB = declaration_id.salaire
-                p_base_calcul = p_salaire
-                p_base_trancheA = p_salaire
-                p_base_trancheB = p_salaire
+                p_base_calcul = salaire * proratat
+                p_base_trancheA = salaire  * proratat
+                p_base_trancheB = salaire  * proratat
 
         else:
             raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
 
-        result.update({'base_calcul': base_trancheB,
-                       'base_trancheA': base_trancheA,
-                       'base_trancheB': base_trancheC,
-                       'p_base_calcul': base_trancheB,
-                       'p_base_trancheA': base_trancheA,
-                       'p_base_trancheB': base_trancheC,
+        result.update({'base_calcul': base_trancheA,
+                       'base_trancheA': base_calcul,
+                       'base_trancheB': base_trancheB,
+                       'p_base_calcul': base_trancheA,
+                       'p_base_trancheA': base_calcul,
+                       'p_base_trancheB': base_trancheB,
                        'proratat': proratat,
-                       'p_salaire': salaire,
+                       'p_salaire': salaire * proratat,
                        })
         return result
 
@@ -323,7 +324,7 @@ class calcul_cotisation (models.TransientModel):
                             cotisation_line_dict['base'] = base_calcul.get('base_trancheB')
                     elif contrat.regle_id.regle_base_id.code == 'SALBRUT':
                         if contrat.regle_id.regle_base_id.applicabilite_proratat:
-                            cotisation_line_dict['base'] = base_calcul.get('salaire') * base_calcul.get('proratat')
+                            cotisation_line_dict['base'] = base_calcul.get('p_salaire')
                         else:
                             cotisation_line_dict['base'] = declaration_id.salaire
                     elif contrat.regle_id.regle_base_id and contrat.regle_id.regle_base_id.id in dict_bases.keys():
