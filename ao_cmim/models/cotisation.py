@@ -53,6 +53,7 @@ class Cotisation(models.Model):
                 'view_mode':'tree',
                 # 'views' : [(view_id, 'form'),(False, 'tree')],
                 'domain': [('id', 'in', self.cotisation_assure_ids.ids)],
+                'context':{'search_default_group_assure_id': 1,'search_default_group_date_range_id': 1,},
                 'target':'self',
                 }
 
