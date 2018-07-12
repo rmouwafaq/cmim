@@ -239,7 +239,6 @@ class calcul_cotisation (models.TransientModel):
             PLF_TRA = (CNSS * 2) * proratat
             PLF_TRB = (CNSS * 4) * proratat
 
-            base_calcul = 0
             base_trancheA = 0
             base_trancheB = 0
 
@@ -287,7 +286,7 @@ class calcul_cotisation (models.TransientModel):
     def calcul_per_collectivite(self, declaration_id, contrat_line_ids, dict_tarifs):
         cotisation_line_list = []
         dict_bases = {}
-        base_calcul = self.get_base_calcul2(declaration_id)
+        base_calcul = self.get_base_calcul(declaration_id)
         taux_abattement = self.get_taux_abattement(declaration_id)
         for contrat in contrat_line_ids:
 
@@ -363,7 +362,7 @@ class calcul_cotisation (models.TransientModel):
                                    'type_id': self.type_id.id,
                                    'collectivite_id': col.id,
                                    'cotisation_assure_ids' : [],
-                                   'name': 'Cotisation Brouillon',
+                                   'name': col.name + ' ' + self.date_range_id.name,
                                     }
                 cotisation_dict.setdefault('cotisation_assure_ids', [])
                 declaration_ids = self.env['cmim.declaration'].search([('collectivite_id.id', '=', col.id),
