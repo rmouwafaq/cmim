@@ -10,7 +10,7 @@ class ConstanteCalcul(models.Model):
             raise UserError(
                 _(u"Impossible de supprimer des constantes de calcul réservées au système"))
         else:
-            return super(RegleCalcul, self).unlink()
+            return super(ConstanteCalcul, self).unlink()
          
     @api.multi
     def _get_val_trimestrielle(self):
