@@ -224,49 +224,54 @@ class calcul_cotisation (models.TransientModel):
 
     def get_base_calcul2(self, declaration_id ):
         cnss = self.env.ref('ao_cmim.cte_calcul_cnss')
-        srp = self.env.ref('ao_cmim.cte_calcul_srp')
+        # srp = self.env.ref('ao_cmim.cte_calcul_srp')
         result = {}
-        if cnss and srp:
+        if cnss :
             proratat = 1
             if declaration_id.nb_jour_prorata > 0:
                 proratat = float(declaration_id.nb_jour / float(declaration_id.nb_jour_prorata))
             salaire = declaration_id.salaire
 
-            plancher, plafond = declaration_id.secteur_id.plancher_mensuel, declaration_id.secteur_id.plafond_mensuel
             CNSS = cnss.val_mensuelle
-            SRP = srp.valeur
 
+            plancher = declaration_id.secteur_id.plancher_mensuel * proratat
             PLF_BASE = CNSS * proratat
             PLF_TRA = (CNSS * 2) * proratat
             PLF_TRB = (CNSS * 4) * proratat
+
+            salaire_plaf = salaire if proratat == 1 else salaire * proratat
 
             base_trancheB = 0
 
             if not declaration_id.secteur_id.is_complementary:
                 if salaire < plancher:
-                    base_calcul = plancher if proratat == 1 else plancher * proratat
-                    base_trancheA = salaire if proratat == 1 else salaire * proratat
+                    base_calcul = plancher
+                    base_trancheA = salaire_plaf
                     base_trancheB = salaire - base_trancheA
 
-                elif plancher < salaire < PLF_BASE and proratat != 1:
-                    base_calcul = base_trancheA = salaire * proratat
                 elif salaire < PLF_BASE:
-                    base_calcul = base_trancheA = salaire
+                    if plancher < salaire:
+                        base_calcul = salaire_plaf
+                    else:
+                        base_calcul = salaire
+
+                    base_trancheA = base_calcul
+                    base_trancheB = salaire - base_trancheA
+
                 elif salaire < PLF_TRA:
                     base_calcul = salaire
                     base_trancheA = PLF_BASE
-                    base_trancheB = salaire - PLF_BASE
+                    base_trancheB = salaire - base_trancheA
+
                 elif salaire < PLF_TRB:
                     base_calcul = PLF_TRA
                     base_trancheA = PLF_BASE
-                    base_trancheB = salaire - PLF_BASE
+                    base_trancheB = salaire - base_trancheA
+
                 else:
                     base_calcul = PLF_TRA
                     base_trancheA = PLF_BASE
-                    if salaire < SRP:
-                        base_trancheB = PLF_TRB if proratat == 1 else salaire - PLF_BASE
-                    else:
-                        base_trancheB = PLF_TRB
+                    base_trancheB = PLF_TRB
             else:
                 base_calcul = declaration_id.salaire
                 base_trancheA = declaration_id.salaire
@@ -286,6 +291,7 @@ class calcul_cotisation (models.TransientModel):
                        'p_base_trancheB': base_trancheB,
                        'proratat': proratat,
                        'p_salaire': salaire * proratat,
+                       'salaire_plaf':salaire_plaf
                        })
         return result
 
