@@ -250,11 +250,7 @@ class calcul_cotisation (models.TransientModel):
                     base_trancheB = salaire - base_trancheA
 
                 elif salaire < PLF_BASE:
-                    if plancher < salaire:
-                        base_calcul = salaire_plaf
-                    else:
-                        base_calcul = salaire
-
+                    base_calcul = salaire_plaf if plancher < salaire else salaire
                     base_trancheA = base_calcul
                     base_trancheB = salaire - base_trancheA
 
@@ -271,7 +267,7 @@ class calcul_cotisation (models.TransientModel):
                 else:
                     base_calcul = PLF_TRA
                     base_trancheA = PLF_BASE
-                    base_trancheB = PLF_TRB
+                    base_trancheB = PLF_TRB if (salaire - base_trancheA) > PLF_TRB else salaire - base_trancheA
             else:
                 base_calcul = declaration_id.salaire
                 base_trancheA = declaration_id.salaire
