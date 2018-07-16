@@ -234,23 +234,21 @@ class calcul_cotisation (models.TransientModel):
 
             CNSS = cnss.val_mensuelle
 
-            plancher = declaration_id.secteur_id.plancher_mensuel * proratat
+            plancher = declaration_id.secteur_id.plancher_mensuel
             PLF_BASE = CNSS * proratat
             PLF_TRA = (CNSS * 2) * proratat
             PLF_TRB = (CNSS * 4) * proratat
 
             salaire_plaf = salaire if proratat == 1 else salaire * proratat
 
-            base_trancheB = 0
-
             if not declaration_id.secteur_id.is_complementary:
                 if salaire < plancher:
-                    base_calcul = plancher
+                    base_calcul = plancher * proratat
                     base_trancheA = salaire_plaf
                     base_trancheB = salaire - base_trancheA
 
                 elif salaire < PLF_BASE:
-                    base_calcul = salaire_plaf if plancher < salaire else salaire
+                    base_calcul = salaire_plaf
                     base_trancheA = base_calcul
                     base_trancheB = salaire - base_trancheA
 
