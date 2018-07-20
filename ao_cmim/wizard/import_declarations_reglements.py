@@ -32,7 +32,7 @@ class cmimImportDecPay(models.TransientModel):
                                  domain="[('company_id', '=', company_id),('type', '=', 'bank')]", required=True)
     header = fields.Boolean(u'Entête', default=True)
     date_range_id = fields.Many2one('date.range', u'Période',
-                                    domain="[('active', '=', True)]", required=True)
+                                    domain="[('active', '=', True)]")
     type_id = fields.Many2one('date.range.type', u'Type de péride', default=lambda self: self.env.ref('ao_cmim.data_range_type_trimestriel').id,
                               required=True)
 
@@ -165,7 +165,8 @@ class cmimImportDecPay(models.TransientModel):
         for i in range(len(reader_info)):
             val = {}
             values = reader_info[i]
-            collectivite_obj = collectivite_obj.search([('code', '=', values[0])])
+            collectivite_obj = collectivite_obj.search([('code', '=', values[3])])
+            payment_date = date(int(values[2]),int(values[1]),int(values[0]))
             if (collectivite_obj):
                 vals = {'partner_id': collectivite_obj.id,
                         'journal_id': self.journal_id.id,
@@ -173,8 +174,9 @@ class cmimImportDecPay(models.TransientModel):
                         'payment_type': 'inbound',
                         'partner_type': 'customer',
                         'import_flag': True,
-                        'payment_date': self.payment_date,
-                        'amount': float('.'.join(str(x) for x in tuple(values[2].split(',')))),
+                        'payment_date': payment_date,
+                        'communication':values[4],
+                        'amount': float('.'.join(str(x) for x in tuple(values[5].split(',')))),
 
                         }
                 list_to_import.append(vals)
