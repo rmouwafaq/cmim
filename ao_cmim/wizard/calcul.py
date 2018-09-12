@@ -64,7 +64,7 @@ class calcul_cotisation (models.TransientModel):
             if param.regle_id.type== 'tabat' :
                 if param.tarif_id.type == 'f':
                     raise exceptions.Warning(
-                    _(u"L'abattement se base toujours sur des tarifs en pourcentage! Vérifiez le paramétrage des règles de calcul chez la collectivité %s" %declaration_id.collectivite_id.name))
+                    _(u"L'abattement se base toujours sur des tarifs en pourcentage! Vérifiez le paramétrage des règles de calcul de la collectivité %s" %declaration_id.collectivite_id.name))
             
                 elif self.get_applicabilite(param.regle_id, declaration_id):
                         mt -= param.tarif_id.montant
