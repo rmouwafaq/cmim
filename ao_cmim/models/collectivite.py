@@ -75,7 +75,10 @@ class ResPartner(models.Model):
                                             declaration_id.date_range_id.date_end)) > 0:
                 res.append(rsc)
         return rsc_ids
-                
+
+    def get_statut_by_periode(self, date_start, date_end):
+        return self.position_statut_ids.search([('assure_id','=',self.id), ('date_debut_appl','<=',date_start), ('date_fin_appl','>=',date_end)])
+
     @api.multi
     def create_lines(self):
         self.ensure_one() 

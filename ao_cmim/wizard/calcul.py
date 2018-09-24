@@ -296,6 +296,7 @@ class calcul_cotisation (models.TransientModel):
         dict_bases = {}
         base_calcul = self.get_base_calcul2(declaration_id)
         taux_abattement = self.get_taux_abattement(declaration_id)
+        statuts_assure = declaration_id.assure_id.get_statut_by_periode(declaration_id.date_range_id.date_start, declaration_id.date_range_id.date_end)
         for contrat in contrat_line_ids:
 
             if self.get_applicabilite(contrat.regle_id, declaration_id):
@@ -344,9 +345,11 @@ class calcul_cotisation (models.TransientModel):
                                              'montant_abattu' : mt * cotisation_line_dict['taux_abattement']})
 
                 if contrat.regle_id.type == 'trsc':
-                    rsc_assure_ids = declaration_id.assure_id.get_rsc(contrat.regle_id, declaration_id)
-                    cotisation_line_dict.update({'montant_abattu ' : mt * cotisation_line_dict['taux_abattement'] *  len(rsc_assure_ids),
-                                                 'nb_rsc' : len(rsc_assure_ids)})
+                    for statut in statuts_assure:
+                        if statut.statut_regime == 'rsc':
+                            # rsc_assure_ids = declaration_id.assure_id.get_rsc(contrat.regle_id, declaration_id)
+                            cotisation_line_dict.update({'montant_abattu ' : mt * cotisation_line_dict['taux_abattement'] * statut.nbr_cjt,
+                                                             'nb_rsc' : statut.nbr_cjt})
                 if cotisation_line_dict['montant_abattu'] !=0:
                     cotisation_line_list.append((0, 0, cotisation_line_dict))
                     dict_bases.update({

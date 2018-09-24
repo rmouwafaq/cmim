@@ -162,6 +162,8 @@
 								<field name="date_debut_appl" />
 								<field name="date_fin_appl" />
 								<field name="statut_id" />
+								<field name="statut_regime" invisible="1"/>
+								<field name="nbr_cjt" attrs="{'invisible' : [('statut_regime','=','n')]}"/>
 							</tree>
 						</field>
 					</page>

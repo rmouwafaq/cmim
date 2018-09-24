@@ -5,8 +5,10 @@ class ProductCMIM(models.Model):
     _name = 'cmim.position.statut'
 
     statut_id = fields.Many2one('cmim.statut.assure', required=True, string='Statut', domain = lambda self: self._get_statut_domain())
+    statut_regime = fields.Selection(related='statut_id.regime', store=False)
     date_debut_appl = fields.Date(string=u"Début applicabilité", required=True)
     date_fin_appl = fields.Date(string=u"Fin applicabilité", required=True)
+    nbr_cjt = fields.Integer(string=u'Nbr Conjt.',default=1)
     assure_id = fields.Many2one('res.partner', string=u'Assuré')
     
     def _get_statut_domain(self):
