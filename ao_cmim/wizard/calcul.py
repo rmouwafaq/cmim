@@ -138,7 +138,7 @@ class calcul_cotisation (models.TransientModel):
         else:
             test_applicabilite_date = False
         test_applicabilite_secteur_inverse = test_applicabilite_secteur if regle_id.secteur_inverse else test_applicabilite_secteur
-        return test_applicabilite_statut and test_applicabilite_secteur_inverse and test_applicabilite_dateres
+        return test_applicabilite_statut and test_applicabilite_secteur_inverse and test_applicabilite_date
     
     def get_montant_cotisation_line(self, tarif_id, base, montant):
         res = 0.0
