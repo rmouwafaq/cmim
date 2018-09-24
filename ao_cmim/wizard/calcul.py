@@ -140,12 +140,12 @@ class calcul_cotisation (models.TransientModel):
         test_applicabilite_secteur_inverse = test_applicabilite_secteur if regle_id.secteur_inverse else test_applicabilite_secteur
         return test_applicabilite_statut and test_applicabilite_secteur_inverse and test_applicabilite_dateres
     
-    def get_montant_cotisation_line(self, tarif_id, base):
+    def get_montant_cotisation_line(self, tarif_id, base, montant):
         res = 0.0
         if tarif_id.type == 'f':
-            res = tarif_id.montant
+            res = montant #tarif_id.montant
         else:
-            res = (base * tarif_id.montant) / 100
+            res = (base * montant) / 100
         return res
 
     def get_base_calcul(self, declaration_id ):
@@ -300,6 +300,7 @@ class calcul_cotisation (models.TransientModel):
         for contrat in contrat_line_ids:
 
             if self.get_applicabilite(contrat.regle_id, declaration_id):
+                # logging.info('#### regle : %s --> %s' % (contrat.regle_id.name, contrat.regle_id.type) )
                 selected_tarif_id = dict_tarifs.get(contrat.regle_id.regle_tarif_id.id)
                 if not selected_tarif_id:
                     selected_tarif_id = contrat.regle_id.regle_tarif_id.default_tarif_id
@@ -307,7 +308,7 @@ class calcul_cotisation (models.TransientModel):
                 cotisation_line_dict = {'declaration_id': declaration_id.id,
                                         'name': contrat.product_id.short_name,
                                         'contrat_line_id' : contrat.id,
-                                        'taux': selected_tarif_id.montant,
+                                        'taux': contrat.taux_tarif,
                                         'base': 1,
                                         'tarif_id': selected_tarif_id.id,
                                         'taux_abattement': taux_abattement if contrat.regle_id.applicabilite_abattement else 1,
@@ -340,7 +341,7 @@ class calcul_cotisation (models.TransientModel):
                     else:
                         cotisation_line_dict['base'] = 0
                         
-                mt = self.get_montant_cotisation_line(selected_tarif_id, cotisation_line_dict['base'])
+                mt = self.get_montant_cotisation_line(selected_tarif_id, cotisation_line_dict['base'],contrat.taux_tarif)
                 cotisation_line_dict.update({'montant': mt,
                                              'montant_abattu' : mt * cotisation_line_dict['taux_abattement']})
 
