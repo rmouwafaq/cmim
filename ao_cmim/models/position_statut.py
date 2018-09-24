@@ -12,7 +12,7 @@ class ProductCMIM(models.Model):
     assure_id = fields.Many2one('res.partner', string=u'Assuré')
     
     def _get_statut_domain(self):
-        return [('regime', '=', 'rsc')] if self._context.get('default_type_entite', False) == 'rsc' else [('regime', '=', 'n')]
+        return [('regime', '=', 'rsc')] if self._context.get('default_type_entite') == 'rsc' else [('regime', '=', 'n')]
 
     @api.model
     def create(self, vals):

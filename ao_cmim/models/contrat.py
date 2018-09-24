@@ -59,4 +59,9 @@ class LigneContrat(models.Model):
     regle_id_type = fields.Selection(related='regle_id.type', store=False)
     regle_id_sequence = fields.Integer(related='regle_id.sequence', store=False)
     tarif_id = fields.Many2one(related='regle_id.regle_tarif_id')
-    taux_tarif = fields.Float(related='tarif_id.default_tarif_id.montant')
+    taux_tarif = fields.Float('Taux')
+
+    @api.onchange('tarif_id')
+    def onchange_tarif(self):
+        if self.tarif_id:
+            self.taux_tarif = self.tarif_id.default_tarif_id.montant
