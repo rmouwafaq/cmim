@@ -259,7 +259,7 @@ class calcul_cotisation (models.TransientModel):
                     base_trancheB = salaire - base_trancheA
 
                 elif salaire < PLF_TRB:
-                    base_calcul = PLF_TRA
+                    base_calcul = plafond #PLF_TRA
                     base_trancheA = PLF_BASE
                     base_trancheB = salaire - base_trancheA
 
