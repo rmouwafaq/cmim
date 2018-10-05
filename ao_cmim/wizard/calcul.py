@@ -235,7 +235,7 @@ class calcul_cotisation (models.TransientModel):
             CNSS = cnss.val_mensuelle
 
             plancher = declaration_id.secteur_id.plancher_mensuel
-            plafond = declaration_id.secteur_id.plafond_mensuel
+            plafond = declaration_id.secteur_id.plafond_mensuel * proratat
             PLF_BASE = CNSS * proratat
             PLF_TRA = (CNSS * 2) * proratat
             PLF_TRB = (CNSS * 4) * proratat
