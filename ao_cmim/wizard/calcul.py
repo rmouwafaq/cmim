@@ -234,43 +234,43 @@ class calcul_cotisation (models.TransientModel):
 
             CNSS = cnss.val_mensuelle
 
-            plancher = declaration_id.secteur_id.plancher_mensuel
+            plancher = declaration_id.secteur_id.plancher_mensuel * proratat
             plafond = declaration_id.secteur_id.plafond_mensuel * proratat
             PLF_BASE = CNSS * proratat
-            PLF_TRA = plafond #(CNSS * 2) * proratat
-            PLF_TRB = (CNSS * 4) * proratat
+            PLF_TA = plafond #(CNSS * 2) * proratat
+            PLF_TB = (CNSS * 4) * proratat
 
             salaire_plaf = salaire if proratat == 1 else salaire * proratat
 
             if not declaration_id.secteur_id.is_complementary:
                 if salaire < plancher:
-                    base_calcul = plancher * proratat
-                    base_trancheA = salaire_plaf
-                    base_trancheB = salaire - base_trancheA
+                    AM = plancher
+                    TA = salaire_plaf
+                    TB = salaire - TA
 
                 elif salaire < PLF_BASE:
-                    base_calcul = salaire_plaf
-                    base_trancheA = base_calcul
-                    base_trancheB = salaire - base_trancheA
+                    AM = salaire_plaf
+                    TA = AM
+                    TB = salaire - TA
 
-                elif salaire < PLF_TRA:
-                    base_calcul = salaire
-                    base_trancheA = PLF_BASE
-                    base_trancheB = salaire - base_trancheA
+                elif salaire < PLF_TA:
+                    AM = salaire_plaf
+                    TA = PLF_BASE
+                    TB = salaire - TA
 
-                elif salaire < PLF_TRB:
-                    base_calcul = PLF_TRA
-                    base_trancheA = PLF_BASE
-                    base_trancheB = salaire - base_trancheA
+                elif salaire < PLF_TB:
+                    AM = PLF_TA
+                    TA = PLF_BASE
+                    TB = salaire - TA
 
                 else:
-                    base_calcul = PLF_TRA
-                    base_trancheA = PLF_BASE
-                    base_trancheB = PLF_TRB if (salaire - base_trancheA) > PLF_TRB else salaire - base_trancheA
+                    AM = PLF_TA
+                    TA = PLF_BASE
+                    TB = PLF_TB if (salaire - TA) > PLF_TB else salaire - TA
             else:
-                base_calcul = declaration_id.salaire
-                base_trancheA = declaration_id.salaire
-                base_trancheB = declaration_id.salaire
+                AM = declaration_id.salaire
+                TA = declaration_id.salaire
+                TB = declaration_id.salaire
                 p_base_calcul = salaire * proratat
                 p_base_trancheA = salaire  * proratat
                 p_base_trancheB = salaire  * proratat
@@ -278,12 +278,12 @@ class calcul_cotisation (models.TransientModel):
         else:
             raise osv.except_osv(_('Error!'), _(u"Veuillez vérifier la configuration des constantes de calcul" ))
 
-        result.update({'base_calcul': base_calcul,
-                       'base_trancheA': base_trancheA,
-                       'base_trancheB': base_trancheB,
-                       'p_base_calcul': base_calcul,
-                       'p_base_trancheA': base_trancheA,
-                       'p_base_trancheB': base_trancheB,
+        result.update({'base_calcul': AM,
+                       'base_trancheA': TA,
+                       'base_trancheB': TB,
+                       'p_base_calcul': AM,
+                       'p_base_trancheA': TA,
+                       'p_base_trancheB': TB,
                        'proratat': proratat,
                        'p_salaire': salaire * proratat,
                        'salaire_plaf':salaire_plaf
