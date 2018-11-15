@@ -249,7 +249,7 @@ class calcul_cotisation (models.TransientModel):
                     TB = salaire - TA
 
                 elif salaire < PLF_BASE:
-                    AM = salaire_plaf
+                    AM = salaire
                     TA = AM
                     TB = salaire - TA
 
