@@ -245,7 +245,7 @@ class calcul_cotisation (models.TransientModel):
             if not declaration_id.secteur_id.is_complementary:
                 if salaire < plancher:
                     AM = plancher
-                    TA = salaire_plaf
+                    TA = salaire
                     TB = salaire - TA
 
                 elif salaire < PLF_BASE:
