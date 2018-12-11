@@ -121,7 +121,7 @@ class Cotisation(models.Model):
 class cotisation_assure_line(models.Model):
     _name = 'cmim.cotisation.assure.line'
     _description = "Lignes ou details du calcul des cotisations_assure"
-    _order = 'assure_id, product_name desc'
+    _order = 'assure_id, date_range_id, product_name desc'
     
     cotisation_id = fields.Many2one('cmim.cotisation', string='Cotisation',  ondelete='cascade')
     declaration_id = fields.Many2one('cmim.declaration', string=u'Déclaration')
