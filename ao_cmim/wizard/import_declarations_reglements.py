@@ -41,16 +41,16 @@ class cmimImportDecPay(models.TransientModel):
                 ('id', 'in', [self.env.ref('ao_cmim.data_range_type_trimestriel').id,
                               self.env.ref('ao_cmim.data_range_type_mensuel').id])]
 
-    @api.onchange('type_id', 'type_operation', 'model')
-    def onchange_type_id(self):
-        if self.type_operation == 'declaration':
-            if self.model == 'old' and self.type_id:
-                return {'domain': {'date_range_id': [('active', '=', True),
-                                                     ('type_id', '=', self.type_id.id)]}}
-            elif self.model == 'sep':
-                return {'domain': {'date_range_id': [('active', '=', True),
-                                                     ('type_id', '=',
-                                                      self.env.ref('ao_cmim.data_range_type_trimestriel').id)]}}
+    # @api.onchange('type_id', 'type_operation', 'model')
+    # def onchange_type_id(self):
+    #     if self.type_operation == 'declaration':
+    #         if self.model == 'old' and self.type_id:
+    #             return {'domain': {'date_range_id': [('active', '=', True),
+    #                                                  ('type_id', '=', self.type_id.id)]}}
+    #         elif self.model == 'sep':
+    #             return {'domain': {'date_range_id': [('active', '=', True),
+    #                                                  ('type_id', '=',
+    #                                                   self.env.ref('ao_cmim.data_range_type_trimestriel').id)]}}
 
     def _default_journal(self):
         domain = [
@@ -77,10 +77,14 @@ class cmimImportDecPay(models.TransientModel):
 
         for i in range(len(reader_info)):
             values = reader_info[i]
-            data = [{'date':dates[0] ,'salaire': values[5], 'nb_jour': values[6]},
-                    {'date':dates[1] ,'salaire': values[7], 'nb_jour': values[8]},
-                    {'date':dates[2] ,'salaire': values[9], 'nb_jour': values[10]}
-                    ]
+            if self.type_id.name == 'Trimestriel':
+                data = [{'date':dates[0] ,'salaire': values[5], 'nb_jour': values[6]},
+                        {'date':dates[1] ,'salaire': values[7], 'nb_jour': values[8]},
+                        {'date':dates[2] ,'salaire': values[9], 'nb_jour': values[10]}
+                        ]
+            else:
+                data = [{'date': self.date_range_id, 'salaire': values[5], 'nb_jour': values[6]}
+                        ]
 
             # values[0] = int(values[0].replace(" ", ""))
             partner_obj = partner_obj.search([('numero', '=', values[0])])

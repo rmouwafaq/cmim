@@ -102,7 +102,6 @@ class ResPartner(models.Model):
     @api.multi
     @api.depends('declaration_ids')
     def get_last_collectivite(self):
-        print 'get_last_collectivite'
         for obj in self:
             if obj.type_entite == 'c':
                 obj.collectivite_id = False
@@ -120,7 +119,6 @@ class ResPartner(models.Model):
     ###################
     @api.model
     def update_assure(self):
-        print 'CRON CRON'
         for ass in self.search([('type_entite', '=', 'a'), ('statut_id', '!=', False), ('numero', '!=', 0)]):
             ass.write({
                        'statut_ids' : [(4,ass.statut_id.id)],

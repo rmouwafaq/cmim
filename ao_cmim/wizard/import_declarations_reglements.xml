@@ -33,9 +33,11 @@
 							<field name="model" string="Périodicité" invisible="1" />
 							<!--<field name="type_id" widget="selection"-->
 								<!--attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')]}" />-->
-							<field name="date_range_id" domain="[('type_id.name','=', 'Trimestriel')]"
+							<!--<field name="date_range_id" domain="[('type_id','=', type_id)]"-->
+								<!--attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')],}" />-->
+							<field name="date_range_id" domain="[('type_id.name','=', 'Mensuel')]"
 								attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')],}" />
-                            </group>
+						</group>
 						<group>
 							<field name="data" />
 							<field name="header"/>

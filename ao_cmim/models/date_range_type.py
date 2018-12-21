@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class DateRange(models.Model):
     _inherit = "date.range"
+    _order = "date_end desc"
     parent_id = fields.Many2one('date.range','Parent')
     child_id = fields.One2many('date.range', 'parent_id', 'Child')
 
