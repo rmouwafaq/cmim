@@ -44,7 +44,7 @@
 								<field name="collectivite_ids" widget="many2many" />
 							</page>
 							<page string="Lignes de contrat">
-								<field name="contrat_line_ids" widget="many2many">
+								<field name="contrat_line_ids" >
 									<form>
 										<group>
 											<group>
@@ -56,6 +56,7 @@
 										</group>
 									</form>
 									<tree editable="buttom">
+										<field name="sequence" widget="handle"/>
 										<field name="product_id" />
 										<field name="regle_id" />
 										<field name="regle_id_type" />
@@ -107,7 +108,7 @@
 			<field name="name">Lignes de Contrats</field>
 			<field name="res_model">cmim.contrat.line</field>
 			<field name="view_type">form</field>
-			<field name="view_mode">tree,form,kanban</field>
+			<field name="view_mode">tree,form</field>
 			<field name="view_id" ref="view_contrat_ligne_tree" />
 		</record>
 	</data>
