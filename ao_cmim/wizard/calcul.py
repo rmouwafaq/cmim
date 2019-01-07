@@ -193,7 +193,6 @@ class calcul_cotisation (models.TransientModel):
                 p_base_trancheA = p_salaire
                 p_base_trancheB = p_salaire
 
-            logging.info('################# Assur : %s ', declaration_id.assure_id.name)
             logging.info({
                         'salaire': declaration_id.salaire,
                         'nb_jour': declaration_id.nb_jour,
@@ -298,9 +297,7 @@ class calcul_cotisation (models.TransientModel):
         taux_abattement = self.get_taux_abattement(declaration_id)
         statuts_assure = declaration_id.assure_id.get_statut_by_periode(declaration_id.date_range_id.date_start, declaration_id.date_range_id.date_end)
         for contrat in contrat_line_ids:
-
             if self.get_applicabilite(contrat.regle_id, declaration_id):
-                # logging.info('#### regle : %s --> %s' % (contrat.regle_id.name, contrat.regle_id.type) )
                 selected_tarif_id = dict_tarifs.get(contrat.regle_id.regle_tarif_id.id)
                 if not selected_tarif_id:
                     selected_tarif_id = contrat.regle_id.regle_tarif_id.default_tarif_id

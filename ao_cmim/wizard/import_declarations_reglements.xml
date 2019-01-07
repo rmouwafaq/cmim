@@ -1,69 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-	<data>
-		<record id="view_import_dec_pay" model="ir.ui.view">
-			<field name="name">cmim.import.dec.pay.form</field>
-			<field name="model">cmim.import.dec.pay</field>
-			<field name="type">form</field>
-			<field name="arch" type="xml">
-				<form string="Import Declarations Paiements">
-					<br></br>
-					<span attrs="{'invisible': [('type_operation','!=', 'declaration')]}">
-					<pre class="oe_grey" attrs="{'invisible': [('model','!=', 'sep')]}" >
-						<!--La périodicité Trimestrielle est utilisée pour les déclarations qui émanent de du nouveau système.-->
-						<!--Les assuérs sont identifiés par leurs matricules <strong>id num personne</strong>, et le salaire est déclaré par mois.-->
-						<!--Le format de fichier exigé est le suivant:-->
-						
-						<center><img src='/ao_cmim/static/src/img/new_dec.jpg'   style="max-width: 100%;"/></center>
-					</pre>
-					<pre class="oe_grey" attrs="{'invisible': [('model','!=', 'old')]}" >
-						<!--La périodicité Trimestrielle est utilisée pour les déclarations qui émanent de l'ancien système.-->
-						<!--Les assuérs sont identifiés par leurs <strong>id num famille</strong>, et le salaire déclaré concerne bien tout le trimestre en totalité.-->
-						<!--Le format de fichier exigé est le suivant:-->
-						<!---->
-						<center><img src='/ao_cmim/static/src/img/old_dec.jpg' style="max-width: 100%; " /></center>
-					</pre>
-					</span>
-					<group>
-						<group>
-							<field name="type_operation"/>
-							<field name="company_id" invisible="1" />
-							<field name="journal_id"
-								   attrs="{'invisible': [('type_operation','!=', 'reglement')], 'required': [('type_operation','=', 'reglement')]}" />
-							<field name="model" string="Périodicité" invisible="1" />
-							<!--<field name="type_id" widget="selection"-->
-								<!--attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')]}" />-->
-							<!--<field name="date_range_id" domain="[('type_id','=', type_id)]"-->
-								<!--attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')],}" />-->
-							<field name="date_range_id" domain="[('type_id.name','=', 'Mensuel')]"
-								attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')],}" />
-						</group>
-						<group>
-							<field name="data" />
-							<field name="header"/>
-							<field name="payment_date"
-								attrs="{'invisible': [('type_operation','!=', 'reglement')]}" />
-                            <field name="collectivite_id"
-								   attrs="{'invisible': [ '|',('model','!=', 'sep'),('type_operation','=', 'reglement')], 'required': [('type_operation','=', 'declaration'), ('model','=', 'sep')]}" />
+    <data>
+        <record id="view_import_dec_pay" model="ir.ui.view">
+            <field name="name">cmim.import.dec.pay.form</field>
+            <field name="model">cmim.import.dec.pay</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Import Declarations Paiements">
+                    <span attrs="{'invisible': [('type_operation','!=', 'declaration')]}">
+                        <pre class="oe_grey" attrs="{'invisible': [('model','!=', 'sep')]}">Le format du fichier de salaire à intégrer doit être un fichier CSV avec un séparateur ‘’|’’ respectant le format suivant
+                            <center>
+                                <img src='/ao_cmim/static/src/img/model_dec_mens.jpg' style="max-width: 100%;"/>
+                            </center>
+                        </pre>
+                        <pre class="oe_grey" attrs="{'invisible': [('model','!=', 'old')]}">
+                            <!--La périodicité Trimestrielle est utilisée pour les déclarations qui émanent de l'ancien système.-->
+                            <!--Les assuérs sont identifiés par leurs <strong>id num famille</strong>, et le salaire déclaré concerne bien tout le trimestre en totalité.-->
+                            <!--Le format de fichier exigé est le suivant:-->
+                            <!---->
+                            <center>
+                                <img src='/ao_cmim/static/src/img/model_dec_mens.jpg' style="max-width: 100%; "/>
+                            </center>
+                        </pre>
+                    </span>
+                    <group>
+                        <group>
+                            <field name="type_operation"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="journal_id"
+                                   attrs="{'invisible': [('type_operation','!=', 'reglement')], 'required': [('type_operation','=', 'reglement')]}"/>
+                            <field name="model" string="Périodicité" invisible="1"/>
+                            <!--<field name="type_id" widget="selection"-->
+                            <!--attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')]}" />-->
+                            <!--<field name="date_range_id" domain="[('type_id','=', type_id)]"-->
+                            <!--attrs="{'invisible': [('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')],}" />-->
+
                         </group>
-					</group>
-					<separator string="" colspan="4" />
-					<footer>
-						<button name="import_dec_pay" class="oe_highlight" string="Importer"
-							type="object" />
-						<button special="cancel" string="Annuler" />
-					</footer>
-				</form>
-			</field>
-		</record>
-		<record id="action_dec_pay_import" model="ir.actions.act_window">
-			<field name="name">Assistant d'intégration des données de la CMIM
-			</field>
-			<field name="res_model">cmim.import.dec.pay</field>
-			<field name="view_type">form</field>
-			<field name="view_id" ref="view_import_dec_pay" />
-			<field name="view_mode">tree,form,kanban</field>
-			<field name="target">new</field>
-		</record>
-	</data>
+                        <group>
+                            <field name="data"/>
+                            <field name="delimeter"/>
+                            <!--<field name="header"/>-->
+                            <field name="payment_date"
+                                   attrs="{'invisible': [('type_operation','!=', 'reglement')]}"/>
+
+                        </group>
+                    </group>
+                    <group string="Infos Fichier" attrs="{'invisible': [ '|',('data','=', False)]}">
+                        <field name="date_range_id" domain="[('type_id.name','=', 'Mensuel')]" readonly="1"
+                               attrs="{'invisible': ['|',('data','=', False),('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')],}"/>
+                        <field name="collectivite_id" readonly="1"
+                               attrs="{'invisible': [ '|',('data','=', False),('type_operation','=', 'reglement')], 'required': [('type_operation','=', 'declaration'), ('model','=', 'sep')]}"/>
+                        <field name="nombre_lignes" readonly="1"/>
+                    </group>
+                    <footer>
+                        <button name="import_dec_pay" class="oe_highlight" string="Importer"
+                                type="object"/>
+                        <button special="cancel" string="Annuler"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_dec_pay_import" model="ir.actions.act_window">
+            <field name="name">Assistant d'intégration des données de la CMIM
+            </field>
+            <field name="res_model">cmim.import.dec.pay</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_import_dec_pay"/>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="target">new</field>
+        </record>
+    </data>
 </odoo>

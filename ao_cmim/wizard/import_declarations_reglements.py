@@ -2,6 +2,7 @@
 from datetime import datetime
 from datetime import date
 from openerp import fields, models, exceptions, api, _
+from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import base64
 import csv
 import cStringIO
@@ -33,8 +34,9 @@ class cmimImportDecPay(models.TransientModel):
     header = fields.Boolean(u'Entête', default=True)
     date_range_id = fields.Many2one('date.range', u'Période',
                                     domain="[('active', '=', True)]")
-    type_id = fields.Many2one('date.range.type', u'Type de péride', default=lambda self: self.env.ref('ao_cmim.data_range_type_trimestriel').id,
+    type_id = fields.Many2one('date.range.type', u'Type de péride', default=lambda self: self.env.ref('ao_cmim.data_range_type_mensuel').id,
                               required=True)
+    nombre_lignes = fields.Integer('N° Lignes')
 
     def _get_domain(self):
         return [('active', '=', True),
@@ -51,6 +53,33 @@ class cmimImportDecPay(models.TransientModel):
     #             return {'domain': {'date_range_id': [('active', '=', True),
     #                                                  ('type_id', '=',
     #                                                   self.env.ref('ao_cmim.data_range_type_trimestriel').id)]}}
+
+    @api.onchange('data')
+    def onchange_file(self):
+        if self.data:
+            reader = self.read_file()
+            partner_obj = self.env['res.partner']
+            date_range_obj = self.env['date.range']
+            if reader:
+                entete = filter(lambda p: p[0] == 'ENTCHGSAL', reader)[0]
+                recap = filter(lambda p: p[0] == 'RECCHGSAL', reader)[0]
+                logging.info('#### entete : %s ' %entete)
+                logging.info('#### recap : %s ' %recap)
+                collectivite = partner_obj.search([('code','=',entete[1])])
+                self.collectivite_id = collectivite.id if collectivite else None
+                reader_date = datetime.strptime(entete[2], '%d/%M/%Y').date()
+                format_date = reader_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+                date_range = date_range_obj.search([('type_id','=',self.env.ref('ao_cmim.data_range_type_mensuel').id),
+                                                    ('date_start','<=',format_date),
+                                                    ('date_end','>=',format_date),
+                                                    ])
+                self.date_range_id = date_range.id if date_range else None
+                self.nombre_lignes = recap[1]
+            else:
+                self.collectivite_id =  None
+                self.date_range_id = None
+
+
 
     def _default_journal(self):
         domain = [
@@ -77,50 +106,51 @@ class cmimImportDecPay(models.TransientModel):
 
         for i in range(len(reader_info)):
             values = reader_info[i]
-            if self.type_id.name == 'Trimestriel':
-                data = [{'date':dates[0] ,'salaire': values[5], 'nb_jour': values[6]},
-                        {'date':dates[1] ,'salaire': values[7], 'nb_jour': values[8]},
-                        {'date':dates[2] ,'salaire': values[9], 'nb_jour': values[10]}
-                        ]
-            else:
-                data = [{'date': self.date_range_id, 'salaire': values[5], 'nb_jour': values[6]}
-                        ]
+            if values[0] == 'LIGCHGSAL':
+                if self.type_id.name == 'Trimestriel':
+                    data = [{'date':dates[0] ,'salaire': values[5], 'nb_jour': values[6]},
+                            {'date':dates[1] ,'salaire': values[7], 'nb_jour': values[8]},
+                            {'date':dates[2] ,'salaire': values[9], 'nb_jour': values[10]}
+                            ]
+                else:
+                    data = [{'date': self.date_range_id, 'nb_jour': values[6], 'salaire': values[7]}
+                            ]
 
-            # values[0] = int(values[0].replace(" ", ""))
-            partner_obj = partner_obj.search([('numero', '=', values[0])])
+                # values[0] = int(values[0].replace(" ", ""))
+                partner = partner_obj.search([('numero', '=', values[1])],limit=1)
 
-            if not partner_obj:
-                partner_obj = partner_obj.create({'type_entite': 'a',
-                                                  'company_type': 'person',
-                                                  'customer': True,
-                                                  'name': '%s %s' % (values[1], values[2]),
-                                                  'id_num_famille': '',
-                                                  'numero': values[0],
-                                                  'import_flag': True,
-                                                  })
+                if not partner:
+                    partner = partner_obj.create({'type_entite': 'a',
+                                                      'company_type': 'person',
+                                                      'customer': True,
+                                                      'name': '%s %s' % (values[2], values[3]),
+                                                      'id_num_famille': '',
+                                                      'numero': values[1],
+                                                      'import_flag': True,
+                                                      })
 
-            vals = {'collectivite_id': self.collectivite_id.id,
-                    'assure_id': partner_obj[0].id,
-                    'import_flag': True,
-                    'state': 'valide'
-                    }
+                vals = {'collectivite_id': self.collectivite_id.id,
+                        'assure_id': partner.id,
+                        'import_flag': True,
+                        'state': 'valide'
+                        }
 
-            for item in data:
-                values ={}
-                salaire = float(item['salaire'].strip() or 0)
-                nb_jour = int(item['nb_jour'].strip() or 0)
-                nb_jour_prorata = 0
-                if nb_jour > 0:
-                    nb_jour_prorata = nb_jour_prorata + 30
+                for item in data:
+                    values ={}
+                    salaire = float(item['salaire'].strip() or 0)
+                    nb_jour = int(item['nb_jour'].strip() or 0)
+                    nb_jour_prorata = 0
+                    if nb_jour > 0:
+                        nb_jour_prorata = nb_jour_prorata + 30
 
-                values.update({'nb_jour': nb_jour,
-                             'salaire': salaire ,
-                             'type_id': item['date'].type_id.id,
-                             'date_range_id': item['date'].id,
-                             'nb_jour_prorata':nb_jour_prorata,
-                             })
+                    values.update({'nb_jour': nb_jour,
+                                 'salaire': salaire ,
+                                 'type_id': item['date'].type_id.id,
+                                 'date_range_id': item['date'].id,
+                                 'nb_jour_prorata':nb_jour_prorata,
+                                 })
 
-                list_to_import.append(dict(vals.items() + values.items()))
+                    list_to_import.append(dict(vals.items() + values.items()))
 
         #self.statut_id = self.env.ref('ao_cmim.epd').id if self.is_epd else self.env.ref('ao_cmim.act').id
         self.statut_id = self.env.ref('ao_cmim.act').id
@@ -213,7 +243,7 @@ class cmimImportDecPay(models.TransientModel):
             ############################################################################
 
     @api.multi
-    def import_dec_pay(self):
+    def read_file(self):
         data = base64.b64decode(self.data)
         file_input = cStringIO.StringIO(data)
         file_input.seek(0)
@@ -228,16 +258,20 @@ class cmimImportDecPay(models.TransientModel):
             reader_info.extend(reader)
         except Exception:
             raise exceptions.Warning(_(u"Le fichier sélectionné n'est pas valide!"))
-        if self.header:
-            del reader_info[0]
+
         if (not self.env['res.partner'].search([('type_entite', '=', 'c')])):
             raise exceptions.Warning(_(
                 u"L'import des encaissements exige l'existances des collectivités dans le système, veuillez créer les collectivités en premier"))
-        else:
-            if self.type_operation == 'declaration':
-                return self.import_declarations(reader_info)
-            elif self.type_operation == 'reglement':
-                return self.import_reglements(reader_info)
+
+        return reader_info
+
+    @api.multi
+    def import_dec_pay(self):
+        reader_info = self.read_file()
+        if self.type_operation == 'declaration':
+            return self.import_declarations(reader_info)
+        elif self.type_operation == 'reglement':
+            return self.import_reglements(reader_info)
 
     @api.multi
     def check_declaration(self,collectivite,periode):
