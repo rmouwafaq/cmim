@@ -17,8 +17,8 @@ class cmimImportDecPay(models.TransientModel):
     _name = 'cmim.import.dec.pay'
 
     data = fields.Binary("Fichier", required=True)
-    delimeter = fields.Char('Delimeter', default=';',
-                            help='Default delimeter is ";"')
+    delimeter = fields.Char('Séparateur', default='|',
+                            help='Default delimeter is "|"')
     type_operation = fields.Selection(selection=[('declaration', u'Déclarations'), ('reglement', 'Encaissements')],
                                       required=True, string=u"Type d'opération", default='declaration')
     model = fields.Selection(selection=[('old', 'Ancien Format'), ('sep', 'Mois séparés')], string=u"Format de fichier",
