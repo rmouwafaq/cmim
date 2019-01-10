@@ -17,8 +17,8 @@ class cmimImportDecPay(models.TransientModel):
     _name = 'cmim.import.dec.pay'
 
     data = fields.Binary("Fichier", required=True)
-    delimeter = fields.Char('Séparateur', default='|',
-                            help='Default delimeter is "|"')
+    delimeter = fields.Char('Séparateur', default=';',
+                            help='Default delimeter is ";"')
     type_operation = fields.Selection(selection=[('declaration', u'Déclarations'), ('reglement', 'Encaissements')],
                                       required=True, string=u"Type d'opération", default='declaration')
     model = fields.Selection(selection=[('old', 'Ancien Format'), ('sep', 'Mois séparés')], string=u"Format de fichier",
@@ -63,11 +63,13 @@ class cmimImportDecPay(models.TransientModel):
             if reader:
                 entete = filter(lambda p: p[0] == 'ENTCHGSAL', reader)[0]
                 recap = filter(lambda p: p[0] == 'RECCHGSAL', reader)[0]
-                logging.info('#### entete : %s ' %entete)
-                logging.info('#### recap : %s ' %recap)
                 collectivite = partner_obj.search([('code','=',entete[1])])
-                self.collectivite_id = collectivite.id if collectivite else None
-                reader_date = datetime.strptime(entete[2], '%d/%M/%Y').date()
+                self.collectivite_id = collectivite.id if collectivite else False
+                # self.collectivite_id = collectivite.id if collectivite else partner_obj.create({'code':entete[1],
+                #                                                                                 'name':entete[1],
+                #                                                                                 'type_entite':'c',
+                #                                                                                 'company_type':'company'})
+                reader_date = datetime.strptime(entete[2], '%d/%m/%Y').date()
                 format_date = reader_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
                 date_range = date_range_obj.search([('type_id','=',self.env.ref('ao_cmim.data_range_type_mensuel').id),
                                                     ('date_start','<=',format_date),
@@ -75,9 +77,9 @@ class cmimImportDecPay(models.TransientModel):
                                                     ])
                 self.date_range_id = date_range.id if date_range else None
                 self.nombre_lignes = recap[1]
-            else:
-                self.collectivite_id =  None
-                self.date_range_id = None
+        else:
+            self.collectivite_id =  None
+            self.date_range_id = None
 
 
 

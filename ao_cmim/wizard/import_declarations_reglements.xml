@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <form string="Import Declarations Paiements">
                     <span attrs="{'invisible': [('type_operation','!=', 'declaration')]}">
-                        <pre class="oe_grey" attrs="{'invisible': [('model','!=', 'sep')]}">Le format du fichier de salaire à intégrer doit être un fichier CSV avec un séparateur ‘’|’’ respectant le format suivant
+                        <pre class="oe_grey" attrs="{'invisible': [('model','!=', 'sep')]}">Le format du fichier de salaire à intégrer doit être un fichier CSV avec un séparateur ‘’;’’ respectant le format suivant
                             <center>
                                 <img src='/ao_cmim/static/src/img/model_dec_mens.jpg' style="max-width: 100%;"/>
                             </center>
@@ -38,7 +38,7 @@
                         </group>
                         <group>
                             <field name="data"/>
-                            <field name="delimeter"/>
+                            <!--<field name="delimeter"/>-->
                             <!--<field name="header"/>-->
                             <field name="payment_date"
                                    attrs="{'invisible': [('type_operation','!=', 'reglement')]}"/>
@@ -46,9 +46,9 @@
                         </group>
                     </group>
                     <group string="Infos Fichier" attrs="{'invisible': [ '|',('data','=', False)]}">
-                        <field name="date_range_id" domain="[('type_id.name','=', 'Mensuel')]" readonly="1"
+                        <field name="date_range_id" domain="[('type_id.name','=', 'Mensuel')]"
                                attrs="{'invisible': ['|',('data','=', False),('type_operation','!=', 'declaration')], 'required': [('type_operation','=', 'declaration')],}"/>
-                        <field name="collectivite_id" readonly="1"
+                        <field name="collectivite_id"
                                attrs="{'invisible': [ '|',('data','=', False),('type_operation','=', 'reglement')], 'required': [('type_operation','=', 'declaration'), ('model','=', 'sep')]}"/>
                         <field name="nombre_lignes" readonly="1"/>
                     </group>
