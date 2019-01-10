@@ -146,7 +146,7 @@ class cmimImportDecPay(models.TransientModel):
                         nb_jour_prorata = nb_jour_prorata + 30
 
                     values.update({'nb_jour': nb_jour,
-                                 'salaire': salaire ,
+                                 'salaire': salaire/100 ,
                                  'type_id': item['date'].type_id.id,
                                  'date_range_id': item['date'].id,
                                  'nb_jour_prorata':nb_jour_prorata,
