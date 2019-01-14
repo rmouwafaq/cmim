@@ -8,8 +8,8 @@ class Contrat(models.Model):
     description = fields.Char('Description', required=True)
     collectivite_ids = fields.One2many('res.partner', 'contrat_id', string=u'Collectivités',
                                        domain=[('customer', '=', True), ('type_entite', '=', 'c'), ('is_company', '=', True)])
-    contrat_line_ids = fields.One2many('cmim.contrat.line','contrat_id', string="Lignes de contrat", required=True)
-    name = fields.Char('Nom', readonly=True)  
+    contrat_line_ids = fields.One2many('cmim.contrat.line','contrat_id', string="Lignes de contrat", required=True, copy=True)
+    name = fields.Char('Nom', readonly=True, copy=False)
     notes = fields.Text('Notes')   
     
     @api.multi
