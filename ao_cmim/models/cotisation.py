@@ -19,6 +19,7 @@ class Cotisation(models.Model):
     date_range_id = fields.Many2one('date.range', u'Période',
                                     domain="[('type_id', '=', type_id), ('active', '=', True)]", required=True)
     type_id = fields.Many2one('date.range.type', u'Type de péride', domain="[('active', '=', True)]", required=True)
+
     @api.onchange('date_range_id')
     def onchange_date_range_id(self):
         if self.date_range_id:
@@ -107,7 +108,7 @@ class Cotisation(models.Model):
         if not journal_id:
             raise UserError(_('Veuillez definir un compte journal pour votre Ste.'))
         invoice_vals = {
-            'name': self.collectivite_id.name ,
+            'name': self.name,
             'origin':self.collectivite_id.name,
             'type': 'out_invoice',
             'account_id': self.collectivite_id.property_account_receivable_id.id,
@@ -118,7 +119,8 @@ class Cotisation(models.Model):
         }
         return invoice_vals
 
-class cotisation_assure_line(models.Model):
+
+class CotisationAssureLine(models.Model):
     _name = 'cmim.cotisation.assure.line'
     _description = "Lignes ou details du calcul des cotisations_assure"
     _order = 'assure_id, date_range_id, product_name desc'
@@ -161,13 +163,15 @@ class cotisation_assure_line(models.Model):
                                                                     'montant' : self.montant_abattu
                                                                     })
         self.cotisation_id.write({'cotisation_product_ids': [(4, cotisation_product_obj.id)]})
+
     @api.model
     def create(self, vals):
-        cotisation_line =  super(cotisation_assure_line, self).create(vals)
+        cotisation_line =  super(CotisationAssureLine, self).create(vals)
         cotisation_line.update_cotisation_product()
         return cotisation_line
 
-class cotisation_product(models.Model):
+
+class CotisationProduct(models.Model):
     _name = 'cmim.cotisation.product'
     _description = "Lignes ou details du calcul des cotisations_produit"
 

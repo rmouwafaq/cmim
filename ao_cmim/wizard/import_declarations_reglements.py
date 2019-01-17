@@ -56,30 +56,31 @@ class cmimImportDecPay(models.TransientModel):
 
     @api.onchange('data')
     def onchange_file(self):
-        if self.data:
-            reader = self.read_file()
-            partner_obj = self.env['res.partner']
-            date_range_obj = self.env['date.range']
-            if reader:
-                entete = filter(lambda p: p[0] == 'ENTCHGSAL', reader)[0]
-                recap = filter(lambda p: p[0] == 'RECCHGSAL', reader)[0]
-                collectivite = partner_obj.search([('code','=',entete[1])])
-                self.collectivite_id = collectivite.id if collectivite else False
-                # self.collectivite_id = collectivite.id if collectivite else partner_obj.create({'code':entete[1],
-                #                                                                                 'name':entete[1],
-                #                                                                                 'type_entite':'c',
-                #                                                                                 'company_type':'company'})
-                reader_date = datetime.strptime(entete[2], '%d/%m/%Y').date()
-                format_date = reader_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-                date_range = date_range_obj.search([('type_id','=',self.env.ref('ao_cmim.data_range_type_mensuel').id),
-                                                    ('date_start','<=',format_date),
-                                                    ('date_end','>=',format_date),
-                                                    ])
-                self.date_range_id = date_range.id if date_range else None
-                self.nombre_lignes = recap[1]
-        else:
-            self.collectivite_id =  None
-            self.date_range_id = None
+        if self.type_operation == 'declaration':
+            if self.data:
+                reader = self.read_file()
+                partner_obj = self.env['res.partner']
+                date_range_obj = self.env['date.range']
+                if reader:
+                    entete = filter(lambda p: p[0] == 'ENTCHGSAL', reader)[0]
+                    recap = filter(lambda p: p[0] == 'RECCHGSAL', reader)[0]
+                    collectivite = partner_obj.search([('code','=',entete[1])])
+                    self.collectivite_id = collectivite.id if collectivite else False
+                    self.collectivite_id = collectivite.id if collectivite else partner_obj.create({'code':entete[1],
+                                                                                                    'name':entete[1],
+                                                                                                    'type_entite':'c',
+                                                                                                    'company_type':'company'})
+                    reader_date = datetime.strptime(entete[2], '%d/%m/%Y').date()
+                    format_date = reader_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+                    date_range = date_range_obj.search([('type_id','=',self.env.ref('ao_cmim.data_range_type_mensuel').id),
+                                                        ('date_start','<=',format_date),
+                                                        ('date_end','>=',format_date),
+                                                        ])
+                    self.date_range_id = date_range.id if date_range else None
+                    self.nombre_lignes = recap[1]
+            else:
+                self.collectivite_id =  None
+                self.date_range_id = None
 
 
 
@@ -194,17 +195,17 @@ class cmimImportDecPay(models.TransientModel):
     @api.multi
     def import_reglements(self, reader_info):
         collectivite_obj = self.env['res.partner']
-        codes = [int(reader_info[i][0]) for i in range(len(reader_info))]
+        # codes = [int(reader_info[i][0]) for i in range(len(reader_info))]
         list_to_import = []
         ids = []
         account_obj = self.env['account.payment']
         for i in range(len(reader_info)):
             val = {}
             values = reader_info[i]
-            collectivite_obj = collectivite_obj.search([('code', '=', values[3])])
+            collectivite = collectivite_obj.search([('code', '=', values[3])])
             payment_date = date(int(values[2]),int(values[1]),int(values[0]))
-            if (collectivite_obj):
-                vals = {'partner_id': collectivite_obj.id,
+            if (collectivite):
+                vals = {'partner_id': collectivite.id,
                         'journal_id': self.journal_id.id,
                         'payment_method_id': 1,
                         'payment_type': 'inbound',
@@ -212,7 +213,7 @@ class cmimImportDecPay(models.TransientModel):
                         'import_flag': True,
                         'payment_date': payment_date,
                         'communication':values[4],
-                        'amount': float('.'.join(str(x) for x in tuple(values[5].split(',')))),
+                        'amount': float('.'.join(str(x).replace(" ", "") for x in tuple(values[5].split(',')))),
 
                         }
                 list_to_import.append(vals)
@@ -256,6 +257,7 @@ class cmimImportDecPay(models.TransientModel):
             delimeter = ';'
         reader = csv.reader(file_input, delimiter=delimeter,
                             lineterminator='\r\n')
+
         try:
             reader_info.extend(reader)
         except Exception:
@@ -273,6 +275,7 @@ class cmimImportDecPay(models.TransientModel):
         if self.type_operation == 'declaration':
             return self.import_declarations(reader_info)
         elif self.type_operation == 'reglement':
+            reader_info.pop(0)
             return self.import_reglements(reader_info)
 
     @api.multi
