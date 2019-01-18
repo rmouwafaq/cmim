@@ -136,7 +136,7 @@ class ResPartner(models.Model):
                 'view_id': 'ao_cmim.view_assure_tree',
                 'target':'self',
                 'domain':[ 
-                          ('statut_id.code' , '!=', 'INACT'),
+                          # ('statut_id.code' , '!=', 'INACT'),
                           ('company_type' , '=', 'person'),
                           ('customer' , '=', True),
                           ('type_entite' , '=', 'a'),
