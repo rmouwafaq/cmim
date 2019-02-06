@@ -92,16 +92,20 @@ class calcul_cotisation (models.TransientModel):
         return test_applicabilite_statut
 
 
-    def get_statut_applicabilite(self, regle_id, declaration_id):
+    def get_statut_applicabilite(self, regle_id, declaration_id,applicabilite_statut):
+        if applicabilite_statut == 'all':
+            return True
+        else:
+            statuts = declaration_id.assure_id.get_statut_in_periode(regle_id.statut_ids.ids,
+                                                                     declaration_id.date_range_id.date_start,
+                                                                     declaration_id.date_range_id.date_end)
+            if applicabilite_statut == 'only':
+                return True if len(statuts) > 0 else False
 
-        statut_applicable = False
-        statuts = declaration_id.assure_id.get_statut_in_periode(regle_id.statut_ids.ids,
-                                                                 declaration_id.date_range_id.date_start,
-                                                                 declaration_id.date_range_id.date_end)
-        if len(statuts) > 0:
-            statut_applicable = True
+            if applicabilite_statut == 'exclude':
+                return False if len(statuts) > 0 else True
 
-        return statut_applicable
+
 
     def get_applicabilite(self, regle_id, declaration_id):
 
@@ -110,10 +114,8 @@ class calcul_cotisation (models.TransientModel):
         test_applicabilite_secteur = True
         test_applicabilite_secteur_inverse = True
         test_applicabilite_date = True
-        if not regle_id.statut_ids:
-            test_applicabilite_statut = True
-        else:
-            test_applicabilite_statut = self.get_statut_applicabilite(regle_id, declaration_id)
+
+        test_applicabilite_statut = self.get_statut_applicabilite(regle_id, declaration_id, regle_id.applicabilite_statut)
 
         if not regle_id.secteur_ids:
             test_applicabilite_secteur = True

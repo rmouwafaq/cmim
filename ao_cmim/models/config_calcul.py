@@ -65,7 +65,6 @@ class RegleCalcul(models.Model):
     secteur_inverse = fields.Boolean(u'Applicabilité inverse')
     secteur_ids = fields.Many2many('cmim.secteur', 'cmim_regle_calcul_secteur_rel', 'regle_id', 'secteur_id', string="Secteurs")
     garantie_ids = fields.Many2many('cmim.garantie', 'cmim_regle_calcul_garantie_rel', 'regle_id', 'garantie_id', string="Garanties Applicables")
-    statut_ids = fields.Many2many('cmim.statut.assure', 'regle_calcul_statut_rel', 'regle_id', 'statut_id',  string=u"Type de positions")
     default_tarif_id = fields.Many2one('cmim.tarif', string=u'Tarif par défaut',  ondelete = 'restrict')
     debut_applicabilite = fields.Date(u"Date début de validité")
     fin_applicabilite = fields.Date(u"Date fin de validité")
@@ -79,3 +78,8 @@ class RegleCalcul(models.Model):
                                         help=u"Les règles de calcul intermédaires servent à définir les bons tarifs tandis que les règles de calcul contractuelles définissent les bases de calul , le tarif pris en compte lors du calcul est soit le tarif associé à la règle intermédiaire dans le paramétrage de la collectivité, soit le tarif par défaut définit dans la règle de calcul contractuelle.")
     applicabilite_proratat = fields.Boolean(u'Applicabilité prorata', default=True)
     applicabilite_abattement = fields.Boolean(u'Applicabilité Abattement', default=False)
+    applicabilite_statut = fields.Selection([('all','Tout les statuts'),
+                                             ('only','Appliquable Pour'),
+                                             ('exclude','Exclure Pour')],string=u"Applicabilité statut",default='all')
+    statut_ids = fields.Many2many('cmim.statut.assure', 'regle_calcul_statut_rel', 'regle_id', 'statut_id',
+                                  string=u"Type de positions")
