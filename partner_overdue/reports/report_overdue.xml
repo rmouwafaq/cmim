@@ -15,7 +15,7 @@
                     <th>Date</th>
                     <th>Libellé</th>
                     <!--<th class="text-center">Due Date</th>-->
-                    <!--<th>Communication</th>-->
+                    <th>Communication</th>
                     <th class="text-right">Debit</th>
                     <th class="text-right">Credit</th>
                     <th class="text-right">Solde</th>
@@ -32,10 +32,10 @@
                 <!--<td>-->
                     <!--<span t-esc="line['date_maturity']"/>-->
                 <!--</td>-->
-                <!--<td>-->
-                    <!--<t t-if="line['name'] != '/'"><span t-esc="line['name']"/></t>-->
-                    <!--<span t-esc="line['ref']"/>-->
-                <!--</td>-->
+                <td>
+                    <t t-if="line['name'] != '/'"><span t-esc="line['name']"/></t>
+                    <span t-esc="line['ref']"/>
+                </td>
                 <td class="text-right">
                     <span t-esc="line['debit']" t-esc-options='{"widget": "monetary", "display_currency": "currency"}'/>
                 </td>
@@ -50,7 +50,7 @@
                 <!--</td>-->
             </tr>
             <tr>
-                <td colspan="1"></td>
+                <td colspan="2"></td>
                 <td class="text-right"><strong>Total :</strong></td>
                 <td class="text-right"><span t-esc="Totals[o.id][currency]['due']" t-esc-options='{"widget": "monetary", "display_currency": "currency"}'/></td>
                 <td class="text-right"><span t-esc="Totals[o.id][currency]['paid']" t-esc-options='{"widget": "monetary", "display_currency": "currency"}'/></td>

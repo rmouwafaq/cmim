@@ -2,14 +2,14 @@
 
 import time
 from openerp import api, fields, models
-
+import logging
 
 class ReportOverdue(models.AbstractModel):
     _inherit = 'report.account.report_overdue'
 
-    def _get_account_move_lines2(self, partner_ids):
+    def _get_account_move_lines(self, partner_ids):
         res = dict(map(lambda x:(x,[]), partner_ids))
-        self.env.cr.execute("SELECT m.name AS move_id, l.date, l.name, l.date_maturity, l.partner_id, l.blocked, l.amount_currency, l.currency_id, "
+        self.env.cr.execute("SELECT m.name AS move_id, l.date, l.name, l.ref, l.date_maturity, l.partner_id, l.blocked, l.amount_currency, l.currency_id, "
             "CASE WHEN at.type = 'receivable' "
                 "THEN SUM(l.debit) "
                 "ELSE SUM(l.credit * -1) "
@@ -26,8 +26,8 @@ class ReportOverdue(models.AbstractModel):
             "JOIN account_account_type at ON (l.user_type_id = at.id) "
             "JOIN account_move m ON (l.move_id = m.id) "
             "WHERE l.partner_id IN %s AND at.type IN ('receivable', 'payable') AND l.full_reconcile_id IS NULL "
-            # "GROUP BY m.name, l.date, l.name, at.type, l.move_id", (((fields.date.today(), ) + (tuple(partner_ids),))))
-            "GROUP BY l.date, l.name, l.ref, l.date_maturity, l.partner_id, at.type, l.blocked, l.amount_currency, l.currency_id, l.move_id, m.name", (((fields.date.today(), ) + (tuple(partner_ids),))))
+            "GROUP BY l.date, l.name, l.ref, l.date_maturity, l.partner_id, at.type, l.blocked, l.amount_currency, l.currency_id, l.move_id, m.name "
+            "ORDER BY l.date ASC ;", (((fields.date.today(), ) + (tuple(partner_ids),))))
         for row in self.env.cr.dictfetchall():
             res[row.pop('partner_id')].append(row)
         return res
@@ -65,6 +65,8 @@ class ReportOverdue(models.AbstractModel):
                     totals[partner_id][currency]['paid'] += line['credit']
                     totals[partner_id][currency]['mat'] += line['mat']
                     totals[partner_id][currency]['total'] += line['debit'] - line['credit']
+
+
         docargs = {
             'doc_ids': self.ids,
             'doc_model': 'res.partner',
