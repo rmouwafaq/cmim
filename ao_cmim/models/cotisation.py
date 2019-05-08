@@ -11,7 +11,7 @@ class Cotisation(models.Model):
     invoice_id = fields.Many2one('account.invoice', 'Facture', domain=[('type', '=', 'out_invoice')],  ondelete='cascade')
     cotisation_assure_ids = fields.One2many('cmim.cotisation.assure.line', 'cotisation_id', 'Ligne de calcul par assure')    
     cotisation_product_ids = fields.One2many('cmim.cotisation.product', 'cotisation_id', 'Ligne de calcul par produit')    
-    montant = fields.Float(compute="_getmontant_total", string='Montant')
+    montant = fields.Float(compute="_getmontant_total", string='Montant', store=True)
     state = fields.Selection(selection=[('draft', 'Brouillon'),('valide', 'Validee')],
                              required=True, string='Etat', default = 'draft')
     secteur_id = fields.Many2one('cmim.secteur', string='Secteur',related='collectivite_id.secteur_id', store=True)
@@ -59,6 +59,7 @@ class Cotisation(models.Model):
                 }
 
     @api.multi
+    @api.depends('cotisation_product_ids')
     def _getmontant_total(self):
         for obj in self:
             if(obj.cotisation_assure_ids):
