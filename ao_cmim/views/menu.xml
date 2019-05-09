@@ -1,128 +1,127 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-	<data>
-		<menuitem id="main_menu" name="Comptabilité CMIM" />
+    <data>
+        <menuitem id="main_menu" name="Comptabilité CMIM"/>
 
-		<menuitem id="col_assure_menu" name="Collectivités / Assurés"
-			parent="main_menu" sequence="1" />
+        <menuitem id="col_assure_menu" name="Collectivités / Assurés"
+                  parent="main_menu" sequence="1"/>
 
-		<menuitem id="collectivite_menu" name="Collectivités" action="action_collectivite"
-			parent="col_assure_menu" sequence="1"/>
-		<menuitem id="assure_menu" name="Assurés" action="action_assure"
-			parent="col_assure_menu" sequence="2"/>
-		<menuitem id="rsc_menu" name="RSC" action="action_assure_rsc"
-			parent="col_assure_menu" sequence="3"/>
-		<menuitem id="import_col_assure_menu" name="Importation collectivités/ Assurés"
-			action="action_col_assure_import" parent="col_assure_menu" sequence="4"/>
-
-
-		<menuitem id="declaration_cotisation_menu" name="Déclarations / Calculs"
-			parent="main_menu" sequence="2" />
-
-		<menuitem id="declaration_menu" name="Déclarations" action="action_declaration"
-			parent="declaration_cotisation_menu" sequence="1" />
-		<menuitem id="caclcul_menu" name="Calculs" action="action_calcul_cotisation"
-			parent="declaration_cotisation_menu" sequence="2" />
-		<menuitem id="cotisation_menu" name="Cotisations" action="action_cotisation"
-			parent="declaration_cotisation_menu" sequence="3" />
-		<menuitem id="validation_menu" name="Validations" action="action_validation"
-			parent="declaration_cotisation_menu" sequence="4" />
-		<menuitem id="import_dec_menu" name="Importation déclarations"
-			action="action_dec_pay_import" parent="declaration_cotisation_menu"
-			sequence="5" />
-		<menuitem id="import_assure_menu" name="Import Statut Assurés"
-			action="action_state_import" parent="declaration_cotisation_menu"
-			sequence="6" />
-
-		<menuitem id="facture_payement_menu" name="Factures et Réglements"
-			parent="main_menu" sequence="3" />
-
-		<menuitem id="facture_menu" name="Factures-Cotisations"
-			action="account.action_invoice_tree1" parent="facture_payement_menu"
-			sequence="4" />
-		<menuitem id="reglement_menu" name="Paiements" action="action_reglement"
-			parent="facture_payement_menu" sequence="5" />
-		<menuitem id="import_pay_menu" name="Importation Paiements"
-			action="action_dec_pay_import" parent="facture_payement_menu"
-			sequence="6" />
+        <menuitem id="collectivite_menu" name="Collectivités" action="action_collectivite"
+                  parent="col_assure_menu" sequence="1"/>
+        <menuitem id="assure_menu" name="Assurés" action="action_assure"
+                  parent="col_assure_menu" sequence="2"/>
+        <menuitem id="rsc_menu" name="RSC" action="action_assure_rsc"
+                  parent="col_assure_menu" sequence="3"/>
+        <menuitem id="import_col_assure_menu" name="Importation collectivités/ Assurés"
+                  action="action_col_assure_import" parent="col_assure_menu" sequence="4"
+                  groups="cmim_group_exploitation"/>
 
 
+        <menuitem id="declaration_cotisation_menu" name="Déclarations / Calculs"
+                  parent="main_menu" sequence="2"/>
 
-		<menuitem id="produit_menu" name="Produits" parent="main_menu" sequence="5" />
-		<menuitem id="produit_cmim_menu" name="Produits CMIM" parent="produit_menu"
-			action="action_produit" sequence="1" />
+        <menuitem id="declaration_menu" name="Déclarations" action="action_declaration"
+                  parent="declaration_cotisation_menu" sequence="1"/>
+        <menuitem id="caclcul_menu" name="Calculs" action="action_calcul_cotisation"
+                  parent="declaration_cotisation_menu" sequence="2" groups="cmim_group_exploitation"/>
+        <menuitem id="cotisation_menu" name="Cotisations" action="action_cotisation"
+                  parent="declaration_cotisation_menu" sequence="3"/>
+        <menuitem id="validation_menu" name="Validations" action="action_validation"
+                  parent="declaration_cotisation_menu" sequence="4" groups="cmim_group_exploitation"/>
+        <menuitem id="import_dec_menu" name="Importation déclarations"
+                  action="action_dec_pay_import" parent="declaration_cotisation_menu"
+                  sequence="5" groups="cmim_group_exploitation"/>
+        <menuitem id="import_assure_menu" name="Import Statut Assurés"
+                  action="action_state_import" parent="declaration_cotisation_menu"
+                  sequence="6" groups="cmim_group_exploitation"/>
 
+        <menuitem id="facture_payement_menu" name="Factures et Réglements"
+                  parent="main_menu" sequence="3"/>
 
-
-		<menuitem id="config_menu" name="Configuration" parent="main_menu" />
-		
-		<menuitem id="contrat_regle_config_menu" name="Contrats et règles"
-			sequence="1" parent="config_menu" />
-		<menuitem id="contrat_config_menu" name="Contrats"
-			sequence='1' action="action_contrat" parent="contrat_regle_config_menu" />
-<!-- 		<menuitem id="contrat_ligne_config_menu" name="Lignes de contrats" -->
-<!-- 			sequence='2' action="action_contrat_ligne" parent="contrat_regle_config_menu" /> -->
-		<menuitem id="regle_config_menu" name="Règles de calcul"
-			sequence='3' action="action_regle_calcul" parent="contrat_regle_config_menu" />
-		
-		<menuitem id="tarif_menu" name="Tarifs" action="action_tarif"
-			parent="contrat_regle_config_menu" />
-			
-		<menuitem id="cts_config_menu" name="Constantes de calcul"
-			sequence="2" action="action_constante_calcul" parent="config_menu" />
-		<menuitem id="secteur_menu" name="Secteurs" action="action_secteur"
-			parent="config_menu" sequence="3" />
-		<menuitem id="statut_assure_menu" name="Statut d'assurés" action="action_statut_assure"
-			parent="config_menu" sequence="5" />
-		<menuitem id="garantie_menu" name="Garanties" action="action_garantie"
-			parent="config_menu" sequence="6" />
-
-		<menuitem id="rapport_menu" name="Rapports" parent="main_menu"
-			sequence="6" />
-
-		<menuitem id="rentabilite_rapport_menu" name="Rapports de rentabilité"
-			parent="rapport_menu" />
-
-		<menuitem id="collectivite_rapport_menu" name="Collectivités"
-			parent="rentabilite_rapport_menu" action="action_rapport_correctifs" />
-		<menuitem id="produit_rapport_menu" name="Produits"
-			parent="rentabilite_rapport_menu" action="action_rapport_correctifs" />
+        <menuitem id="facture_menu" name="Factures-Cotisations"
+                  action="account.action_invoice_tree1" parent="facture_payement_menu"
+                  sequence="4"/>
+        <menuitem id="reglement_menu" name="Paiements" action="action_reglement"
+                  parent="facture_payement_menu" sequence="5"/>
+        <menuitem id="import_pay_menu" name="Importation Paiements"
+                  action="action_dec_pay_import" parent="facture_payement_menu"
+                  sequence="6" groups="cmim_group_exploitation"/>
 
 
-		<menuitem id="cotisation_rapport_menu" name="Rapports des Cotisations"
-			parent="rapport_menu" />
+        <menuitem id="produit_menu" name="Produits" parent="main_menu" sequence="5"/>
+        <menuitem id="produit_cmim_menu" name="Produits CMIM" parent="produit_menu"
+                  action="action_produit" sequence="1"/>
 
-		<menuitem id="collectivite_rapport_menu" name="Détails calcul par assurés"
-			parent="cotisation_rapport_menu" action="action_rapport_correctifs" />
-		<menuitem id="produit_rapport_menu" name="Détails calcul par produit"
-			parent="cotisation_rapport_menu" action="action_rapport_correctifs" />
 
-		<!-- Menu des période de date_range -->
-		<menuitem id="date_range.menu_date_range" name="Périodes"
-			parent="config_menu" sequence="1" />
+        <menuitem id="config_menu" name="Configuration" parent="main_menu" groups="base.group_no_one"/>
 
-		<record id="date_range_generator_action" model="ir.actions.act_window">
-			<field name="name">Génération des périodes</field>
-			<field name="type">ir.actions.act_window</field>
-			<field name="res_model">date.range.generator</field>
-			<field name="view_mode">form</field>
-			<field name="view_id" ref="date_range.date_range_generator_view_form" />
-			<field name="target">new</field>
-		</record>
-		<record id="date_range_action" model="ir.actions.act_window">
-			<field name="name">Périodes</field>
-			<field name="type">ir.actions.act_window</field>
-			<field name="res_model">date.range</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">tree,form</field>
-			<field name="view_id" ref="date_range.view_date_range_tree" />
-			<field name="domain">[]</field>
-			<field name="context">{}</field>
-		</record>
-		<menuitem action="date_range_action" id="date_range.menu_date_range_action"
-			parent="date_range.menu_date_range" sequence="1"/>
-		<menuitem action="date_range_generator_action"
-			id="date_range.menu_date_range_generator_action" sequence="100" parent="date_range.menu_date_range" />
+        <menuitem id="contrat_regle_config_menu" name="Contrats et règles"
+                  sequence="1" parent="config_menu"/>
+        <menuitem id="contrat_config_menu" name="Contrats"
+                  sequence='1' action="action_contrat" parent="contrat_regle_config_menu"/>
+        <!-- 		<menuitem id="contrat_ligne_config_menu" name="Lignes de contrats" -->
+        <!-- 			sequence='2' action="action_contrat_ligne" parent="contrat_regle_config_menu" /> -->
+        <menuitem id="regle_config_menu" name="Règles de calcul"
+                  sequence='3' action="action_regle_calcul" parent="contrat_regle_config_menu"/>
 
-	</data>
+        <menuitem id="tarif_menu" name="Tarifs" action="action_tarif"
+                  parent="contrat_regle_config_menu"/>
+
+        <menuitem id="cts_config_menu" name="Constantes de calcul"
+                  sequence="2" action="action_constante_calcul" parent="config_menu"/>
+        <menuitem id="secteur_menu" name="Secteurs" action="action_secteur"
+                  parent="config_menu" sequence="3"/>
+        <menuitem id="statut_assure_menu" name="Statut d'assurés" action="action_statut_assure"
+                  parent="config_menu" sequence="5"/>
+        <menuitem id="garantie_menu" name="Garanties" action="action_garantie"
+                  parent="config_menu" sequence="6"/>
+
+        <menuitem id="rapport_menu" name="Rapports" parent="main_menu"
+                  sequence="6"/>
+
+        <menuitem id="rentabilite_rapport_menu" name="Rapports de rentabilité"
+                  parent="rapport_menu"/>
+
+        <menuitem id="collectivite_rapport_menu" name="Collectivités"
+                  parent="rentabilite_rapport_menu" action="action_rapport_correctifs"/>
+        <menuitem id="produit_rapport_menu" name="Produits"
+                  parent="rentabilite_rapport_menu" action="action_rapport_correctifs"/>
+
+
+        <menuitem id="cotisation_rapport_menu" name="Rapports des Cotisations"
+                  parent="rapport_menu"/>
+
+        <menuitem id="collectivite_rapport_menu" name="Détails calcul par assurés"
+                  parent="cotisation_rapport_menu" action="action_rapport_correctifs"/>
+        <menuitem id="produit_rapport_menu" name="Détails calcul par produit"
+                  parent="cotisation_rapport_menu" action="action_rapport_correctifs"/>
+
+        <!-- Menu des période de date_range -->
+        <menuitem id="date_range.menu_date_range" name="Périodes"
+                  parent="config_menu" sequence="1"/>
+
+        <record id="date_range_generator_action" model="ir.actions.act_window">
+            <field name="name">Génération des périodes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">date.range.generator</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="date_range.date_range_generator_view_form"/>
+            <field name="target">new</field>
+        </record>
+        <record id="date_range_action" model="ir.actions.act_window">
+            <field name="name">Périodes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">date.range</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="date_range.view_date_range_tree"/>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+        </record>
+        <menuitem action="date_range_action" id="date_range.menu_date_range_action"
+                  parent="date_range.menu_date_range" sequence="1"/>
+        <menuitem action="date_range_generator_action"
+                  id="date_range.menu_date_range_generator_action" sequence="100" parent="date_range.menu_date_range"/>
+
+    </data>
 </openerp>

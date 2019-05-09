@@ -30,6 +30,15 @@ class declaration(models.Model):
     # nb_jour_prorata = totalise le nombre de mois travaille en jours ( 1 mois commence est un mois de 30 jours)
     nb_jour_prorata = fields.Integer(u'Prorata Jours déclarés', required=True)
 
+    @api.multi
+    def name_get(self):
+        # name = super(declaration, self)._get_name()
+        result = []
+        for rec in self:
+            name = '%s - %s' % (self.assure_id.name,self.date_range_id.name)
+            result.append((rec.id,name))
+        return result
+
     @api.onchange('nb_jour', 'type_id')
     def onchange_nb_jour(self):
         print 'enteeeeeeeeeeeeeeeeeeeer'

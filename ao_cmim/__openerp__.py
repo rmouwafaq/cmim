@@ -10,6 +10,7 @@
                'product', 
                'date_range'],
     'data':[
+            'security/security.xml',
             'security/ir.model.access.csv',
             'data/data_range_tye.xml',
             'data/product_template.xml',
